@@ -18,7 +18,9 @@ const clientSecret = process.env.O_AUTH_CLIENT_SECRET
 
 // app & redirect url
 const appUrl = 'https://cpg-project-4bdb3.web.app'
-const redirectUrl = 'https://pze1h729pj.execute-api.us-east-1.amazonaws.com/api/googleAuth/callback';
+// const redirectUrl = 'https://pze1h729pj.execute-api.us-east-1.amazonaws.com/api/googleAuth/callback';
+const redirectUrl = 'https://cpg-new.onrender.com/api/googleAuth/callback';
+
 
 // get user data by decoding credentials
 async function getUserData(accessToken) {
