@@ -20,15 +20,12 @@ const clientSecret = process.env.O_AUTH_CLIENT_SECRET
 const appUrl = 'https://cpg-project-4bdb3.web.app'
 // const redirectUrl = 'https://pze1h729pj.execute-api.us-east-1.amazonaws.com/api/googleAuth/callback';
 const redirectUrl = 'https://cpg-new.onrender.com/api/googleAuth/callback';
-
-
 // get user data by decoding credentials
 async function getUserData(accessToken) {
     const { data } = await axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`)
     if(data) return data
     return null
 }
-
 // @METHOD: POST
 // @ROUTE: /api/googleAuth/
 // @DESC: To open consent screen to signin with google
@@ -54,7 +51,6 @@ googleAuth.post('/', rateLimitter, asyncFun (async (req, res) => {
     // send encrypted response
     return res.status(200).send(cryptojs.encryptObj({ url: consentUrl }))
 }))
-
 // @METHOD: GET
 // @ROUTE: /api/googlAuth/callback
 // @DESC: To get accesstoken & signin/signup from google credentials

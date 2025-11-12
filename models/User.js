@@ -53,7 +53,11 @@ const UserSchema = new mongoose.Schema({
     others: { type: Object, required: true, default: {} },
     isAdmin: { type: Boolean, required: true, default: false },
     auth: { type: Array, required: true, default: ["self"] },
-    merchantFee: { type: mongoose.Schema.Types.Decimal128, default: 2 },
+    // merchantFee: { type: mongoose.Schema.Types.Decimal128, default: 2 },
+    merchantFee  : { type: Object, default: {} },
+
+
+
 }, {
     timestamps: true,
     toJSON: {
