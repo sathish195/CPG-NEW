@@ -836,8 +836,7 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     // create transaction
     const finalAmount = hash_dec.amount + totalFee_chain
     const address = '0x289A53817F0ed41e743112aDb0Db5437c953482F'
-    const addres = cryptojs.generateRandomString(20)
-    log("address -->", address)
+    // const address = cryptojs.generateRandomString(20)
     const transactionData = {
         tId: cryptojs.generateRandomString(15),
         invNo: hash_dec.invNo,
