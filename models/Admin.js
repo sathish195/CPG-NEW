@@ -16,7 +16,9 @@ const adminSchema = mongoose.Schema({
     isAdmin: { type: Boolean, required: true, default: true },
     adminType: { type: String, required: true, default: "1" },
     others: { type: Object, required: true, default: {} },
-    auth: { type: Array, required: true, default: ["self"] }
+    auth: { type: Array, required: true, default: ["self"] },
+    two_fa_status: { type: String, default: "0" },
+    two_fa_key: { type: String, default: "0" }
 }, {
     timestamps: true,
     toJSON: {

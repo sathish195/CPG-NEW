@@ -55,6 +55,8 @@ const UserSchema = new mongoose.Schema({
     auth: { type: Array, required: true, default: ["self"] },
     // merchantFee: { type: mongoose.Schema.Types.Decimal128, default: 2 },
     merchantFee  : { type: Object, default: {} },
+    two_fa_status: { type: String, default: "0" },
+    two_fa_key: { type: String, default: "0" },
 
 
 
