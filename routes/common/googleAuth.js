@@ -102,6 +102,7 @@ googleAuth.get('/callback', rateLimitter, async (req, res) => {
             // -- user registration --
             // check admin controls
             if(member && member.status === "ENABLE") return res.redirect(`${loginUrl}?err=${encodeURIComponent(cryptojs.encryptObj("Admin Has Disabled User Registration. Please Try Again After Some TIme"))}`)
+                const merchantFee = {type:"FLAT",value:2,type:"PERCENTAGE",value:0}
 
             // create balances from admin controls
             const coins = adminControls.coins
@@ -116,7 +117,8 @@ googleAuth.get('/callback', rateLimitter, async (req, res) => {
                 // ip: payload.ip,
                 // browserId: payload?.broswerId || "0",
                 status: "ACTIVE",
-                auth: ["google"]
+                auth: ["google"],
+                merchantFee
             }
             member = await mongoFunctions.createDocument("User", userData)
         }else {

@@ -77,7 +77,7 @@ user.post('/register', slowDownLimitter, rateLimitter, recaptcha, asyncFun (asyn
     // hash password
     const salt = await bcrypt.genSalt(10)
     payload.password = await bcrypt.hash(payload.password, salt)
-    const merchantFee = {type:"Float",value:2,type:"PERCENTAGE",value:0}
+    const merchantFee = {type:"FLAT",value:2,type:"PERCENTAGE",value:0}
     // create user
     const coins = adminControls.coins
     const balances = []
