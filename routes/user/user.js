@@ -597,7 +597,7 @@ user.post('/initWithdraw', auth, authUser, slowDownLimitter, rateLimitter, async
     // create transaction
     const transactionData = {
         tId: cryptojs.generateRandomString(15),
-        type: "DEBIT",
+        type: "WITHDRAWAL",
         amount: requestedAmount,
         address: payload.address,
         ..._.pick(user, ['userId', 'userName', 'email']),
@@ -727,7 +727,7 @@ user.post('/generateHash', slowDownLimitter, rateLimitter, asyncFun (async (req,
     const requestedAmount = Number(payload.amount)
 
     // check pending invoices
-    const totalPendingInv = await mongoFunctions.countDocuments("Transaction", { type: "CREDIT", status: "PENDING" })
+    const totalPendingInv = await mongoFunctions.countDocuments("Transaction", { type: "DIPOSIT", status: "PENDING" })
     if(totalPendingInv >= 50) return res.status(400).send("Pending Invoices Limit Reached. Please Try Again After Some Time")
 
     // validations
@@ -793,7 +793,7 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Cannot Be Empty");
 
     // check pending invoices
-    const totalPendingInv = await mongoFunctions.countDocuments("Transaction", { type: "CREDIT", status: "FAILED" })
+    const totalPendingInv = await mongoFunctions.countDocuments("Transaction", { type: "DIPOSIT", status: "FAILED" })
     if(totalPendingInv >= 50) return res.status(400).send("Pending Invoices Limit Reached")
 
     // validate payload
@@ -840,7 +840,7 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     const transactionData = {
         tId: cryptojs.generateRandomString(15),
         invNo: hash_dec.invNo,
-        type: "CREDIT",
+        type: "DIPOSIT",
         amount: finalAmount,
         address,
         ..._.pick(user, ['userId', 'userName', 'email']),
