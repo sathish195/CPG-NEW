@@ -836,13 +836,15 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     // create transaction
     const finalAmount = hash_dec.amount + totalFee_chain
     const address = '0x289A53817F0ed41e743112aDb0Db5437c953482F'
-    // const address = cryptojs.generateRandomString(20)
+    const secret_key = cryptojs.generateRandomString(10)
+    console.log(secret_key,"-------->");
     const transactionData = {
         tId: cryptojs.generateRandomString(15),
         invNo: hash_dec.invNo,
         type: "DIPOSIT",
         amount: finalAmount,
         address,
+        secret_key,
         ..._.pick(user, ['userId', 'userName', 'email']),
         ..._.pick(currentCoin, ['coinId', 'coinName', 'coinTicker']),
         ..._.pick(currentChain, ['chainId', 'chainName']),
