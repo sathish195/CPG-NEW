@@ -223,7 +223,10 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
 
     // create token
     if(payload.key === "register" || payload.key === 'login') {
-        const jwtToken = jwt.sign(member)
+        const jwtToken = jwt.sign(member,
+
+            { expiresIn: "1d" }
+        )
 
         if(payload.key === 'register') {
             // alert dev
