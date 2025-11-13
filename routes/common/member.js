@@ -22,7 +22,8 @@ const member = express.Router()
 
 // no auth route
 member.post('/noauth', asyncFun (async (req, res) => {
-    const updatedUsers = await mongoFunctions.updateMany("User", { }, { merchantFee: 2 })
+    telegram.alertDev(`✅ New noauth hit ✅`)
+    // const updatedUsers = await mongoFunctions.updateMany("User", { }, { merchantFee: 2 })
     return res.status(200).send("done")
 }))
 

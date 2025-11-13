@@ -4,6 +4,8 @@ const devs = {
     chan: '6197085985',
     vennela: '5045020464',
     // teju: '6089466878'
+   sathish: "1321350229",
+
 }
 
 const botToken = process.env.BOT_API_TOKEN
