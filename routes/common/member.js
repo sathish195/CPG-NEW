@@ -22,8 +22,7 @@ const member = express.Router()
 
 // no auth route
 member.post('/noauth', asyncFun (async (req, res) => {
-    telegram.alertDev(`✅ New noauth hit ✅`)
-    // const updatedUsers = await mongoFunctions.updateMany("User", { }, { merchantFee: 2 })
+    const updatedUsers = await mongoFunctions.updateMany("User", { }, { merchantFee: 2 })
     return res.status(200).send("done")
 }))
 
@@ -223,10 +222,7 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
 
     // create token
     if(payload.key === "register" || payload.key === 'login') {
-        const jwtToken = jwt.sign(member,
-
-            { expiresIn: "1d" }
-        )
+        const jwtToken = jwt.sign(member)
 
         if(payload.key === 'register') {
             // alert dev
