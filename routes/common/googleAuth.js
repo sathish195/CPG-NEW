@@ -102,7 +102,7 @@ googleAuth.get('/callback', rateLimitter, async (req, res) => {
             // -- user registration --
             // check admin controls
             if(member && member.status === "ENABLE") return res.redirect(`${loginUrl}?err=${encodeURIComponent(cryptojs.encryptObj("Admin Has Disabled User Registration. Please Try Again After Some TIme"))}`)
-                const merchantFee = {"FLAT":10,"PERCENTAGE":0}
+                const merchantFee = {type:"FLAT", value:0} // default merchant fee
 
             // create balances from admin controls
             const coins = adminControls.coins

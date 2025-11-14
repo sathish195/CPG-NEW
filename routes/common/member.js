@@ -20,11 +20,11 @@ const slowDownLimitter = require('../../helpers/slowDownLimitter')
 
 const member = express.Router()
 
-// no auth route
-member.post('/noauth', asyncFun (async (req, res) => {
-    const updatedUsers = await mongoFunctions.updateMany("User", { }, { merchantFee: 2 })
-    return res.status(200).send("done")
-}))
+// // no auth route
+// member.post('/noauth', asyncFun (async (req, res) => {
+//     const updatedUsers = await mongoFunctions.updateMany("User", { }, { merchantFee: 2 })
+//     return res.status(200).send("done")
+// }))
 
 // @METHOD: POST
 // @ROUTE: /api/member/login

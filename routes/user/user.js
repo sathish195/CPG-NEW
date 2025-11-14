@@ -80,8 +80,8 @@ user.post('/register', slowDownLimitter, rateLimitter, recaptcha, asyncFun (asyn
     // create user
     const coins = adminControls.coins
     const balances = []
-    const merchantFee = {"FLAT":10,"PERCENTAGE":0}
-
+    const merchantFee = {type:"FLAT", value:0} 
+    // const merchantFee = {type : "PERCENTAGE", value : 0}
     const userData = {
         userId: 'CPG'+cryptojs.generateRandomString(),
         ...payload,
