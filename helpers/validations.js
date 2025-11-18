@@ -476,6 +476,7 @@ module.exports = {
             referralStatus: Joi.string().valid("ACTIVE", "PENDING"),
             withdrawStatus: Joi.string().valid("ENABLE", "DISABLE").optional().allow(''),
             transferStatus: Joi.string().valid("ENABLE", "DISABLE").optional().allow(''),
+            depositeStatus: Joi.string().valid("ENABLE", "DISABLE").optional().allow(''),
             // merchantFee: Joi.number().greater(0).max(50).optional().allow('')
             merchantFee: Joi.object({
                 type: Joi.string().valid("FLAT", "PERCENTAGE").required(),

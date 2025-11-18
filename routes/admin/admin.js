@@ -209,9 +209,12 @@ admin.post('/updateUser/:userId', auth, authAdmin, slowDownLimitter, rateLimitte
             update.tfaKey = '0'
         }
     }
+    
 	if(payload.referralStatus && payload.referralStatus !== user.referralStatus) update.referralStatus = payload.referralStatus
 	if(payload.withdrawStatus && payload.withdrawStatus !== user.withdrawStatus) update.withdrawStatus = payload.withdrawStatus
 	if(payload.transferStatus && payload.transferStatus !== user.transferStatus) update.transferStatus = payload.transferStatus
+	if(payload.dipositeStatus && payload.dipositeStatus !== user.dipositeStatus) update.dipositeStatus = payload.dipositeStatus
+
 	if(payload.merchantFee) update.merchantFee = payload.merchantFee
 
     console.log(update,"update------->");

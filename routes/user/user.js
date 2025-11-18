@@ -727,7 +727,7 @@ user.post('/generateHash', slowDownLimitter, rateLimitter, asyncFun (async (req,
     const requestedAmount = Number(payload.amount)
 
     // check pending invoices
-    const totalPendingInv = await mongoFunctions.countDocuments("Transaction", { type: "DIPOSIT", status: "PENDING" })
+    const totalPendingInv = await mongoFunctions.countDocuments("Transaction", { type: "DEPOSIT", status: "PENDING" })
     if(totalPendingInv >= 50) return res.status(400).send("Pending Invoices Limit Reached. Please Try Again After Some Time")
 
     // validations
@@ -793,7 +793,7 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Cannot Be Empty");
 
     // check pending invoices
-    const totalPendingInv = await mongoFunctions.countDocuments("Transaction", { type: "DIPOSIT", status: "FAILED" })
+    const totalPendingInv = await mongoFunctions.countDocuments("Transaction", { type: "DEPOSIT", status: "FAILED" })
     if(totalPendingInv >= 50) return res.status(400).send("Pending Invoices Limit Reached")
 
     // validate payload
@@ -816,6 +816,8 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
 
     // get coins
     const adminControls = await controllers.getAdminControls();
+    if(adminControls.deposit !== "ENABLE") return res.status(401).send("Admin Has Disabled Deposit. Please Try After Some Time")
+
     const allCoins = adminControls.coins
 
     // coin validations
@@ -842,7 +844,7 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     const transactionData = {
         tId: cryptojs.generateRandomString(15),
         invNo: hash_dec.invNo,
-        type: "DIPOSIT",
+        type: "DEPOSIT",
         amount: finalAmount,
         address,
         secret_key,
