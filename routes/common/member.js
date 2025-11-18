@@ -680,10 +680,10 @@ member.post('/getBalances', auth, authMember, slowDownLimitter, rateLimitter, as
 // @DESC: To get stats for dashboard
 member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get stats
-    const totalInvMatch = { $match: { type: "DIPOSIT" } }
-    const tdyInvMatch = { $match: { type: "DIPOSIT", createdAt: { $gte: controllers.getTodayStart(), $lt: controllers.getTmrwStart() } } }
-    const sucInvMatch = { $match: { type: "DIPOSIT", status: "SUCCESS" } }
-    const failInvMatch = { $match: { type: "DIPOSIT", status: "FAILED" } }
+    const totalInvMatch = { $match: { type: "DEPOSIT" } }
+    const tdyInvMatch = { $match: { type: "DEPOSIT", createdAt: { $gte: controllers.getTodayStart(), $lt: controllers.getTmrwStart() } } }
+    const sucInvMatch = { $match: { type: "DEPOSIT", status: "SUCCESS" } }
+    const failInvMatch = { $match: { type: "DEPOSIT", status: "FAILED" } }
     if(!req.member.isAdmin) {
         totalInvMatch.$match.userId = req.member.userId
         tdyInvMatch.$match.userId = req.member.userId
@@ -831,7 +831,7 @@ member.post('/getTransactions', auth, authMember, slowDownLimitter, rateLimitter
 
     // get transactons
     const filter = {};
-    filter['type'] = type === 'withdraw' ? "WITHDRAWAL" : "DIPOSIT";
+    filter['type'] = type === 'withdraw' ? "WITHDRAWAL" : "DEPOSIT";
     if (fromDate && toDate) {
         fromDate = moment(fromDate, "YYYY-MM-DD").toDate()
         toDate = moment(toDate, "YYYY-MM-DD").toDate()

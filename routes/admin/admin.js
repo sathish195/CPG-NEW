@@ -213,7 +213,7 @@ admin.post('/updateUser/:userId', auth, authAdmin, slowDownLimitter, rateLimitte
 	if(payload.referralStatus && payload.referralStatus !== user.referralStatus) update.referralStatus = payload.referralStatus
 	if(payload.withdrawStatus && payload.withdrawStatus !== user.withdrawStatus) update.withdrawStatus = payload.withdrawStatus
 	if(payload.transferStatus && payload.transferStatus !== user.transferStatus) update.transferStatus = payload.transferStatus
-	if(payload.dipositeStatus && payload.dipositeStatus !== user.dipositeStatus) update.dipositeStatus = payload.dipositeStatus
+	if(payload.depositeStatus && payload.depositeStatus !== user.depositeStatus) update.depositeStatus = payload.depositeStatus
 
 	if(payload.merchantFee) update.merchantFee = payload.merchantFee
 
@@ -390,6 +390,8 @@ admin.post('/updateControls', auth, authAdmin, slowDownLimitter, rateLimitter, a
     login --> ${adminControls.login} %0A
     register --> ${adminControls.register} %0A
     withdraw --> ${adminControls.withdraw} %0A
+    deposit --> ${adminControls.withdraw} %0A
+
     by --> ${admin.email}`)
 
     // send encrypted response

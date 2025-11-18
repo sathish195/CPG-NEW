@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const transactionSchema = mongoose.Schema({
     tId: { type: String, required: true, default: true },
     invNo: { type: String, default: '' },
-    type: { type: String, required: true, enum: { values: ["DIPOSIT", "WITHDRAWAL"], message: "${VALUE} is not supported" } },
+    type: { type: String, required: true, enum: { values: ["DEPOSIT ", "WITHDRAWAL"], message: "${VALUE} is not supported" } },
     userId: { type: String, required: true },
     secret_key: { type: Object, required: true },
     userName: { type: String, default: "" },

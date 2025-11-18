@@ -507,6 +507,8 @@ module.exports = {
             login: Joi.string().valid("ENABLE", "DISABLE").required(),
             register: Joi.string().valid("ENABLE", "DISABLE").required(),
             withdraw: Joi.string().valid("ENABLE", "DISABLE").required(),
+            deposit: Joi.string().valid("ENABLE", "DISABLE").required(),
+
             ip: Joi.string().ip({ version: ['ipv4', 'ipv6'] }).required().messages({
                 'string.ip': "Invalid Ip Address Format"
             }),

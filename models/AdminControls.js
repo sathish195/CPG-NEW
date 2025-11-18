@@ -42,7 +42,7 @@ const adminControlsSchema = mongoose.Schema({
     login: { type: String, enum: { values: ["ENABLE", "DISABLE"], message: "${VALUE} is not supported" }, default: "ENABLE" },
     register: { type: String, enum: { values: ["ENABLE", "DISABLE"], message: "${VALUE} is not supported" }, default: "ENABLE" },
     withdraw: { type: String, enum: { values: ["ENABLE", "DISABLE"], message: "${VALUE} is not supported" }, default: "ENABLE" },
-    diposit: { type: String, enum: { values: ["ENABLE", "DISABLE"], message: "${VALUE} is not supported" }, default: "ENABLE" },
+    deposit: { type: String, enum: { values: ["ENABLE", "DISABLE"], message: "${VALUE} is not supported" }, default: "ENABLE" },
 
     referral: {
         referralStatus: { type: String, enum: { values: ["ENABLE", "DISABLE"], message: "${VALUE} is not supported" }, default: "ENABLE" },
