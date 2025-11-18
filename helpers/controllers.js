@@ -90,9 +90,11 @@ const getAdminControls = async () => {
 
 const getPrecisionByCoin = (balance, coinName) => {
     const bal = parseFloat(balance) || 0;
+    console.log(bal);
 
     // Bitcoin
     if (coinName === "bitcoin") {
+        console.log(coinName);
         return bal === 0 ? "0.00000000" : bal.toFixed(8);
     }
 
