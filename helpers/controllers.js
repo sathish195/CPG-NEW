@@ -82,26 +82,28 @@ const getAdminControls = async () => {
 
 // to get precesion by coin
 // const getPrecisionByCoin = (balance, coinName) => {
-//     // const bal = parseFloat(balance)
-//     const bal = Number(balance); // safer than parseFloat
-
+//     const bal = parseFloat(balance)
 //     if(coinName === 'bitcoin') return bal.toFixed(8);
 //     if(coinName === 'ethereum') return bal.toFixed(18);
 //     return bal.toFixed(2)
 // }
 
-const BigNumber = require("bignumber.js");
-BigNumber.config({ EXPONENTIAL_AT: 1e9 });
-
-
 const getPrecisionByCoin = (balance, coinName) => {
-    const bal = new BigNumber(balance || 0);
+    const bal = parseFloat(balance) || 0;
 
-    if (coinName === "bitcoin") return bal.toFixed(8);
-    if (coinName === "ethereum") return bal.toFixed(18);
+    // Bitcoin
+    if (coinName === "bitcoin") {
+        return bal === 0 ? "0.00000000" : bal.toFixed(8);
+    }
 
+    // Ethereum
+    if (coinName === "ethereum") {
+        return bal.toFixed(18);
+    }
+
+    // Default for other coins
     return bal.toFixed(2);
-}
+};
 
 
 // to get coin precision
