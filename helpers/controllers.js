@@ -81,14 +81,26 @@ const getAdminControls = async () => {
 }
 
 // to get precesion by coin
-const getPrecisionByCoin = (balance, coinName) => {
-    // const bal = parseFloat(balance)
-    const bal = Number(balance); // safer than parseFloat
+// const getPrecisionByCoin = (balance, coinName) => {
+//     // const bal = parseFloat(balance)
+//     const bal = Number(balance); // safer than parseFloat
 
-    if(coinName === 'bitcoin') return bal.toFixed(8);
-    if(coinName === 'ethereum') return bal.toFixed(18);
-    return bal.toFixed(2)
+//     if(coinName === 'bitcoin') return bal.toFixed(8);
+//     if(coinName === 'ethereum') return bal.toFixed(18);
+//     return bal.toFixed(2)
+// }
+
+const BigNumber = require("bignumber.js");
+
+const getPrecisionByCoin = (balance, coinName) => {
+    const bal = new BigNumber(balance || 0);
+
+    if (coinName === "bitcoin") return bal.toFixed(8);
+    if (coinName === "ethereum") return bal.toFixed(18);
+
+    return bal.toFixed(2);
 }
+
 
 // to get coin precision
 const getCoinPrecision = (coinName) => {
