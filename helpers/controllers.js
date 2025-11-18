@@ -91,6 +91,8 @@ const getAdminControls = async () => {
 // }
 
 const BigNumber = require("bignumber.js");
+BigNumber.config({ EXPONENTIAL_AT: 1e9 });
+
 
 const getPrecisionByCoin = (balance, coinName) => {
     const bal = new BigNumber(balance || 0);
