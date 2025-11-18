@@ -123,7 +123,7 @@ const getCoinPrecision = (coinName) => {
 const getDefaultBalances = (coins=[]) => {
     if(!coins || !coins?.length) return []
     const defaultBalances = coins.map(coin => {
-        return { coinId: coin.coinId, coinName: coin.coinName, coinTicker: coin.coinTicker, coinLogo: "", coinStatus: coin.coinStatus, precision: getCoinPrecision(coin.coinName), balance: getPrecisionByCoin(0, coin.coinName) }
+        return { coinId: coin.coinId, coinName: coin.coinName, coinTicker: coin.coinTicker, coinLogo: "", coinStatus: coin.coinStatus, precision: getCoinPrecision(coin.coinName), balance: getPrecisionByCoin(1, coin.coinName) }
     })
     return defaultBalances
 }
