@@ -38,7 +38,7 @@ const UserSchema = new mongoose.Schema({
             coinLogo: { type: String, default: "" },
             coinStatus: { type: String },
             precision: { type: String, default: 2 },
-            balance: { type: mongoose.Schema.Types.Decimal128, default: 0 },
+            balance: { type: String, default: 0 },
             settlement: {
                 settlementType: { type: String, enum: { values: ["", "MONTHLY", "AMOUNT"], message: "${VALUE} is not supported" }, default: "" },
                 settlementIn: { type: Number, default: 0 },

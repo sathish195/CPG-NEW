@@ -83,9 +83,7 @@ const getAdminControls = async () => {
 // to get precesion by coin
 const getPrecisionByCoin = (balance, coinName) => {
     const bal = parseFloat(balance)
-    if(coinName === 'bitcoin') {
-        return bal === 0 ?"0.00000000" : bal.toFixed(8);
-    }
+    if(coinName === 'bitcoin') return bal.toFixed(8);
     if(coinName === 'ethereum') return bal.toFixed(18);
     return bal.toFixed(2)
 }
@@ -101,7 +99,7 @@ const getCoinPrecision = (coinName) => {
 const getDefaultBalances = (coins=[]) => {
     if(!coins || !coins?.length) return []
     const defaultBalances = coins.map(coin => {
-        return { coinId: coin.coinId, coinName: coin.coinName, coinTicker: coin.coinTicker, coinLogo: "", coinStatus: coin.coinStatus, precision: getCoinPrecision(coin.coinName), balance: "0"}
+        return { coinId: coin.coinId, coinName: coin.coinName, coinTicker: coin.coinTicker, coinLogo: "", coinStatus: coin.coinStatus, precision: getCoinPrecision(coin.coinName), balance: getPrecisionByCoin(0, coin.coinName) }
     })
     return defaultBalances
 }
