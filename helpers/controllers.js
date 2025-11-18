@@ -108,7 +108,10 @@ const getPrecisionByCoin = (balance, coinName) => {
 
 // to get coin precision
 const getCoinPrecision = (coinName) => {
-    if(coinName === 'bitcoin') return 8;
+    // if(coinName === 'bitcoin') return 8;
+    if (coinName === "bitcoin") {
+        return bal === 0 ? "0.00000000" : bal.toFixed(8);
+    }
     if(coinName === 'ethereum') return 18;
     return 2
 }
