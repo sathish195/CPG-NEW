@@ -210,7 +210,8 @@ admin.post('/updateUser/:userId', auth, authAdmin, slowDownLimitter, rateLimitte
 	if(payload.referralStatus && payload.referralStatus !== user.referralStatus) update.referralStatus = payload.referralStatus
 	if(payload.withdrawStatus && payload.withdrawStatus !== user.withdrawStatus) update.withdrawStatus = payload.withdrawStatus
 	if(payload.transferStatus && payload.transferStatus !== user.transferStatus) update.transferStatus = payload.transferStatus
-	if(payload.merchantFee && payload.merchantFee !== user.merchantFee) update.merchantFee = payload.merchantFee
+	if(payload.merchantFee && payload.merchantFee.value !== user.merchantFee.value) update.merchantFee = payload.merchantFee
+    console.log(update);
 	if(update && (Object.keys(update)).length) {
 		const updatedUser = await mongoFunctions.findOneAndUpdate("User", { userId }, update, { new: true })
 		await redis.hSet("cpg_users", user.email, JSON.stringify(updatedUser))

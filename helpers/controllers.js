@@ -82,7 +82,9 @@ const getAdminControls = async () => {
 
 // to get precesion by coin
 const getPrecisionByCoin = (balance, coinName) => {
-    const bal = parseFloat(balance)
+    // const bal = parseFloat(balance)
+    const bal = Number(balance); // safer than parseFloat
+
     if(coinName === 'bitcoin') return bal.toFixed(8);
     if(coinName === 'ethereum') return bal.toFixed(18);
     return bal.toFixed(2)
