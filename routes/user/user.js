@@ -844,7 +844,6 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     const transactionData = {
         tId: cryptojs.generateRandomString(15),
         invNo: hash_dec.invNo,
-        type: "DEPOSIT",
         amount: finalAmount,
         address,
         secret_key,
@@ -853,7 +852,9 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
         ..._.pick(currentChain, ['chainId', 'chainName']),
         fee: totalFee_chain,
         comment: `Deposit to ${address} with fee "${totalFee_chain}"`,
-        status: "PENDING"
+        status: "PENDING",
+        type: "DEPOSIT",
+
     }
     const transaction = await mongoFunctions.create("Transaction", transactionData)
 
