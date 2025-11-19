@@ -31,6 +31,7 @@ module.exports = {
                             
                             // Calculate new balance
                             const newBalance = currentBalance - requestedAmount;
+                            console.log(newBalance);
                             
                             // Build update
                             const filter = {
@@ -40,7 +41,7 @@ module.exports = {
                             
                             const update = {
                                 $set: {
-                                    "balances.$.balance": newBalance.toString()  // save as string again
+                                    "balances.balance": newBalance.toString()  
                                 }
                             };
                             
