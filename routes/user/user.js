@@ -731,8 +731,8 @@ user.post('/generateHash', slowDownLimitter, rateLimitter, asyncFun (async (req,
     if(totalPendingInv >= 50) return res.status(400).send("Pending Invoices Limit Reached. Please Try Again After Some Time")
 
     // validations
-    const invExists = await mongoFunctions.findOne("Transaction", { userId: user.userId, invNo: payload.invNo })
-    if(invExists) return res.status(400).send("Invoice Number Already Exists");
+    // const invExists = await mongoFunctions.findOne("Transaction", { userId: user.userId, invNo: payload.invNo })
+    // if(invExists) return res.status(400).send("Invoice Number Already Exists");
 
     // get coins
     const adminControls = await controllers.getAdminControls();
@@ -811,8 +811,8 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     if(timeNow >= expireTime) return res.status(400).send("Hash Key Expired. Please Try Again");
 
     // check invoice
-    const invExists = await mongoFunctions.findOne("Transaction", { userId: user.userId, invNo: hash_dec.invNo })
-    if(invExists) return res.status(400).send("Invoice Number Already Exists");
+    // const invExists = await mongoFunctions.findOne("Transaction", { userId: user.userId, invNo: hash_dec.invNo })
+    // if(invExists) return res.status(400).send("Invoice Number Already Exists");
 
     // get coins
     const adminControls = await controllers.getAdminControls();
@@ -852,8 +852,8 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
         ..._.pick(currentChain, ['chainId', 'chainName']),
         fee: totalFee_chain,
         comment: `Deposit to ${address} with fee "${totalFee_chain}"`,
-        status: "PENDING",
-        type: "DEPOSIT",
+        status:"PENDING",
+        type:"DEPOSIT",
 
     }
     const transaction = await mongoFunctions.create("Transaction", transactionData)
