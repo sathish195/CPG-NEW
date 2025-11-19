@@ -117,13 +117,18 @@ admin.post('/getUsers', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     if(search) {
         filter['$or'] = [{ userId: search.toUpperCase() }, { email: search.toLowerCase() }]
     }
+    console.log(payload,"payload------->");
+
+    console.log(filter,"search------->");
     const options = {
         sort: { createdAt: -1 },
         skip: payload.skip,
         limit: payload.limit,
         select: 'dateOfRegister userId userName email status createdAt'
     }
+    console.log(options,"options------->");
     const users = await mongoFunctions.find("User", filter, options)
+    console.log(users,"users------->");
 
     // send encrypted response
     return res.status(200).send(cryptojs.encryptObj(users))
