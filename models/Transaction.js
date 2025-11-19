@@ -12,7 +12,7 @@ const transactionSchema = mongoose.Schema({
         uppercase: true
       },      
     userId: { type: String, required: true },
-    secret_key: { type: Object, required: true },
+    secret_key: { type: Object, required: true,default:"" },
     userName: { type: String, default: "" },
     email: { type: String, required: true },
     coinId: { type: String, required: true },
