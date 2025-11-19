@@ -840,7 +840,7 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     // const address = '0x289A53817F0ed41e743112aDb0Db5437c953482F'
     const address = cryptojs.generateRandomString(10)
     const secret_key = cryptojs.generateRandomString(10)
-    console.log(secret_key,"-------->");
+    console.log(secret_key,"------s-->");
     const transactionData = {
         tId: cryptojs.generateRandomString(15),
         invNo: hash_dec.invNo,
