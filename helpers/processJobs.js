@@ -20,17 +20,37 @@ module.exports = {
                         const currentCoin = (allCoins.filter(coin => coin.coinId === transaction.coinId))[0]
                         if(currentCoin && currentCoin.withdraw?.withdrawStatus === "ENABLE") {
                             // create amounts
-                            const requestedAmount = transaction.amount
+                            const requestedAmount = parseFloat(transaction.amount)
                             const amountToBeTransfer = transaction.amount - transaction.fee
+                            // const requestedAmount = Number(transaction.amount);
 
-                            // update user :: deduct balance from user
-                            const filter = { userId: user.userId, 'balances.coinId': transaction.coinId }
+                            // Get current balance (string → number)
+                            const currentBalance = Number(
+                                user.balances.find(b => b.coinId === transaction.coinId).balance
+                            );
+                            
+                            // Calculate new balance
+                            const newBalance = currentBalance - requestedAmount;
+                            
+                            // Build update
+                            const filter = {
+                                userId: user.userId,
+                                "balances.coinId": transaction.coinId
+                            };
+                            
                             const update = {
-                                $inc: {
-                                    'balances.$.balance': -requestedAmount
+                                $set: {
+                                    "balances.$.balance": newBalance.toString()  // save as string again
                                 }
-                            }
-                            const updatedUser = await mongoFunctions.findOneAndUpdate("User", filter, update, { new: true })
+                            };
+                            
+                            const updatedUser = await mongoFunctions.findOneAndUpdate(
+                                "User",
+                                filter,
+                                update,
+                                { new: true }
+                            );
+                            
                             await redis.hSet("cpg_users", user.email, JSON.stringify(updatedUser)) // update in redis
         
                             // transaction success
