@@ -29,24 +29,21 @@ module.exports = {
                                 user.balances.find(b => b.coinId === transaction.coinId).balance
                             );
                             
-                            if (currentBalance < requestedAmount) throw new Error("Insufficient funds");
-
-                            const precision = Number(balanceObj.precision || 2);
-                            const newBalanceStr = (currentBalance - requestedAmount).toFixed(precision);
+                            // Calculate new balance
+                            const newBalance = (currentBalance - requestedAmount).toString()  ;
+                            console.log(newBalance);
                             
-                            // filter must match the array element
+                            // Build update
                             const filter = {
-                              userId: user.userId,
-                              "balances.coinId": transaction.coinId
+                                userId: user.userId,
+                                "balances.coinId": transaction.coinId
                             };
                             
                             const update = {
-                              $set: {
-                                "balances.$.balance": newBalanceStr // NOTE the $. here
-                              }
+                                $set: {
+                                    "balances.$.balance": newBalance
+                                }
                             };
-                            
-                            
                             
                             const updatedUser = await mongoFunctions.findOneAndUpdate(
                                 "User",
