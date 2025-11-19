@@ -25,7 +25,7 @@ module.exports = {
                             // const requestedAmount = Number(transaction.amount);
 
                             // Get current balance (string → number)
-                            const currentBalance = Number(
+                            const currentBalance = parseFloat(
                                 user.balances.find(b => b.coinId === transaction.coinId).balance
                             );
                             
