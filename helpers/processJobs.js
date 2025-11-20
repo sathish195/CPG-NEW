@@ -1,6 +1,9 @@
 const mongoFunctions = require("./mongoFunctions")
 const redis = require("./redis")
 const telegram = require("./telegram")
+const controllers = require('./controllers')
+const { log } = require("winston")
+
 
 module.exports = {
     crypto_withdaw: async (job) => {
@@ -19,9 +22,13 @@ module.exports = {
                         const allCoins = adminControls.coins
                         const currentCoin = (allCoins.filter(coin => coin.coinId === transaction.coinId))[0]
                         if(currentCoin && currentCoin.withdraw?.withdrawStatus === "ENABLE") {
+
+                            const precision = await controllers.getPrecisionByCoin(0, transaction.coinName)
+                            console.log(precision," precision-------------------------------->");
                             // create amounts
                             const requestedAmount = parseFloat(transaction.amount)
-                            const amountToBeTransfer = transaction.amount - transaction.fee
+                            const amountToBeTransfer = controllers.getExactLength(transaction.amount) - controllers.getExactLength(precision,transaction.fee)
+                            
                             // const requestedAmount = Number(transaction.amount);
 
                             // Get current balance (string → number)
@@ -30,7 +37,7 @@ module.exports = {
                             );
                             
                             // Calculate new balance
-                            const newBalance = (currentBalance - requestedAmount).toString()  ;
+                            const newBalance = (controllers.getExactLength(precision,currentBalance) - controllers.getExactLength(precision,requestedAmount).toString()).toString();
                             console.log(newBalance);
                             
                             // Build update

@@ -124,6 +124,13 @@ const generateOtp = () => {
     return Math.floor(100000 + Math.random() * 900000)
 }
 
+const getExactLength = (value, length) => {
+    //this function takes value and a length to provide number of values after decimal point
+    if (isNaN(value)) return 0;
+    let zeros = String(0).padStart(length, "0");
+    var divider = 1 + zeros;
+    return (Math.floor(divider * value) / divider).toFixed(length);
+  }
 module.exports = {
     getAdminControls,
     generateOtp,
@@ -131,5 +138,6 @@ module.exports = {
     getDefaultBalances,
     getTodayStart,
     getTmrwStart,
-    getPrecisionByCoin
+    getPrecisionByCoin,
+    getExactLength
 }
