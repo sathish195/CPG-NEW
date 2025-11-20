@@ -37,7 +37,7 @@ module.exports = {
                             );
                             
                             // Calculate new balance
-                            const newBalance = (controllers.getExactLength(currentBalance,precision) - controllers.getExactLength(requestedAmount,precision).toString()).toString();
+                            const newBalance = (controllers.getExactLength(currentBalance,precision) - controllers.getExactLength(requestedAmount,precision)).toString();
                             console.log(newBalance);
                             
                             // Build update
