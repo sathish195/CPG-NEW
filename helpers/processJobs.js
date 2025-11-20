@@ -23,8 +23,11 @@ module.exports = {
                         const currentCoin = (allCoins.filter(coin => coin.coinId === transaction.coinId))[0]
                         if(currentCoin && currentCoin.withdraw?.withdrawStatus === "ENABLE") {
 
-                            const precision = await controllers.getPrecisionByCoin(0, transaction.coinName)
+                            const precision = await controllers.getPrecisionByCoin(0, transaction.coinName).length()
                             console.log(precision," precision-------------------------------->");
+                            console.log(precision," precision-------------------------------->");
+
+
                             // create amounts
                             const requestedAmount = parseFloat(transaction.amount)
                             const amountToBeTransfer = controllers.getExactLength(transaction.amount,precision) - controllers.getExactLength(transaction.fee,precision)
