@@ -27,7 +27,7 @@ module.exports = {
                             // console.log(precision," precision-------------------------------->");
                             // console.log(precision.length," precision-------------------------------->");
 
-                            const precision = transaction.coinName.tolowarcase() === 'bitcoin' ? 8 : transaction.coinName === 'ethereum' ? 18 : 2;
+                            const precision = transaction.coinName.toLowerCase() === 'bitcoin' ? 8 : transaction.coinName === 'ethereum' ? 18 : 2;
 
 
                             // create amounts
