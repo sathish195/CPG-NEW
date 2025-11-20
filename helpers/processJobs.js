@@ -27,7 +27,7 @@ module.exports = {
                             console.log(precision," precision-------------------------------->");
                             // create amounts
                             const requestedAmount = parseFloat(transaction.amount)
-                            const amountToBeTransfer = controllers.getExactLength(transaction.amount) - controllers.getExactLength(precision,transaction.fee)
+                            const amountToBeTransfer = controllers.getExactLength(transaction.amount,precision) - controllers.getExactLength(transaction.fee,precision)
                             
                             // const requestedAmount = Number(transaction.amount);
 
@@ -37,7 +37,7 @@ module.exports = {
                             );
                             
                             // Calculate new balance
-                            const newBalance = (controllers.getExactLength(precision,currentBalance) - controllers.getExactLength(precision,requestedAmount).toString()).toString();
+                            const newBalance = (controllers.getExactLength(currentBalance,precision) - controllers.getExactLength(requestedAmount,precision).toString()).toString();
                             console.log(newBalance);
                             
                             // Build update
