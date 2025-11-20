@@ -65,7 +65,8 @@ member.post('/login', slowDownLimitter, rateLimitter, recaptcha, asyncFun (async
     if(!validPassword) return res.status(400).send("Incorrect Password. Please Try Again")
 
     // save otp to redis
-    if(member.tfaStatus !== "ENABLE") await redis.setEx(`cpg-login-otp-${member.email}`, '123456', '180')
+    // if(member.tfaStatus !== "ENABLE")
+         await redis.setEx(`cpg-login-otp-${member.email}`, '123456', '180')
 
     // send encrypted response
     return res.status(200).send(cryptojs.encryptObj({ message: member.tfaStatus === "ENABLE" ? "Proceed To Verify 2FA Code" : "OTP Sent To Email", email: member.email, tfaStatus: member.tfaStatus }))
@@ -175,7 +176,7 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
     if(member && payload.key !== "register" && member.status !== "ACTIVE") return res.status(401).send("Someting Went Wrong! Contact Admin")
 
     // otp validations
-    if(payload.key === "register" || payload.key === "tfa") {
+    // if(payload.key === "register" || payload.key === "tfa") {
         // check otp
         if(!payload.otp) return res.status(400).send("OTP Is Required")
         
@@ -186,7 +187,7 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
 
         // delete otp
         await redis.delete(`cpg-${payload.key}-otp-${payload.email}`)
-    }else {
+    // }else {
         if(member.tfaStatus === "ENABLE") {
             if(!payload.tfaCode) return res.status(400).send("2FA Code Is Required");
     
@@ -204,7 +205,7 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
             });
             if(!tfaResult || tfaResult.delta === null || tfaResult.delta === undefined) return res.status(400).send("Invalid 2FA Code! Please Try Again")
             if(tfaResult.delta < -1) return res.status(400).send("2FA Code Expired! Please Try Again")
-        }
+        // }
     }
 
     // update member

@@ -34,7 +34,7 @@ module.exports = {
             email: Joi.string().email().regex(/^[a-z0-9._%+-]+@[a-z.-]+\.[a-z]{2,}$/).min(5).max(35).required().messages({
                 'string.pattern.base': 'Email Should Not Contain Special Characters And Capital Case Letters'
             }),
-            otp: Joi.string().pattern(/^[0-9]+$/).length(6).optional().allow('').messages({
+            otp: Joi.string().pattern(/^[0-9]+$/).length(6).required().allow('').messages({
                 'string.pattern.base': 'OTP Should Contain Only Numbers',
                 'string.lenth': 'OTP Must Be 6 Digits Long',
                 'any.only': 'Invalid OTP. Try Again'
