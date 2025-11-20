@@ -67,7 +67,7 @@ module.exports = {
                             await redis.hSet("cpg_users", user.email, JSON.stringify(updatedUser)) // update in redis
         
                             // transaction success
-                            const finalTransaction = await mongoFunctions.findOneAndUpdate("Transaction", { tId: transaction.tId }, { status: "SUCCESS", amount: amountToBeTransfer }, { new: true })
+                            const finalTransaction = await mongoFunctions.findOneAndUpdate("Transaction", { tId: transaction.tId }, { status: "PENDING", amount: amountToBeTransfer }, { new: true })
 
                             // alert dev
                             telegram.alertDev(`✅ Transaction success ✅ %0A
