@@ -23,9 +23,12 @@ module.exports = {
                         const currentCoin = (allCoins.filter(coin => coin.coinId === transaction.coinId))[0]
                         if(currentCoin && currentCoin.withdraw?.withdrawStatus === "ENABLE") {
 
-                            const precision = await controllers.getPrecisionByCoin(0, transaction.coinName)
-                            console.log(precision," precision-------------------------------->");
-                            console.log(precision.length," precision-------------------------------->");
+                            // const precision = await controllers.getPrecisionByCoin(0, transaction.coinName)
+                            // console.log(precision," precision-------------------------------->");
+                            // console.log(precision.length," precision-------------------------------->");
+
+                            const precision = transaction.coinName.tolowarcase() === 'bitcoin' ? 8 : transaction.coinName === 'ethereum' ? 18 : 2;
+
 
                             // create amounts
                             const requestedAmount = parseFloat(transaction.amount)
