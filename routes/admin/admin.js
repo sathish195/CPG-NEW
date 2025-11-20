@@ -907,5 +907,14 @@ admin.post('/set_up', asyncFun (async (req, res) => {
 
     return res.status(200).send(admin)
 }))
+// admin get pending withdrawals
+// method post
+ 
+admin.post('/get_pending_withdrawals', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
 
+    const pending_withdrawals = await mongoFunctions.find("Transaction", { status: "PENDING" })
+    return res.status(200).send(pending_withdrawals)
+
+
+}))
 module.exports = admin

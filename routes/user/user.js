@@ -870,4 +870,11 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     return res.status(200).send(responseData)
 }))
 
+// const {stats} =require('../../helpers/stats');
+// // test stats
+// user.get('/testStats', asyncFun (async (req, res) => {
+//     const stats = await stats("deposit",{ coinId: "bitcoin" }, amount,coin);
+//     return res.status(200).send(stats)
+// }))
+
 module.exports = user
