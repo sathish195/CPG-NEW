@@ -14,6 +14,8 @@ const controllers = require('../../helpers/controllers')
 const tfa = require('speakeasy')
 const tigerBalm = require('../../helpers/tigerBalm')
 const slowDownLimitter = require('../../helpers/slowDownLimitter')
+const producer = require('../../helpers/producer')
+
 
 const admin = express.Router()
 
@@ -912,16 +914,16 @@ admin.post('/set_up', asyncFun (async (req, res) => {
  
 admin.post('/get_pending_withdrawals', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
 
-    const pending_withdrawals = await mongoFunctions.find("Transaction", {type : "WITHDRAWAL", status: "PENDING" })
+    const pending_withdrawals = await mongoFunctions.find("Transaction", {type : "WITHDRAWAL", status: "PENDING" },{_id:0, __v:0,invNo:0})
     return res.status(200).send(pending_withdrawals)
 
 
 }))
 // addmin succes withdrawals
 // method post
-admin.post('/get_success_withdrawals', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
-
-
+admin.post('/accept_reject_withdrwals', slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
+ 
+    req.body = {enc : cryptojs.encryptObj(req.body)}
     // get enc
     const { error: payloadError } = validations.getEnc(req.body)
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
@@ -932,11 +934,42 @@ admin.post('/get_success_withdrawals', auth, authAdmin, slowDownLimitter, rateLi
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
     // validate payload
-    const { error } = validations.updateTicket(payload)
+    const { error } = validations.approve_reject_withdral(payload)
     if(error) return res.status(400).send(error.details[0].message)
-    const success_withdrawals = await mongoFunctions.find("Transaction", { status: "SUCCESS" })
-    return res.status(200).send(success_withdrawals) }))
+
+console.log(payload);
+
+        let history = await mongoFunctions.findOne("Transaction", {
+            tId: payload.tid,
+            status: "PENDING",
+            type: "WITHDRAWAL"
+          });
+          if (!history) return res.status(400).send("Record Not Found..!");
+
+        //   if(history.status === "SUCCESS") {
+            // const withdarwal_obj = 
+            // {
+            //     type: "WITHDRAWAL",
+            //     status: payload.status,
+            //     tid: history.tid,
+            //     userId: history.userId,
+            // }
+
+    await producer.addJob({ type: "AdminApproveCryptoWithdraw", tId: history.tId, userId: history.userId,status: payload.status } );
 
 
 
-module.exports = admin
+        
+
+        //   }
+        //   else{
+
+
+
+        //   }
+    return res.status(200).send(cryptojs.encryptObj({ status: "Request Processing..!" }));
+
+
+        }))
+
+module.exports = admin;

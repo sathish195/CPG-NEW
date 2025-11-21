@@ -3,6 +3,7 @@ const redis = require("./redis")
 const telegram = require("./telegram")
 const controllers = require('./controllers')
 const { log } = require("winston")
+const { HmacSHA3 } = require("crypto-js")
 
 
 module.exports = {
@@ -243,4 +244,130 @@ module.exports = {
     //       return true;
     //     }
     //   },
+
+
+    admin_crypto_withdrawal_approve: async (job) => {
+        try{
+                const { tId, userId,status,hash } = job.data
+                // get transaction
+                const transaction = await mongoFunctions.findOne("Transaction", { tId, userId, status: "PENDING" })
+                if(transaction) {
+                    // get user
+                    const user = await mongoFunctions.findOne("User", { userId, status: "ACTIVE", withdrawStatus: "ENABLE" })
+                    if(user) {
+                        // get admin controls
+                        const adminControls = await redis.hGet("cpg_admin", "controls", "AdminControls", { })
+                        if(adminControls && adminControls.withdraw === "ENABLE") {
+                            // get current coin controls
+                            const allCoins = adminControls.coins
+                            const currentCoin = (allCoins.filter(coin => coin.coinId === transaction.coinId))[0]
+                            if(currentCoin && currentCoin.withdraw?.withdrawStatus === "ENABLE") {
+
+
+                                if(status === "SUCCESS") {
+                                
+    
+                                const precision = transaction.coinName.toLowerCase() === 'bitcoin' ? 8 : transaction.coinName === 'ethereum' ? 18 : 2;
+    
+                                // create amounts
+                                const amountToBeTransfer = controllers.getExactLength(transaction.amount,precision) + controllers.getExactLength(transaction.fee,precision)
+                                
+                                // const requestedAmount = Number(transaction.amount);
+    
+                                // Get current balance (string → number)
+                                const currentBalance = parseFloat(
+                                    user.balances.find(b => b.coinId === transaction.coinId).balance
+                                );
+                                
+                                // Calculate new balance
+                                const newBalance = (controllers.getExactLength(currentBalance,precision) + controllers.getExactLength(amountToBeTransfer,precision)).toString();
+                                console.log(newBalance);
+                                
+                                // Build update
+                                const filter = {
+                                    userId: user.userId,
+                                    "balances.coinId": transaction.coinId
+                                };
+                                
+                                const update = {
+                                    $set: {
+                                        "balances.$.balance": newBalance
+                                    }
+                                };
+                                
+                                const updatedUser = await mongoFunctions.findOneAndUpdate(
+                                    "User",
+                                    filter,
+                                    update,
+                                    { new: true }
+                                );
+                            
+                                await redis.hSet("cpg_users", user.email, JSON.stringify(updatedUser)) // update in redis
+                            }
+                                // transaction success
+                                const finalTransaction = await mongoFunctions.findOneAndUpdate("Transaction", { tId: transaction.tId }, { status: status,others:{hash:hash} }, { new: true })
+    
+                                // alert dev
+                                telegram.alertDev(`✅ Transaction ${status} ✅ %0A
+                                tId --> ${finalTransaction.tId} %0A
+                                type --> ${finalTransaction.type} ${finalTransaction.type === "CREDIT" ? '💵' : '💸'} %0A
+                                from --> ${user.email} %0A
+                                coin --> ${finalTransaction.coinName} %0A
+                                amount --> ${finalTransaction.amount} %0A
+                                address --> ${finalTransaction.address} %0A
+                                fee --> ${finalTransaction.fee} %0A
+                                status --> ${finalTransaction.status} %0A
+                                comment --> ${finalTransaction.comment}`)
+                            }else {
+                                // transaction failed
+                                await mongoFunctions.findOneAndUpdate("Transaction", { tId: transaction.tId }, { status: "FAILED"})
+    
+                                // alert dev
+                                telegram.alertDev(`❌ Transaction failed ❌ %0A
+                                ❗ Withdraw status of ${currentCoin.coinName} disabled in admin controls❗ %0A
+                                tId --> ${transaction.tId} %0A
+                                type --> ${transaction.type} ${transaction.type === "CREDIT" ? '💵' : '💸'} %0A
+                                from --> ${user.email} %0A
+                                coin --> ${transaction.coinName} %0A
+                                address --> ${transaction.address}`)
+                            }
+                        }else {
+                            // transaction failed
+                            await mongoFunctions.findOneAndUpdate("Transaction", { tId: transaction.tId }, { status: "FAILED"})
+    
+                            // alert dev
+                            telegram.alertDev(`❌ Transaction failed ❌ %0A
+                            ❗ Withdraw status disabled in admin controls ❗ %0A
+                            tId --> ${transaction.tId} %0A
+                            type --> ${transaction.type} ${transaction.type === "CREDIT" ? '💵' : '💸'} %0A
+                            from --> ${user.email} %0A
+                            coin --> ${transaction.coinName} %0A
+                            address --> ${transaction.address}`)
+                        }
+                    }else {
+                        // transaction failed
+                        await mongoFunctions.findOneAndUpdate("Transaction", { tId: transaction.tId }, { status: "FAILED"})
+    
+                        // alert dev
+                        telegram.alertDev(`❌ Transaction failed ❌ %0A
+                        ❗ User not found ❗ %0A
+                        tId --> ${transaction.tId} %0A
+                        userId --> ${userId} %0A
+                        type --> ${transaction.type} ${transaction.type === "CREDIT" ? '💵' : '💸'} %0A
+                        coin --> ${transaction.coinName} %0A
+                        address --> ${transaction.address}`)
+                    }
+                }else {
+                    // alert dev
+                    telegram.alertDev(`❌ Transaction failed ❌ %0A
+                    ❗ Transaction not found ❗ %0A
+                    tId --> ${tId} %0A
+                    userId --> ${userId}`)
+                }
+            }
+        
+    catch(err) {
+            telegram.alertDev(`Error in admin crypto withdrawal approve job --> ❌❌❌❌❌❌ \n ${err.stack} \n ❌❌❌❌❌❌`)
+        }
+    }
 }

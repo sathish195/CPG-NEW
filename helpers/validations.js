@@ -328,6 +328,19 @@ module.exports = {
         return schema.validate(data)
     },
 
+
+    approve_reject_withdral: (data) => {
+        const schema = Joi.object({
+          tid: Joi.string().min(10).max(25).required(),
+          status: Joi.string().valid("SUCCESS", "FAILED").required(),
+          hash: Joi.string().min(10).max(50).required(),
+        });
+        return schema.validate(data);
+      },
+    
+
+
+
     // To reply ticket for user
     replyTicket: (data) => {
         const schema = Joi.object({

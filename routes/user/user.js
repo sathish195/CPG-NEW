@@ -660,6 +660,7 @@ user.post('/withdraw', auth, authUser, slowDownLimitter, rateLimitter, asyncFun 
 
     // otp validations
     const otp = await redis.get(`cpg-withdraw-otp-${user.email}`)
+    console.log(otp, payload.otp);
     if(!otp) return res.status(400).send("OTP Expired. Please Try Resend OTP")
     if(otp !== payload.otp) return res.status(400).send("Incorrect OTP. Please Try Again")
     await redis.delete(`cpg-withdraw-otp-${user.email}`) // delete otp

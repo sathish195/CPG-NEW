@@ -1,6 +1,6 @@
 const bullMQ = require('bullmq');
 const telegram = require('./telegram');
-const { crypto_withdaw } = require('./processJobs');
+const { crypto_withdaw,admin_crypto_withdrawal_approve } = require('./processJobs');
 
 const connection = {
     host: process.env.REDIS_HOST,
@@ -11,7 +11,15 @@ const connection = {
 const handleJobs = {
     cryptoWithdraw: async (job) => {
         await crypto_withdaw(job)
+    },
+
+
+    AdminApproveCryptoWithdraw: async (job) => {
+        await admin_crypto_withdrawal_approve(job)
     }
+
+
+
 }
 
 const worker = new bullMQ.Worker('cpg_queue', async(job) => {
