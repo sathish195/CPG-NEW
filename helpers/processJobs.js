@@ -252,12 +252,12 @@ module.exports = {
             console.log(job.data," admin crypto withdrawal approve job data----------------->");
                 const { tId, userId,status,hash } = job.data
               console.log(tId, userId,status,hash ," admin crypto withdrawal approve job data----------------->");
-                // get transaction
-                const transaction = await mongoFunctions.findOne("Transaction", { tId : tId, userID:userId })
-                if(transaction) {
-                    // get user
-                    const user = await mongoFunctions.findOne("User", { userId, status: "ACTIVE", withdrawStatus: "ENABLE" })
-                    log("User fetched:", user);
+              // get transaction
+              const transaction = await mongoFunctions.findOne("Transaction", { tId, userId, status: "PENDING" })
+              if(transaction) {
+                  // get user
+                  const user = await mongoFunctions.findOne("User", { userId, status: "ACTIVE", withdrawStatus: "ENABLE" })
+                    // log("User fetched:", user);
                     if(user) {
                         // get admin controls
                         const adminControls = await redis.hGet("cpg_admin", "controls", "AdminControls", { })
@@ -272,24 +272,26 @@ module.exports = {
                                 
     
                                 const precision = transaction.coinName.toLowerCase() === 'bitcoin' ? 8 : transaction.coinName === 'ethereum' ? 18 : 2;
-    
+                                console.log(transaction.amount," amount-------------------------------->");
+                                console.log(transaction.fee," fee-------------------------------->");
                                 // create amounts
-                                const amountToBeTransfer = controllers.getExactLength(transaction.amount,precision) + controllers.getExactLength(transaction.fee,precision)
-                                
+                                const amountToBeTransfer =parseFloat(controllers.getExactLength(transaction.amount,precision)) + parseFloat(controllers.getExactLength(transaction.fee,precision))
+                                let newbal = controllers.getExactLength(amountToBeTransfer,precision);
+                                console.log(newbal,"amountToBeTransfer------->");
                                 // const requestedAmount = Number(transaction.amount);
     
                                 // Get current balance (string → number)
-                                const currentBalance = parseFloat(
-                                    user.balances.find(b => b.coinId === transaction.coinId).balance
-                                );
+                                const balanceObject = user.balances.find(b => b.coinId === transaction.coinId);
 
-                                log("Current Balance:", currentBalance);
+                                    const currentBalance = controllers.getExactLength(parseFloat(balanceObject.balance),precision);
+                                    console.log(currentBalance," currentBalance----------->");
 
-                                
+                                const newBalance= parseFloat(currentBalance)+parseFloat(newbal);
+                                let finalAmount = controllers.getExactLength(newBalance,precision);
                                 // Calculate new balance
-                                const newBalance = (controllers.getExactLength(currentBalance,precision) + controllers.getExactLength(amountToBeTransfer,precision)).toString();
-                                console.log(newBalance);
-                                return true
+                                // const newBalance = parseFloat((controllers.getExactLength(currentBalance,precision)) + parseFloat(controllers.getExactLength(amountToBeTransfer,precision))).toString();
+                                console.log("newbalance----------->",finalAmount);
+                                // return true
                                 
                                 // Build update
                                 const filter = {
@@ -299,7 +301,7 @@ module.exports = {
                                 
                                 const update = {
                                     $set: {
-                                        "balances.$.balance": newBalance
+                                        "balances.$.balance": finalAmount
                                     }
                                 };
                                 
