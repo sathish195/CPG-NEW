@@ -618,7 +618,7 @@ module.exports = {
                 'string.min': "Chain Name Length Should Be Minimum 3 Characters",
                 'string.max': "Chain Name Length Should Be Maximum 25 Characters",
             }),
-            contractAddress : Joi.string().required(),
+            // contractAddress : Joi.string().required(),
             chainLogo: Joi.string().required(),
             fee: Joi.number().min(0).required().required(),
             min: Joi.number().min(0).required(),

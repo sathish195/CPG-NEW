@@ -653,7 +653,7 @@ admin.post('/addChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     if(chain) return res.status(400).send("Chain Name Already Exists");
 
     // add chain
-    const newChain = _.pick(payload, ['chainId', 'chainName','contractAddress' ,'note', 'fee', 'min', 'max', 'chainLogo'])
+    const newChain = _.pick(payload, ['chainId', 'chainName', 'note', 'fee', 'min', 'max', 'chainLogo'])
     let filter = { 'coins.coinId': payload.coin }
     let update = {
         $push: {
@@ -673,8 +673,6 @@ admin.post('/addChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
 admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get admin
     const { admin } = req
-req.body = {enc: cryptojs.encryptObj(req.body)}
-
 
     // admin validations
     if(admin?.adminType !== "1") return res.status(401).send("You Are Not Allowed To Add New Chain");
@@ -691,11 +689,11 @@ req.body = {enc: cryptojs.encryptObj(req.body)}
     // validate payload
     const { error } = validations.addUpdateChain(payload)
     if(error) return res.status(400).send(error.details[0].message);
-console.log(payload,"payload------->");
+
     // get all coins
     const adminControls = await controllers.getAdminControls()
-    const allCoins = adminControls.coins
-
+    const allCoins = adminControls.coins;
+    log(payload,"payload------>");
     // get coin
     const currentCoin = allCoins?.filter(coin => coin.coinId === payload.coin)[0]
     if(!currentCoin) return res.status(400).send("No Coin Found With Given Coin Id");
@@ -720,12 +718,6 @@ console.log(payload,"payload------->");
     if(currentChain.max !== payload.max) update.$set['coins.$[coin].chains.$[chain].max'] = payload.max
     if(currentChain.chainStatus !== payload.chainStatus) update.$set['coins.$[coin].chains.$[chain].chainStatus'] = payload.chainStatus
     if(currentChain.chainLogo !== payload.chainLogo) update.$set['coins.$[coin].chains.$[chain].chainLogo'] = payload.chainLogo
-    // if(currentChain.contractAddress !== payload.contractAddress) update.$set['coins.$[coin].chains.$[chain].contractAddress'] = payload.contractAddress
-    if (currentChain.contractAddress !== payload.contractAddress) {
-        update.$set['coins.$[coin].chains.$[chain].contractAddress'] = payload.contractAddress;
-    }
-    
-
     if(Object.keys(update.$set).length) {
         // update chain
         let filter = { 'coins.coinId': payload.coin, 'coins.chains.chainId': payload.chainId }
