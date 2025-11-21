@@ -912,9 +912,31 @@ admin.post('/set_up', asyncFun (async (req, res) => {
  
 admin.post('/get_pending_withdrawals', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
 
-    const pending_withdrawals = await mongoFunctions.find("Transaction", { status: "PENDING" })
+    const pending_withdrawals = await mongoFunctions.find("Transaction", {type : "WITHDRAWAL", status: "PENDING" })
     return res.status(200).send(pending_withdrawals)
 
 
 }))
+// addmin succes withdrawals
+// method post
+admin.post('/get_success_withdrawals', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
+
+
+    // get enc
+    const { error: payloadError } = validations.getEnc(req.body)
+    if(payloadError) return res.status(400).send(payloadError.details[0].message)
+
+    // decrypt payload
+    const payload = cryptojs.decryptObj(req.body.enc)
+    if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
+    if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
+
+    // validate payload
+    const { error } = validations.updateTicket(payload)
+    if(error) return res.status(400).send(error.details[0].message)
+    const success_withdrawals = await mongoFunctions.find("Transaction", { status: "SUCCESS" })
+    return res.status(200).send(success_withdrawals) }))
+
+
+
 module.exports = admin
