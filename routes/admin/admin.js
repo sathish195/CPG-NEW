@@ -676,7 +676,7 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
 
     // admin validations
     if(admin?.adminType !== "1") return res.status(401).send("You Are Not Allowed To Add New Chain");
-
+// req.body = {enc:cryptojs.encryptObj(req.body)}
     // get enc
     const { error: payloadError } = validations.getEnc(req.body)
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
@@ -693,7 +693,6 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     // get all coins
     const adminControls = await controllers.getAdminControls()
     const allCoins = adminControls.coins;
-    console.log(payload,"payload------>");
     // get coin
     const currentCoin = allCoins?.filter(coin => coin.coinId === payload.coin)[0]
     if(!currentCoin) return res.status(400).send("No Coin Found With Given Coin Id");
@@ -701,7 +700,6 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     // get chain
     const currentChain = currentCoin?.chains.filter(chain => chain.chainId === payload.chainId)[0]
     if(!currentChain) return res.status(400).send("No Chain Found With Given Chain Id");
-
 
     // update chain
     const update = {
@@ -718,6 +716,10 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     if(currentChain.max !== payload.max) update.$set['coins.$[coin].chains.$[chain].max'] = payload.max
     if(currentChain.chainStatus !== payload.chainStatus) update.$set['coins.$[coin].chains.$[chain].chainStatus'] = payload.chainStatus
     if(currentChain.chainLogo !== payload.chainLogo) update.$set['coins.$[coin].chains.$[chain].chainLogo'] = payload.chainLogo
+    if(currentChain.contractAddress !== payload.contractAddress) update.$set['coins.$[coin].chains.$[chain].contractAddress'] = payload.contractAddress
+
+ 
+    
     if(Object.keys(update.$set).length) {
         // update chain
         let filter = { 'coins.coinId': payload.coin, 'coins.chains.chainId': payload.chainId }

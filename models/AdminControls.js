@@ -9,7 +9,10 @@ const chainSchema = mongoose.Schema({
     fee: { type: Number, required: true, default: 0 },
     min: { type: Number, required: true, default: 0 },
     max: { type: Number, required: true, default: 0 },
-    chainStatus: { type: String, required: true, enum: { values: ["ENABLE", "DISABLE"], message: "${VALUE} is not supported" }, default: "ENABLE" }
+    chainStatus: { type: String, required: true, enum: { values: ["ENABLE", "DISABLE"], message: "${VALUE} is not supported" }, default: "ENABLE" },
+    contractAddress: { type: String, required: true, default: "0" },
+
+    
 }, { _id: false })
 
 // coins schema
