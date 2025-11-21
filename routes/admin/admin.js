@@ -719,7 +719,14 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     if(currentChain.chainStatus !== payload.chainStatus) update.$set['coins.$[coin].chains.$[chain].chainStatus'] = payload.chainStatus
     if(currentChain.chainLogo !== payload.chainLogo) update.$set['coins.$[coin].chains.$[chain].chainLogo'] = payload.chainLogo
     // if(currentChain.contractAddress !== payload.contractAddress) update.$set['coins.$[coin].chains.$[chain].contractAddress'] = payload.contractAddress
-    if (!currentChain.contractAddress || currentChain.contractAddress !== payload.contractAddress) update.$set['coins.$[coin].chains.$[chain].contractAddress'] = payload.contractAddress;
+    // if (!currentChain.contractAddress || currentChain.contractAddress !== payload.contractAddress) update.$set['coins.$[coin].chains.$[chain].contractAddress'] = payload.contractAddress;
+    if (
+        !currentChain.contractAddress || 
+        currentChain.contractAddress !== payload.contractAddress
+    ) {
+        update.$set['coins.$[coin].chains.$[chain].contractAddress'] = payload.contractAddress;
+    }
+    
 
     console.log(update,"update------->");
 
