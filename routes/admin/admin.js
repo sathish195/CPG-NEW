@@ -693,7 +693,7 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     // get all coins
     const adminControls = await controllers.getAdminControls()
     const allCoins = adminControls.coins;
-    log(payload,"payload------>");
+    console.log(payload,"payload------>");
     // get coin
     const currentCoin = allCoins?.filter(coin => coin.coinId === payload.coin)[0]
     if(!currentCoin) return res.status(400).send("No Coin Found With Given Coin Id");
