@@ -653,7 +653,7 @@ admin.post('/addChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     if(chain) return res.status(400).send("Chain Name Already Exists");
 
     // add chain
-    const newChain = _.pick(payload, ['chainId', 'chainName', 'note', 'fee', 'min', 'max', 'chainLogo'])
+    const newChain = _.pick(payload, ['chainId', 'chainName','contractAddress' ,'note', 'fee', 'min', 'max', 'chainLogo'])
     let filter = { 'coins.coinId': payload.coin }
     let update = {
         $push: {
@@ -718,6 +718,8 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     if(currentChain.max !== payload.max) update.$set['coins.$[coin].chains.$[chain].max'] = payload.max
     if(currentChain.chainStatus !== payload.chainStatus) update.$set['coins.$[coin].chains.$[chain].chainStatus'] = payload.chainStatus
     if(currentChain.chainLogo !== payload.chainLogo) update.$set['coins.$[coin].chains.$[chain].chainLogo'] = payload.chainLogo
+    if(currentChain.contractAddress !== payload.contractAddress) update.$set['coins.$[coin].chains.$[chain].contractAddress'] = payload.contractAddress
+
     if(Object.keys(update.$set).length) {
         // update chain
         let filter = { 'coins.coinId': payload.coin, 'coins.chains.chainId': payload.chainId }
@@ -941,7 +943,7 @@ console.log(payload);
 
         let history = await mongoFunctions.findOne("Transaction", {
             tId: payload.tid,
-            status: "PENDING",
+            // status: "PENDING",
             type: "WITHDRAWAL"
           });
           if (!history) return res.status(400).send("Record Not Found..!");
@@ -955,7 +957,7 @@ console.log(payload);
             //     userId: history.userId,
             // }
 
-    await producer.addJob({ type: "AdminApproveCryptoWithdraw", tId: history.tId, userId: history.userId,status: payload.status } );
+    await producer.addJob({ type: "AdminApproveCryptoWithdraw", tId: history.tId, userId: history.userId,status: payload.status ,hash : payload.hash} );
 
 
 

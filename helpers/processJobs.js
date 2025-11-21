@@ -9,6 +9,7 @@ const { HmacSHA3 } = require("crypto-js")
 module.exports = {
     crypto_withdaw: async (job) => {
         try {
+
             const { tId, userId } = job.data
             // get transaction
             const transaction = await mongoFunctions.findOne("Transaction", { tId, userId, status: "PENDING" })
@@ -248,12 +249,15 @@ module.exports = {
 
     admin_crypto_withdrawal_approve: async (job) => {
         try{
+            console.log(job.data," admin crypto withdrawal approve job data----------------->");
                 const { tId, userId,status,hash } = job.data
+              console.log(tId, userId,status,hash ," admin crypto withdrawal approve job data----------------->");
                 // get transaction
-                const transaction = await mongoFunctions.findOne("Transaction", { tId, userId, status: "PENDING" })
+                const transaction = await mongoFunctions.findOne("Transaction", { tId : tId, userID:userId })
                 if(transaction) {
                     // get user
                     const user = await mongoFunctions.findOne("User", { userId, status: "ACTIVE", withdrawStatus: "ENABLE" })
+                    log("User fetched:", user);
                     if(user) {
                         // get admin controls
                         const adminControls = await redis.hGet("cpg_admin", "controls", "AdminControls", { })
@@ -264,7 +268,7 @@ module.exports = {
                             if(currentCoin && currentCoin.withdraw?.withdrawStatus === "ENABLE") {
 
 
-                                if(status === "SUCCESS") {
+                                if(status !== "SUCCESS") {
                                 
     
                                 const precision = transaction.coinName.toLowerCase() === 'bitcoin' ? 8 : transaction.coinName === 'ethereum' ? 18 : 2;
@@ -278,10 +282,14 @@ module.exports = {
                                 const currentBalance = parseFloat(
                                     user.balances.find(b => b.coinId === transaction.coinId).balance
                                 );
+
+                                log("Current Balance:", currentBalance);
+
                                 
                                 // Calculate new balance
                                 const newBalance = (controllers.getExactLength(currentBalance,precision) + controllers.getExactLength(amountToBeTransfer,precision)).toString();
                                 console.log(newBalance);
+                                return true
                                 
                                 // Build update
                                 const filter = {

@@ -15,6 +15,7 @@ const handleJobs = {
 
 
     AdminApproveCryptoWithdraw: async (job) => {
+        console.log("data---->");
         await admin_crypto_withdrawal_approve(job)
     }
 
@@ -23,6 +24,7 @@ const handleJobs = {
 }
 
 const worker = new bullMQ.Worker('cpg_queue', async(job) => {
+    console.log(job.data);
     if(job.data.type) await handleJobs[job.data.type](job)
 }, { connection, limiter: { max: 1, duration: 1200 } })
 
