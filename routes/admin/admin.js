@@ -673,6 +673,8 @@ admin.post('/addChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
 admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get admin
     const { admin } = req
+req.body = {enc: cryptojs.encryptObj(req.body)}
+
 
     // admin validations
     if(admin?.adminType !== "1") return res.status(401).send("You Are Not Allowed To Add New Chain");
@@ -689,7 +691,7 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     // validate payload
     const { error } = validations.addUpdateChain(payload)
     if(error) return res.status(400).send(error.details[0].message);
-
+console.log(payload,"payload------->");
     // get all coins
     const adminControls = await controllers.getAdminControls()
     const allCoins = adminControls.coins
@@ -719,16 +721,10 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     if(currentChain.chainStatus !== payload.chainStatus) update.$set['coins.$[coin].chains.$[chain].chainStatus'] = payload.chainStatus
     if(currentChain.chainLogo !== payload.chainLogo) update.$set['coins.$[coin].chains.$[chain].chainLogo'] = payload.chainLogo
     // if(currentChain.contractAddress !== payload.contractAddress) update.$set['coins.$[coin].chains.$[chain].contractAddress'] = payload.contractAddress
-    // if (!currentChain.contractAddress || currentChain.contractAddress !== payload.contractAddress) update.$set['coins.$[coin].chains.$[chain].contractAddress'] = payload.contractAddress;
-    if (
-        !currentChain.contractAddress || 
-        currentChain.contractAddress !== payload.contractAddress
-    ) {
+    if (currentChain.contractAddress !== payload.contractAddress) {
         update.$set['coins.$[coin].chains.$[chain].contractAddress'] = payload.contractAddress;
     }
     
-
-    console.log(update,"update------->");
 
     if(Object.keys(update.$set).length) {
         // update chain

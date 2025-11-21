@@ -607,7 +607,7 @@ module.exports = {
     // To add/update chain
     addUpdateChain: (data) => {
         const schema = Joi.object({
-            coin: Joi.string().pattern(/^[A-Z0-9]+$/).min(7).max(20).required().messages({
+            coin: Joi.string().pattern(/^[A-Z0-9]+$/).min(3).max(20).required().messages({
                 'string.pattern.base': "Coin Id Should Not Contain Any Special Characters"
             }),
             chainId: Joi.string().pattern(/^[A-Z0-9]+$/).min(3).max(20).required().messages({
