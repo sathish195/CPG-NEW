@@ -657,7 +657,7 @@ user.post('/withdraw', auth, authUser, slowDownLimitter, rateLimitter, asyncFun 
     if(!transaction) return res.status(400).send("No Transaction Found. Please Try Again")
     if(transaction.status === "FAILED") return res.status(400).send("Your Transaction Process Was Failed. Please Try Again")
     if(transaction.status === "COMPLETED") return res.status(400).send("Your Transaction Process Was Completed")
-
+console.log(payload);
     // otp validations
     const otp = await redis.get(`cpg-withdraw-otp-${user.email}`)
     console.log(otp, payload.otp);
