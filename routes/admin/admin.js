@@ -676,7 +676,7 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
 
     // admin validations
     if(admin?.adminType !== "1") return res.status(401).send("You Are Not Allowed To Add New Chain");
-req.body = {enc:cryptojs.encryptObj(req.body)}
+// req.body = {enc:cryptojs.encryptObj(req.body)}
     // get enc
     const { error: payloadError } = validations.getEnc(req.body)
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
