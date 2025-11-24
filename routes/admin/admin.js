@@ -676,7 +676,7 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
 
     // admin validations
     if(admin?.adminType !== "1") return res.status(401).send("You Are Not Allowed To Add New Chain");
-// req.body = {enc:cryptojs.encryptObj(req.body)}
+req.body = {enc:cryptojs.encryptObj(req.body)}
     // get enc
     const { error: payloadError } = validations.getEnc(req.body)
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
@@ -700,6 +700,7 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     // get chain
     const currentChain = currentCoin?.chains.filter(chain => chain.chainId === payload.chainId)[0]
     if(!currentChain) return res.status(400).send("No Chain Found With Given Chain Id");
+    console.log(currentChain,"currentChain------->");
 
     // update chain
     const update = {
@@ -716,9 +717,9 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     if(currentChain.max !== payload.max) update.$set['coins.$[coin].chains.$[chain].max'] = payload.max
     if(currentChain.chainStatus !== payload.chainStatus) update.$set['coins.$[coin].chains.$[chain].chainStatus'] = payload.chainStatus
     if(currentChain.chainLogo !== payload.chainLogo) update.$set['coins.$[coin].chains.$[chain].chainLogo'] = payload.chainLogo
-    if(currentChain.contractAddress !== payload.contractAddress) update.$set['coins.$[coin].chains.$[chain].contractAddress'] = payload.contractAddress
+    if(!currentChain.contractAddress || currentChain.contractAddress !== payload.contractAddress) update.$set['coins.$[coin].chains.$[chain].contractAddress'] = payload.contractAddress
 
- 
+ console.log(update,"update------->");
     
     if(Object.keys(update.$set).length) {
         // update chain

@@ -865,7 +865,7 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
         amount: transaction.amount,
         fee: totalFee_chain,
         coin: _.pick(currentCoin, ['coinId', 'coinName', 'coinLogo', 'coinTicker']),
-        chain: _.pick(currentChain, ['chainId', 'chainName', 'chainLogo']),
+        chain: _.pick(currentChain, ['chainId', 'chainName', 'chainLogo','contractAddress']),
         address
     }
     return res.status(200).send(responseData)
