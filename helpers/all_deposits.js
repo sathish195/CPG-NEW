@@ -1,8 +1,8 @@
 // require("dotenv").config();
 // require("../helpers/mongodb")();
-const { getExactLength } = require(".");
+const { getExactLength } = require("./controllers/getExactLength");
 const mongofunctions = require("./mongoFunctions");
-const rediscon = require("../redis/rediscon");
+const rediscon = require("./redis");
 const {
   get_transactions,
   check_history,
@@ -11,13 +11,13 @@ const {
 } = require("./functions");
 const delay = 1500;
 async function all_deposits() {
-  let check_ALL_cron_status = await rediscon.redisExistSingle("TOP_ALL_CRONS");
+  let check_ALL_cron_status = await rediscon.get("TOP_ALL_CRONS");
   // console.log("check_ALL_cron_status-->", check_ALL_cron_status);
 
   if (check_ALL_cron_status) {
-    let cron_status = await rediscon.redisget_normal_single("TOP_ALL_CRONS");
+    let cron_status = await rediscon.get("TOP_ALL_CRONS");
     if (cron_status) {
-      let users = await mongofunctions.find("Crypto_deposit", {}, { _id: -1 });
+      let users = await mongofunctions.find("Transaction", {status:"PENDING"}, { _id: -1 });
       let count = users.length;
       // console.log("users length", users.length);
 
@@ -223,6 +223,80 @@ async function all_deposits() {
             await new Promise((resolve) => setTimeout(resolve, delay));
           });
         }
+        else if(each.chain === "BSC testnet") {
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            let arr_data = await get_transactions(
+              "BSC testnet",
+              address
+            );
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            // console.log("arr_data", arr_data.length);
+            console.log("arr_data", arr_data);
+  
+            if (arr_data && arr_data.length > 0) {
+              for (const e of arr_data) {
+                if (e.to === address) {
+                  let nohistory = await check_history(e.transaction_id);
+  
+                  await new Promise((resolve) => setTimeout(resolve, delay));
+                  if (nohistory) {
+                    // console.log("no history");
+  
+                    const test_balance = await get_balance(
+                      "BSC testnet",
+                      address,
+                      "0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8"
+                    );
+                    if (test_balance) {
+                      // console.log("tron_balance-->", tron_balance);
+  
+                      const api_bal = parseFloat(e.value) / 1000000;
+                      // let fee = parseFloat(api_bal) >= 25 ? 0 : 2.5;
+                      let fee = 0; //parseFloat(api_bal) >= 25 ? 0 : 2.5;
+                      // console.log({
+                      //   tron_bal: parseFloat(getExactLength(tron_balance, 3)),
+                      //   api_bal: parseFloat(getExactLength(api_bal, 3)),
+                      // });
+  
+                      if (
+                        parseFloat(getExactLength(test_balance, 3)) >=
+                          parseFloat(getExactLength(api_bal, 3)) &&
+                        parseFloat(getExactLength(api_bal, 3)) > 1 &&
+                        parseFloat(getExactLength(api_bal, 3)) > fee
+                      ) {
+                        // console.log({
+                        //   "t-->": "before bull data",
+                        //   amount: parseFloat(getExactLength(api_bal, 3)),
+                        //   txd: e.transaction_id,
+                        //   chain: "Tron",
+                        //   coin: "USDT",
+                        //   userid: each.userid,
+                        //   fee: fee,
+                        //   address,
+                        // });
+  
+                        let bull_ad = await add_queue(
+                          (amount = parseFloat(getExactLength(api_bal, 3))),
+                          (txd = e.transaction_id),
+                          (chain = "Tron"),
+                          (coin = "USDT"),
+                          (userid = each.userid),
+                          (fee = fee),
+                          (address = address),
+                          (from_address = e.from)
+                        (hash = e.hash)
+                        );
+                        await new Promise((resolve) =>
+                          setTimeout(resolve, delay)
+                        );
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            await new Promise((resolve) => setTimeout(resolve, delay));
+          }
         i += 1;
         if (i >= count) {
           return true;

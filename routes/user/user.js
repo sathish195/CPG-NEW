@@ -880,4 +880,23 @@ user.post('/testStats', asyncFun (async (req, res) => {
 }))
 // deposits", "withdraw
 
+user.post('/get_transaction', slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
+    console.log("req",req.body);
+    // req.body = {enc : cryptojs.encryptObj(req.body)}
+
+        console.log(req.body);
+        const payload = cryptojs.decryptObj(req.body.enc)
+        console.log(payload);
+        if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
+        if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
+    
+        const { error } = validations.validate_tid(payload)
+        if(error) return res.status(400).send(error.details[0].message)
+
+    const pending_withdrawals = await mongoFunctions.find("Transaction", {tId:payload.tid },{_id:0, __v:0,invNo:0})
+    // console.log(pending_withdrawals);
+    return res.status(200).send(cryptojs.encryptObj(pending_withdrawals))
+
+
+}))
 module.exports = user

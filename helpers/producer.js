@@ -13,6 +13,7 @@ module.exports = {
     addJob: async (data) => {
         try {
             const job = await myQueue.add('cpg_job', data, { removeOnComplete: true })
+            console.log(`Job added: ${job.id} of type ${data.type}`);
             return job
         }catch(err) {
             telegram.alertDev(`❌❌❌❌❌❌ \n ${err.stack} \n ❌❌❌❌❌❌`)

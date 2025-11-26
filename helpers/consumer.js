@@ -15,7 +15,7 @@ const handleJobs = {
 
 
     AdminApproveCryptoWithdraw: async (job) => {
-        console.log("data---->");
+        console.log("dataddddd---->");
         await admin_crypto_withdrawal_approve(job)
     }
 

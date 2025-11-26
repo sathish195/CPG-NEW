@@ -790,5 +790,14 @@ module.exports = {
         })
 
         return schema.validate(data)
-    }
+    },
+
+        // To validate tie
+        validate_tid: (data) => {
+            const schema = Joi.object({
+                tid: Joi.string().min(5).max(20).required()
+            })
+    
+            return schema.validate(data)
+        }
 }
