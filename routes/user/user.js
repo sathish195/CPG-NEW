@@ -880,7 +880,7 @@ user.post('/testStats', asyncFun (async (req, res) => {
 }))
 // deposits", "withdraw
 
-user.post('/get_transaction', slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
+user.post('/get_transaction',auth, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     console.log("req",req.body);
     // req.body = {enc : cryptojs.encryptObj(req.body)}
 
