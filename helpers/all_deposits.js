@@ -1,29 +1,36 @@
-// require("dotenv").config();
-// require("../helpers/mongodb")();
-const { getExactLength } = require("./controllers/getExactLength");
+// // require("dotenv").config();
+// // require("../helpers/mongodb")();
+const { getExactLength } = require("./controllers");
 const mongofunctions = require("./mongoFunctions");
-const rediscon = require("./redis");
+const producer = require('./producer')
+
+// const rediscon = require("./redis");
 const {
   get_transactions,
   check_history,
   get_balance,
   add_queue,
 } = require("./functions");
+const { log } = require("winston");
+// const { log } = require("winston");
 const delay = 1500;
 async function all_deposits() {
-  let check_ALL_cron_status = await rediscon.get("TOP_ALL_CRONS");
-  // console.log("check_ALL_cron_status-->", check_ALL_cron_status);
+  console.log("Starting all_deposits cron job...");
+  // let check_ALL_cron_status = await rediscon.get("TOP_ALL_CRONS");
+  // // console.log("check_ALL_cron_status-->", check_ALL_cron_status);
 
-  if (check_ALL_cron_status) {
-    let cron_status = await rediscon.get("TOP_ALL_CRONS");
-    if (cron_status) {
+  // if (check_ALL_cron_status) {
+  //   let cron_status = await rediscon.get("TOP_ALL_CRONS");
+  //   if (cron_status) {
       let users = await mongofunctions.find("Transaction", {status:"PENDING"}, { _id: -1 });
       let count = users.length;
       // console.log("users length", users.length);
+      // console.log(users,"------>users");
 
       let i = 0;
       for (const each of users) {
         let address = each.address;
+        console.log(each,"------>each");
         // console.log({ chain: each.chain, address: each.address });
 
         if (each.chain === "Tron") {
@@ -223,7 +230,7 @@ async function all_deposits() {
             await new Promise((resolve) => setTimeout(resolve, delay));
           });
         }
-        else if(each.chain === "BSC testnet") {
+        else if(each.chain === "BSC testnetR") {
             await new Promise((resolve) => setTimeout(resolve, delay));
             let arr_data = await get_transactions(
               "BSC testnet",
@@ -297,6 +304,106 @@ async function all_deposits() {
             }
             await new Promise((resolve) => setTimeout(resolve, delay));
           }
+          else if(each.chainName === "BSC testnet") {
+            console.log("------------> in BSC testnet-------------------");
+            await new Promise((resolve) => setTimeout(resolve, delay));
+//             const API_KEY = "3UPEGEFB3A7RZPYSMM587W7E912GFBX29F";
+// const ADDRESS = "0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8";
+// const CHAIN_ID = 11155111;
+            let arr_data = await get_transactions(
+              "Sepolia Testnet",
+              11155111,
+              address
+            );
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            // console.log("arr_data", arr_data.length);
+            console.log("arr_data", arr_data);
+  
+            if (arr_data && arr_data.length > 0) {
+              for (const e of arr_data) {
+                if (e.to === address) {
+                  let nohistory = await check_history(e.tId);
+                  console.log("nohistory-->", nohistory);
+  
+                  await new Promise((resolve) => setTimeout(resolve, delay));
+                  if (nohistory) {
+                    // console.log("no history");
+  
+                    const test_balance = await get_balance(
+                      "Sepolia Testnet",
+                      address,
+                      "0x4CCc8accD389e3E536Bf199F93826FdcaF4dfF09"
+                    );
+                    console.log("test_balance-->", test_balance);
+                    if (test_balance) {
+                      // console.log("tron_balance-->", tron_balance);
+  
+                      const api_bal = parseFloat(e.value) / 1000000;
+                      // let fee = parseFloat(api_bal) >= 25 ? 0 : 2.5;
+                      let fee = each.fee //parseFloat(api_bal) >= 25 ? 0 : 2.5;
+                      // console.log({
+                      //   tron_bal: parseFloat(getExactLength(tron_balance, 3)),
+                      //   api_bal: parseFloat(getExactLength(api_bal, 3)),
+                      // });
+  
+                      if (
+                        parseFloat(getExactLength(test_balance, 3)) >=
+                          parseFloat(getExactLength(api_bal, 3)) &&
+                        parseFloat(getExactLength(api_bal, 3)) > 1 &&
+                        parseFloat(getExactLength(api_bal, 3)) > fee
+                      ) {
+
+
+                        // console.log({
+                        //   "t-->": "before bull data",
+                        //   amount: parseFloat(getExactLength(api_bal, 3)),
+                        //   txd: e.transaction_id,
+                        //   chain: "Tron",
+                        //   coin: "USDT",
+                        //   userid: each.userid,
+                        //   fee: fee,
+                        //   address,
+                        // });
+  
+                        // let bull_ad = await add_queue(
+                        //   (amount = parseFloat(getExactLength(api_bal, 3))),
+                        //   (txd = e.transaction_id),
+                        //   (chain = "Tron"),
+                        //   (coin = "USDT"),
+                        //   (userid = each.userid),
+                        //   (fee = fee),
+                        //   (address = address),
+                        //   (from_address = e.from)
+                        // (hash = e.hash)
+                        // );
+
+
+
+                  await producer.addJob({
+                                type: "CRYPTO_DEPOSITS",
+                                txd: each.tId,
+                                userid: each.userId,
+                                hash: e.hash,
+                                coin:each.coinName,
+                                chain:each.chainName,
+                                fee:fee,
+                                amount:each.formattedAmount,
+                                address:e.to
+                        });
+
+
+
+                        await new Promise((resolve) =>
+                          setTimeout(resolve, delay)
+                        );
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            await new Promise((resolve) => setTimeout(resolve, delay));
+          }
         i += 1;
         if (i >= count) {
           return true;
@@ -307,12 +414,13 @@ async function all_deposits() {
         return true;
         // process.exit(0);
       }
-    }
-  }
+  //   }
+  // }
   setTimeout(() => {
     // process.exit(0);
     return true;
   }, 280000);
 }
 
-exports.all_deposits = all_deposits;
+// exports.all_deposits = all_deposits;
+all_deposits();

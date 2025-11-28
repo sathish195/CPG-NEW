@@ -1,8 +1,8 @@
 require("dotenv").config();
-const Web3 = require("web3");
+// const Web3 = require("web3");
 const { ethers } = require("ethers");
-const TronWeb = require("tronweb");
-const { bullprocess } = require("../helpers/bull_process");
+// const TronWeb = require("tronweb");
+const  bullprocess  = require("./producer");
 const ABI = [
   {
     inputs: [],
@@ -464,27 +464,451 @@ const ABI = [
   },
 ];
 
-const axios = require("axios");
-const rediscon = require("./redis");
-const mongofunctions = require("./mongoFunctions");
-const { alert_Dev } = require("./telegram");
-const tron_key = process.env.TRON_KEY;
-const bsc_link =
-  "https://nd-791-836-551.p2pify.com/32766e338388be45072d18e0be86a513";
-const eth_link =
-  "https://ethereum-mainnet.core.chainstack.com/067114e2dbc3ecc411e343c3d9d8f87e";
-const bsc_web3 = new Web3(new Web3.providers.HttpProvider(bsc_link));
-const eth_web3 = new Web3(new Web3.providers.HttpProvider(eth_link));
-const eth_provider = new ethers.providers.JsonRpcProvider(eth_link);
-const bsc_provider = new ethers.providers.JsonRpcProvider(bsc_link);
-const tronWeb = new TronWeb({
-  fullHost: "https://api.trongrid.io",
-  headers: {
-    "TRON-PRO-API-KEY": "86fca927-f9c2-4889-a7f1-ed521085fc7b", //tron_key,
+const EABI = [
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "spender",
+                          "type": "address"
+                  },
+                  {
+                          "internalType": "uint256",
+                          "name": "value",
+                          "type": "uint256"
+                  }
+          ],
+          "name": "approve",
+          "outputs": [
+                  {
+                          "internalType": "bool",
+                          "name": "",
+                          "type": "bool"
+                  }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
   },
-});
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "initialOwner",
+                          "type": "address"
+                  }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+  },
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "spender",
+                          "type": "address"
+                  },
+                  {
+                          "internalType": "uint256",
+                          "name": "allowance",
+                          "type": "uint256"
+                  },
+                  {
+                          "internalType": "uint256",
+                          "name": "needed",
+                          "type": "uint256"
+                  }
+          ],
+          "name": "ERC20InsufficientAllowance",
+          "type": "error"
+  },
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "sender",
+                          "type": "address"
+                  },
+                  {
+                          "internalType": "uint256",
+                          "name": "balance",
+                          "type": "uint256"
+                  },
+                  {
+                          "internalType": "uint256",
+                          "name": "needed",
+                          "type": "uint256"
+                  }
+          ],
+          "name": "ERC20InsufficientBalance",
+          "type": "error"
+  },
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "approver",
+                          "type": "address"
+                  }
+          ],
+          "name": "ERC20InvalidApprover",
+          "type": "error"
+  },
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "receiver",
+                          "type": "address"
+                  }
+          ],
+          "name": "ERC20InvalidReceiver",
+          "type": "error"
+  },
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "sender",
+                          "type": "address"
+                  }
+          ],
+          "name": "ERC20InvalidSender",
+          "type": "error"
+  },
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "spender",
+                          "type": "address"
+                  }
+          ],
+          "name": "ERC20InvalidSpender",
+          "type": "error"
+  },
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "to",
+                          "type": "address"
+                  },
+                  {
+                          "internalType": "uint256",
+                          "name": "amount",
+                          "type": "uint256"
+                  }
+          ],
+          "name": "mint",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+  },
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "owner",
+                          "type": "address"
+                  }
+          ],
+          "name": "OwnableInvalidOwner",
+          "type": "error"
+  },
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "account",
+                          "type": "address"
+                  }
+          ],
+          "name": "OwnableUnauthorizedAccount",
+          "type": "error"
+  },
+  {
+          "anonymous": false,
+          "inputs": [
+                  {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "owner",
+                          "type": "address"
+                  },
+                  {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "spender",
+                          "type": "address"
+                  },
+                  {
+                          "indexed": false,
+                          "internalType": "uint256",
+                          "name": "value",
+                          "type": "uint256"
+                  }
+          ],
+          "name": "Approval",
+          "type": "event"
+  },
+  {
+          "anonymous": false,
+          "inputs": [
+                  {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "previousOwner",
+                          "type": "address"
+                  },
+                  {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "newOwner",
+                          "type": "address"
+                  }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+  },
+  {
+          "inputs": [],
+          "name": "renounceOwnership",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+  },
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "to",
+                          "type": "address"
+                  },
+                  {
+                          "internalType": "uint256",
+                          "name": "value",
+                          "type": "uint256"
+                  }
+          ],
+          "name": "transfer",
+          "outputs": [
+                  {
+                          "internalType": "bool",
+                          "name": "",
+                          "type": "bool"
+                  }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+  },
+  {
+          "anonymous": false,
+          "inputs": [
+                  {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "from",
+                          "type": "address"
+                  },
+                  {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "to",
+                          "type": "address"
+                  },
+                  {
+                          "indexed": false,
+                          "internalType": "uint256",
+                          "name": "value",
+                          "type": "uint256"
+                  }
+          ],
+          "name": "Transfer",
+          "type": "event"
+  },
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "from",
+                          "type": "address"
+                  },
+                  {
+                          "internalType": "address",
+                          "name": "to",
+                          "type": "address"
+                  },
+                  {
+                          "internalType": "uint256",
+                          "name": "value",
+                          "type": "uint256"
+                  }
+          ],
+          "name": "transferFrom",
+          "outputs": [
+                  {
+                          "internalType": "bool",
+                          "name": "",
+                          "type": "bool"
+                  }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function"
+  },
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "newOwner",
+                          "type": "address"
+                  }
+          ],
+          "name": "transferOwnership",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+  },
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "owner",
+                          "type": "address"
+                  },
+                  {
+                          "internalType": "address",
+                          "name": "spender",
+                          "type": "address"
+                  }
+          ],
+          "name": "allowance",
+          "outputs": [
+                  {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                  }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+  },
+  {
+          "inputs": [
+                  {
+                          "internalType": "address",
+                          "name": "account",
+                          "type": "address"
+                  }
+          ],
+          "name": "balanceOf",
+          "outputs": [
+                  {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                  }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+  },
+  {
+          "inputs": [],
+          "name": "decimals",
+          "outputs": [
+                  {
+                          "internalType": "uint8",
+                          "name": "",
+                          "type": "uint8"
+                  }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+  },
+  {
+          "inputs": [],
+          "name": "name",
+          "outputs": [
+                  {
+                          "internalType": "string",
+                          "name": "",
+                          "type": "string"
+                  }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+  },
+  {
+          "inputs": [],
+          "name": "owner",
+          "outputs": [
+                  {
+                          "internalType": "address",
+                          "name": "",
+                          "type": "address"
+                  }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+  },
+  {
+          "inputs": [],
+          "name": "symbol",
+          "outputs": [
+                  {
+                          "internalType": "string",
+                          "name": "",
+                          "type": "string"
+                  }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+  },
+  {
+          "inputs": [],
+          "name": "totalSupply",
+          "outputs": [
+                  {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                  }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+  }
+]
+
+// Set up the provider (Sepolia RPC)
+const provider = new ethers.JsonRpcProvider("https://rpc.sepolia.org");
+
+// Define the address for which you want to get the balance
+const address = "0xYourAddressHere"; // Replace with the actual address
+
+
+const axios = require("axios");
+const telegram = require("./telegram");
+const { log } = require("winston");
+// const rediscon = require("./redis");
+const mongofunctions = require("./mongoFunctions");
+// const { alert_Dev } = require("./telegram");
+// const tron_key = process.env.TRON_KEY;
+// const bsc_link =
+//   "https://nd-791-836-551.p2pify.com/32766e338388be45072d18e0be86a513";
+// const eth_link =
+//   "https://ethereum-mainnet.core.chainstack.com/067114e2dbc3ecc411e343c3d9d8f87e";
+// const bsc_web3 = new Web3(new Web3.providers.HttpProvider(bsc_link));
+// const eth_web3 = new Web3(new Web3.providers.HttpProvider(eth_link));
+// const eth_provider = new ethers.providers.JsonRpcProvider(eth_link);
+// const bsc_provider = new ethers.providers.JsonRpcProvider(bsc_link);
+// const tronWeb = new TronWeb({
+//   fullHost: "https://api.trongrid.io",
+//   headers: {
+//     "TRON-PRO-API-KEY": "86fca927-f9c2-4889-a7f1-ed521085fc7b", //tron_key,
+//   },
+// });
 module.exports = {
   get_transactions: async (chain,chain_id, contract_address, address) => {
+    console.log(chain, chain_id, contract_address, address, "-------get_transactions called-------");
     return new Promise(async (resolve, reject) => {
       try {
         if (chain === "Binance Smart") {
@@ -494,6 +918,7 @@ module.exports = {
           const endblock = await bsc_web3.eth.getBlockNumber();
           const startblock = parseFloat(endblock) - parseFloat(bsc_block);
           let url = `https://api.bscscan.com/api?module=account&action=tokentx&contractaddress=${contract_address}&address=${address}&page=1&offset=50&startblock=${startblock}&endblock=${endblock}&sort=asc&apikey=2UBCF9JBZI9AD23351UKU7VEG5682EBZJA`;
+          
           axios
             .get(url)
             .then((response) => {
@@ -504,7 +929,7 @@ module.exports = {
               }
             })
             .catch((error) => {
-              alert_Dev(
+              telegram.alertDev(
                 `err in crypto functions get transactions BSC-->${JSON.stringify(
                   {
                     err: error,
@@ -530,7 +955,7 @@ module.exports = {
               }
             })
             .catch((error) => {
-              alert_Dev(
+              telegram.alertDev(
                 `err in crypto functions get transactions ETH-->${JSON.stringify(
                   {
                     err: error,
@@ -554,7 +979,7 @@ module.exports = {
               }
             })
             .catch((error) => {
-              alert_Dev(
+              telegram.alertDev(
                 `err in crypto functions get transactions TRON-->${JSON.stringify(
                   {
                     err: error,
@@ -583,7 +1008,44 @@ module.exports = {
                 }
               })
               .catch((error) => {
-                alert_Dev(
+                telegram.alertDev(
+                  `err in crypto functions get transactions BSC-->${JSON.stringify(
+                    {
+                      err: error,
+                    }
+                  )}`
+                );
+                reject(error);
+              });
+          } 
+          else if (chain === "Sepolia Testnet") {
+
+            console.log("sdfwedfsdcesdcsdf-------------");
+            const API_KEY = "3UPEGEFB3A7RZPYSMM587W7E912GFBX29F";
+const ADDRESS = "0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8";
+// // const CHAIN_ID = 11155111; 
+//             const bsc_block = 100
+//             // const endblock = await bsc_web3.eth.getBlockNumber();
+//             const startblock = parseFloat(endblock) - parseFloat(bsc_block);
+            // const url = `https://api.etherscan.io/v2/api?chainid=${chain_id}&module=account&action=txlist&address=${contract_address}&startblock=${startblock}&endblock=${endblock}&sort=asc&apikey=${API_KEY}`;
+            const url = `https://api.etherscan.io/v2/api?chainid=${chain_id}&module=account&action=txlist&address=${ADDRESS}&sort=asc&apikey=${API_KEY}`;
+
+// console.log(url, "-------------sepolia url------------");
+
+            axios
+              .get(url)
+              .then((response) => {
+                // console.log(response.data, "---------sepolia response data--------");
+                if (response.data.status === "0") {
+                  resolve([]);
+                } else if (response.data && response.data.result) {
+                  // console.log(response.data.result, "-------sepolia transactions-------");
+                  resolve(response.data.result);
+                }
+              })
+              .catch((error) => {
+                console.log(error, "---------sepolia response error--------");
+                telegram.alertDev(
                   `err in crypto functions get transactions BSC-->${JSON.stringify(
                     {
                       err: error,
@@ -594,17 +1056,17 @@ module.exports = {
               });
           } 
       } catch (error) {
-        alert_Dev(`err in crypto functions get transactions catch-->${error}`);
+        telegram.alertDev(`err in crypto functions get transactions catch-->${error}`);
       }
     });
   },
   check_history: async (tid) => {
     return new Promise(async (resolve, reject) => {
-      var check_histoty_crypto = await mongofunctions.find_one(
+      var check_histoty_crypto = await mongofunctions.findOne(
         "Transaction",
         {
           type: "DEPOSIT",
-          hash: tid,
+          tId: tid,
         }
       );
       if (!check_histoty_crypto) {
@@ -615,6 +1077,7 @@ module.exports = {
     });
   },
   get_balance: async (chain, address, contract_address) => {
+    console.log(chain, address, contract_address, "-------get_balance called-------");
     return new Promise(async (resolve, reject) => {
       try {
         if (chain === "Tron") {
@@ -656,8 +1119,43 @@ module.exports = {
             const bscanbalance = parseFloat(balanceInWei);
             resolve(bscanbalance);
           }
+
+          else if (chain === "Sepolia Testnet") {
+            console.log("-------------get sepolia balance called------------");
+            const API_KEY = "3UPEGEFB3A7RZPYSMM587W7E912GFBX29F";
+            const ADDRESS = "0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8";
+const CHAIN_ID = 11155111; // Sepolia
+
+
+          //  const url =  `https://api.etherscan.io/v2/api?chainid=11155111&action=balance&apikey=3UPEGEFB3A7RZPYSMM587W7E912GFBX29F`
+const url = `https://api.etherscan.io/v2/api?module=account&action=balance&address=${ADDRESS}&chainid=${CHAIN_ID}&apikey=${API_KEY}`;
+
+        
+           axios
+           .get(url)
+           .then((response) => {
+             console.log(response.data, "---------sepolia response data--------");
+             if (response.data.status === "0") {
+               resolve([]);
+             } else if (response.data && response.data.result) {
+               // console.log(response.data.result, "-------sepolia transactions-------");
+               resolve(response.data.result);
+             }
+           })
+           .catch((error) => {
+             console.log(error, "---------sepolia response error--------");
+             telegram.alertDev(
+               `err in crypto functions get transactions BSC-->${JSON.stringify(
+                 {
+                   err: error,
+                 }
+               )}`
+             );
+             reject(error);
+           });
+          }
       } catch (error) {
-        alert_Dev(
+        telegram.alertDev(
           `err in crypto functions get balance-->${JSON.stringify({
             err: error,
           })}`

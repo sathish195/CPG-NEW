@@ -4,6 +4,10 @@ const telegram = require("./telegram")
 const controllers = require('./controllers')
 const { log } = require("winston")
 const { HmacSHA3 } = require("crypto-js")
+const cryptojs = require('./cryptojs')
+const { set } = require("lodash")
+const { saveStats } = require("./stats")
+
 
 
 module.exports = {
@@ -132,119 +136,212 @@ module.exports = {
             telegram.alertDev(`Error in crypto withdraw job --> ❌❌❌❌❌❌ \n ${err.stack} \n ❌❌❌❌❌❌`)
         }
     },
-    // CRYPTO_DEPOSITS: async (data) => {
-    //     try {
-    //       const user = await mongofunctions.find_one("USER", {
-    //         userid: data.userid,
-    //         [`crypto_address.${data.chain}`]: data.address,
-    //       });
-    //       if (user) {
-    //         addlog(
-    //           user.userid,
-    //           "before crypto deposit--",
-    //           JSON.stringify(user),
-    //           ""
-    //         );
-    //         var check_histoty_crypto = await mongofunctions.find_one("HISTORY", {
-    //           "others.refno": data.txd,
-    //         });
+
+    // crypto_deposite: async (job) => {
+    //     console.log("sathish----->>");
+    //     // {userid,tid,fee,amount,coin,chain}
+    //     const data = job.data;
     
-    //         if (!check_histoty_crypto) {
-    //           let user_balance = parseFloat(user["balances"][data.coin]);
-    //           let fee = parseFloat(data.fee);
-    //           if (fee >= parseFloat(data.amount)) {
-    //             let history_obj = {
-    //               t_id: functions.get_random_string("CWD", 14),
-    //               type: "DEPOSIT",
-    //               userid: user.userid,
-    //               user_name: user.user_name,
-    //               coin_name: data.coin,
-    //               amount: 0,
-    //               address: user["crypto_address"][data.chain],
-    //               fee: fee,
-    //               comment: ` New deposit of ${data.coin} fee is greater than amount`,
-    //               status: "Success",
-    //               "others.refno": data.txd,
-    //               "others.chain": data.chain,
-    //             };
-    //             await mongofunctions.create_new_record("HISTORY", history_obj);
-    //             await tele.alert_Developers(
-    //               `✅ New Deposit Received ✅
-    //                Fee is greater than Amount
-    //                Username: ${user.user_name}
-    //                Amount: ${data.amount}
-    //                coin: ${data.coin}
-    //                chain: ${data.chain}
-    //                fee: ${data.fee}`
-    //             );
-    //           } else {
-    //             let amount_to_add = parseFloat(data.amount) - fee;
-    //             const update_user_balance = parseFloat(
-    //               functions.getExactLength(
-    //                 parseFloat(user_balance) + parseFloat(amount_to_add),
-    //                 3
-    //               )
-    //             );
-    //             // user balance update
-    //             var updated_user = await mongofunctions.find_one_and_update(
-    //               "USER",
-    //               { userid: user.userid },
-    //               { [`balances.${data.coin}`]: update_user_balance },
-    //               { new: true }
-    //             );
-    //             let history_obj = {
-    //               t_id: functions.get_random_string("CWD", 14),
-    //               type: "DEPOSIT",
-    //               userid: updated_user.userid,
-    //               user_name: updated_user.user_name,
-    //               coin_name: data.coin,
-    //               amount: amount_to_add,
-    //               address: updated_user["crypto_address"][data.chain],
-    //               fee: fee,
-    //               comment: ` New deposit of ${data.coin}`,
-    //               status: "Success",
-    //               "others.refno": data.txd,
-    //               "others.chain": data.chain,
-    //             };
-    //             await mongofunctions.create_new_record("HISTORY", history_obj);
-    //             await rediscon.update_user_redis(updated_user);
-    //             await functions.updateStats("deposits", data.coin, data.amount);
-    //             addlog(
-    //               user.userid,
-    //               "crypto deposit",
-    //               "crypto deposit Success",
-    //               `${user.user_name} has deposited ${data.coin}, updated balance from ${user_balance} to ${update_user_balance} ${data.coin} .`
-    //             );
-    //             addlog(
-    //               updated_user.userid,
-    //               "after crypto deposit--",
-    //               JSON.stringify(updated_user),
-    //               ""
-    //             );
-    //             await tele.alert_Developers(
-    //               `✅ New Deposit Received ✅
-    //                Username: ${updated_user.user_name}
-    //                Amount: ${data.amount}
-    //                coin: ${data.coin}
-    //                chain: ${data.chain}
-    //                fee: ${fee}`
-    //             );
-    //             return true;
-    //           }
-    //           return true;
+    //     try {
+    //         const user = await mongoFunctions.findOne("User", { userId: data.userid });
+    //         // console.log(user.balance);
+    //         if (user) {
+    //             console.log(data.txd);
+    //             // Check if the deposit has already been recorded
+    //             const check_history_crypto = await mongoFunctions.findOne("History", { "others.refno": data.txd });
+    //             console.log("check_history_crypto", "--------------->>", check_history_crypto);
+    //             // return true
+    //             // 23D7A17877BE7DE3
+    
+    //             // If no existing transaction with the same refno
+    //             if (!check_history_crypto) {
+    //                 // Find the coin object in the user's balances array based on coinName
+    //                 const user_balance = user.balances.find(c => c.coinName.toLowerCase() === data.coin.toLowerCase());
+    
+    //                 if (user_balance) {
+    //                     let fee = parseFloat(data.fee);
+    //                     let amount_to_add = parseFloat(data.amount) - fee;
+    //                     const updatedBalance = parseFloat(user_balance.balance) + amount_to_add;
+                        
+    //                     console.log("Current balance:", user_balance.balance);
+    //                     console.log("Amount to add:", amount_to_add);
+    //                     console.log("Updated balance:", updatedBalance);
+    
+    //                     // Build the update query to update the specific balance in the balances array
+    //                     const filter = {
+    //                         userId: user.userId,
+    //                         "balances.coinName": data.coin
+    //                     };
+    
+    //                     const update = {
+    //                         $set: {
+    //                             "balances.$.balance": updatedBalance // Update balance for the matched coin
+    //                         }
+    //                     };
+    
+    //                     // Perform the update
+    //                     const updated_user = await mongoFunctions.findOneAndUpdate(
+    //                         "User",
+    //                         filter, 
+    //                         update,
+    //                         { new: true }
+    //                     );
+    
+    //                     // console.log("Updated user:", updated_user);
+
+    //                     // return true
+    
+    //                     // Create the deposit history record
+    //                     let history_obj = {
+    //                         t_id: cryptojs.generateRandomString(),
+    //                         type: "DEPOSIT",
+    //                         userId: updated_user.userId,
+    //                         userName: updated_user.userName || "",
+    //                         coinName: data.coin,
+    //                         amount: amount_to_add,
+    //                         address: data.address,
+    //                         fee: fee,
+    //                         comment: `New deposit of ${data.coin}`,
+    //                         status: "SUCCESS",
+    //                         "others.refno": data.txd,
+    //                         "others.chain": data.chain,
+    //                     };
+    
+    //                     // Save deposit history
+    //                     await mongoFunctions.create("History", history_obj);
+
+    //                     // await mongoFunctions.findOneAndUpdate("Transaction",{tId:data.txd},{$status:"SUCCES"})
+    //                     await mongoFunctions.findOneAndUpdate(
+    //                         "Transaction",
+    //                         { tId: data.txd },  
+    //                         { $set: { status: "SUCCESS" ,"others.hash":data.hash} }  
+    //                     );
+                        
+    
+    //                     // Send alert to developers
+    //                     telegram.alertDev(
+    //                         `✅ New Deposit Received ✅
+    //                         Username: ${updated_user.userName}
+    //                         Amount: ${data.amount}
+    //                         Coin: ${data.coin}
+    //                         Chain: ${data.chain}
+    //                         Fee: ${fee}`
+    //                     );
+    //                     return true;
+
+    //                 } else {
+    //                     console.log(`Coin ${data.coin} not found in user's balances.`);
+    //                     return false;
+    //                 }
+    //             } else {
+    //                 console.log("Transaction already exists with refno:", data.txd);
+    //                 return false; // Transaction already exists, no need to proceed further
+    //             }
+    //         } else {
+    //             console.log("User not found");
+    //             return false; // User not found
     //         }
-    //         return true;
-    //       }
-    //       return true;
     //     } catch (err) {
-    //       tele.alert_Dev(
-    //         `❌❌err in project x deposit in bull process-->${err} ❌❌`
-    //       );
-    //       return true;
-    //     } finally {
-    //       return true;
+    //         console.error("Error in deposit process:", err);
+    //         telegram.alertDev(`❌❌ Error in project X deposit process --> ${err} ❌❌`);
+    //         return false; // Return false on error
     //     }
-    //   },
+    // },
+    
+
+
+
+
+    crypto_deposite: async (job) => {
+        console.log("sathish----->>");
+        // {userid,tid,fee,amount,coin,chain}
+        const data = job.data;
+    
+        try {
+            const user = await mongoFunctions.findOne("User", { userId: data.userid });
+            // console.log(user.balance);
+            if (user) {
+                console.log(data.txd);
+                // Check if the deposit has already been recorded
+                const check_history_crypto = await mongoFunctions.findOne("Transaction", { tId: data.txd,status: "PENDING" });
+                console.log("check_history_crypto", "--------------->>", check_history_crypto);
+                // return true
+                // 23D7A17877BE7DE3
+    
+                // If no existing transaction with the same refno
+                if (check_history_crypto) {
+                    // Find the coin object in the user's balances array based on coinName
+                    // const user_balance = user.balances.find(c => c.coinName.toLowerCase() === data.coin.toLowerCase());
+    
+                    // if (user_balance) {
+                        // let fee = parseFloat(data.fee);
+                        // let amount_to_add = parseFloat(data.amount) - fee;
+                        // const updatedBalance = parseFloat(user_balance.balance) + amount_to_add;
+                        
+                        // console.log("Current balance:", user_balance.balance);
+                        // console.log("Amount to add:", amount_to_add);
+                        // console.log("Updated balance:", updatedBalance);
+    
+                        // // Build the update query to update the specific balance in the balances array
+                        // const filter = {
+                        //     userId: user.userId,
+                        //     "balances.coinName": data.coin
+                        // };
+    
+                        // const update = {
+                        //     $set: {
+                        //         "balances.$.balance": updatedBalance // Update balance for the matched coin
+                        //     }
+                        // };
+    
+                        // // Perform the update
+                        // const updated_user = await mongoFunctions.findOneAndUpdate(
+                        //     "User",
+                        //     filter, 
+                        //     update,
+                        //     { new: true }
+                        // );
+    
+                  
+                  const updated_user = await mongoFunctions.findOneAndUpdate(
+                            "Transaction",
+                            { tId: data.txd },  
+                            { $set: { status: "SUCCESS" ,"others.hash":data.hash,"others.settlement": false
+                            } }  
+                        );
+                        
+    
+                        // Send alert to developers
+                        telegram.alertDev(
+                            `✅ New Deposit Received ✅
+                            Username: ${updated_user.userName}
+                            Amount: ${data.amount}
+                            Coin: ${data.coin}
+                            Chain: ${data.chain}
+                            Fee: ${data.fee}`
+                        );
+                        return true;
+
+                    // } else {
+                    //     console.log(`Coin ${data.coin} not found in user's balances.`);
+                    //     return false;
+                    // }
+                } else {
+                    console.log("Transaction already exists with refno:", data.txd);
+                    return false; // Transaction already exists, no need to proceed further
+                }
+            } else {
+                console.log("User not found");
+                return false; // User not found
+            }
+        } catch (err) {
+            console.error("Error in deposit process:", err);
+            telegram.alertDev(`❌❌ Error in project X deposit process --> ${err} ❌❌`);
+            return false; // Return false on error
+        }
+    },
+    
+    
 
 
     admin_crypto_withdrawal_approve: async (job) => {
@@ -378,6 +475,102 @@ module.exports = {
         
     catch(err) {
             telegram.alertDev(`Error in admin crypto withdrawal approve job --> ❌❌❌❌❌❌ \n ${err.stack} \n ❌❌❌❌❌❌`)
+        }
+    },
+
+    cryptoo_settlement: async (job) => {
+        const { tid, userId, amount, fee, coin, chain, hash, txd } = job.data;
+    
+        try {
+            // Step 1: Fetch the active user based on userId
+            const user = await mongoFunctions.findOne("User", { userId: userId, status: "ACTIVE" });
+            
+            if (!user) {
+                console.log(`User with userId ${userId} not found or not active.`);
+                return false;
+            }
+    
+            // Step 2: Fetch the transaction based on tId and userId with SUCCESS status
+            const transaction = await mongoFunctions.findOne("Transaction", { tId: tid, userId: userId, status: "SUCCESS" });
+            
+            if (!transaction) {
+                console.log(`Transaction with tId ${tid} for userId ${userId} not found or not successful.`);
+                return false;
+            }
+    
+            // Step 3: Find the coin object in the user's balances array based on coinName
+            const user_balance = user.balances.find(c => c.coinName.toLowerCase() === coin.toLowerCase());
+    
+            if (!user_balance) {
+                console.log(`Coin ${coin} not found in user's balance.`);
+                return false;
+            }
+    
+            // Step 4: Calculate the amount to add after deducting the fee
+            const parsedFee = parseFloat(fee);
+            const parsedAmount = parseFloat(amount);
+            const amountToAdd = parsedAmount - parsedFee;
+    
+            // Update the user's balance by adding the amount
+            const updatedBalance = parseFloat(user_balance.balance) + amountToAdd;
+    
+            console.log("Current balance:", user_balance.balance);
+            console.log("Amount to add:", amountToAdd);
+            console.log("Updated balance:", updatedBalance);
+    
+            // Step 5: Update the user's balance in the database
+            const filter = {
+                userId: user.userId,
+                "balances.coinName": coin
+            };
+    
+            const update = {
+                $set: {
+                    "balances.$.balance": updatedBalance 
+                }
+            };
+    
+            const updatedUser = await mongoFunctions.findOneAndUpdate("User", filter, update, { new: true });
+    
+            if (!updatedUser) {
+                console.log(`Failed to update user balance for userId ${userId}.`);
+                return false;
+            }
+    
+            const transactionUpdate = {
+                $set: {
+                    status: "SUCCESS",
+                    "others.hash": hash,
+                    "others.settledAt": new Date(),
+                    "others.settlemrnt": true
+                }
+            };
+    
+            const updatedTransaction = await mongoFunctions.findOneAndUpdate("Transaction", { tId: txd }, transactionUpdate);
+
+          await saveStats("deposits", coin, parsedAmount, new Date(), controllers.getPrecisionByCoin(0, coin));
+    
+            if (!updatedTransaction) {
+                console.log(`Failed to update transaction status for tId ${txd}.`);
+                return false;
+            }
+    
+            // Step 7: Send an alert to developers (optional)
+             telegram.alertDev(
+                `✅ New Deposit Settled ✅
+                Username: ${updatedUser.userName}
+                Amount: ${parsedAmount}
+                Coin: ${coin}
+                Chain: ${chain}
+                Fee: ${parsedFee}`
+            );
+    
+            console.log("Deposit processed successfully.");
+            return true;
+    
+        } catch (error) {
+            console.error("Error processing deposit settlement:", error);
+            return false;
         }
     }
 }

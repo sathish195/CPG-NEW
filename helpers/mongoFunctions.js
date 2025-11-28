@@ -4,6 +4,8 @@ const Ticket = require("../models/Ticket")
 const User = require("../models/User")
 const Transaction = require("../models/Transaction")
 const Statistics = require("../models/stats")
+const History = require("../models/History")
+
 
 module.exports = {
     create: async (collection, document) => await eval(collection).create(document),
