@@ -7,7 +7,7 @@ const app = express()
 
 require('./helpers/appConfig')(app) // configurations
 require('./helpers/middlewares')(app, express) // middlewares
-// require('./helpers/all_deposits')
+require('./helpers/corn')
 
 // (async () => {
 //   const results = await set("cpg_eth_block",74792899)

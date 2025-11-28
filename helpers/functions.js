@@ -1018,7 +1018,7 @@ module.exports = {
                 reject(error);
               });
           } 
-          else if (chain === "Sepolia Testnet") {
+          else if (chain === "sepolia") {
 
             console.log("sdfwedfsdcesdcsdf-------------");
             const API_KEY = "3UPEGEFB3A7RZPYSMM587W7E912GFBX29F";
@@ -1120,7 +1120,7 @@ const ADDRESS = "0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8";
             resolve(bscanbalance);
           }
 
-          else if (chain === "Sepolia Testnet") {
+          else if (chain === "sepolia") {
             console.log("-------------get sepolia balance called------------");
             const API_KEY = "3UPEGEFB3A7RZPYSMM587W7E912GFBX29F";
             const ADDRESS = "0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8";

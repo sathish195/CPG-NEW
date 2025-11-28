@@ -37,16 +37,28 @@
 
 // app.js (or any other file)
 
-const  all_deposits  = require('./all_deposits'); // Import the function from the file
+// const  all_deposits  = require('./all_deposits'); // Import the function from the file
 
-async function run() {
-    console.log("----------------------------------sathish------------------------->");
-  // Call the function
+// async function run() {
+//     console.log("----------------------------------sathish------------------------->");
+//   // Call the function
+//   const deposits = await all_deposits();
+//   console.log(deposits); // This should log the result from all_deposits()
+//   return true
+// }
+
+// // Run the function
+// run();
+console.log("sathish");
+const cron = require('node-cron');
+const  all_deposits  = require('./all_deposits'); 
+
+// Schedule the task to run every minute
+cron.schedule('* * * * *', async() => {
+  console.log('This task runs every minute');
   const deposits = await all_deposits();
-  console.log(deposits); // This should log the result from all_deposits()
-  return true
-}
 
-// Run the function
-run();
+  // Your custom functionality goes here
+});
+
 

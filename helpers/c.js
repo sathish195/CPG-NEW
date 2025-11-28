@@ -12,3 +12,13 @@
 
 // // Run the function
 // run();
+
+
+
+const cron = require('node-cron');
+
+// Schedule the task to run every minute
+cron.schedule('* * * * *', () => {
+  console.log('This task runs every minute');
+  // Your custom functionality goes here
+});

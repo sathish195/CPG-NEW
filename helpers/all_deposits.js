@@ -304,14 +304,14 @@ async function all_deposits() {
             }
             await new Promise((resolve) => setTimeout(resolve, delay));
           }
-          else if(each.chainName === "BSC testnet") {
+          else if(each.chainName === "sepolia") {
             console.log("------------> in BSC testnet-------------------");
             await new Promise((resolve) => setTimeout(resolve, delay));
 //             const API_KEY = "3UPEGEFB3A7RZPYSMM587W7E912GFBX29F";
 // const ADDRESS = "0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8";
 // const CHAIN_ID = 11155111;
             let arr_data = await get_transactions(
-              "Sepolia Testnet",
+              "sepolia",
               11155111,
               address
             );
@@ -330,7 +330,7 @@ async function all_deposits() {
                     // console.log("no history");
   
                     const test_balance = await get_balance(
-                      "Sepolia Testnet",
+                      "sepolia",
                       address,
                       "0x4CCc8accD389e3E536Bf199F93826FdcaF4dfF09"
                     );
