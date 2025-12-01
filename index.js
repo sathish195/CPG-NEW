@@ -10,7 +10,8 @@ require('./helpers/middlewares')(app, express) // middlewares
 require('./helpers/corn')
 
 // (async () => {
-//   const results = await set("cpg_eth_block",74792899)
+//   const results = await set("CPG_ALL_CRONS",true)
+
 // })();
 
 dbConnect(app, 8080)

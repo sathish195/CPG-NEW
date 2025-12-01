@@ -1,4 +1,3 @@
-const { log } = require("winston");
 const mongoFunctions = require("./mongoFunctions");
 const controllers = require("./controllers");
 
@@ -29,7 +28,7 @@ async function saveStats(type, amount, coin) {
   const date = new Date().toISOString().split("T")[0];
 
   // get existing stats docs for today (your mongoFunctions.find returns an array)
-  const existing = await mongoFunctions.find("Statistics", { date }, {});
+  const existing = await mongoFunctions.find("Statistics", {});
   log("Existing stats for date", date, "count:", (existing || []).length);
 
   if (!existing || existing.length === 0) {

@@ -5,8 +5,9 @@ const controllers = require('./controllers')
 const { log } = require("winston")
 const { HmacSHA3 } = require("crypto-js")
 const cryptojs = require('./cryptojs')
-const { set } = require("lodash")
+const { set, conformsTo } = require("lodash")
 const { saveStats } = require("./stats")
+const { getExactLength } = require("./controllers")
 
 
 
@@ -306,8 +307,7 @@ module.exports = {
                   const updated_user = await mongoFunctions.findOneAndUpdate(
                             "Transaction",
                             { tId: data.txd },  
-                            { $set: { status: "SUCCESS" ,"others.hash":data.hash,"others.settlement": false
-                            } }  
+                            { $set: { status: "SUCCESS" ,"others.hash":data.hash,"others.settlement": false,"others.tax_amount":data.amount},new: true }  
                         );
                         
     
@@ -315,7 +315,7 @@ module.exports = {
                         telegram.alertDev(
                             `✅ New Deposit Received ✅
                             Username: ${updated_user.userName}
-                            Amount: ${data.amount}
+                            Amount: ${updated_user.amount}
                             Coin: ${data.coin}
                             Chain: ${data.chain}
                             Fee: ${data.fee}`
@@ -507,8 +507,9 @@ module.exports = {
             }
     
             // Step 4: Calculate the amount to add after deducting the fee
-            const parsedFee = parseFloat(fee);
-            const parsedAmount = parseFloat(amount);
+            const precesion = coin.toLowerCase() === 'bitcoin' ? 8 : coin.toLowerCase() === 'ethereum' ? 18 : 2;
+            const parsedFee = parseFloat(getExactLength(fee,precesion));
+            const parsedAmount = parseFloat(getExactLength(amount,precesion));
             const amountToAdd = parsedAmount - parsedFee;
     
             // Update the user's balance by adding the amount
@@ -537,16 +538,15 @@ module.exports = {
                 return false;
             }
     
-            const transactionUpdate = {
-                $set: {
-                    status: "SUCCESS",
-                    "others.hash": hash,
-                    "others.settledAt": new Date(),
-                    "others.settlemrnt": true
-                }
-            };
+            // const transactionUpdate = {
+            //     $set: {
+            //         // status: "SUCCESS",
+            //         // "others.hash": hash,
+            //         "others.settlemrnt": true
+            //     }
+            // };
     
-            const updatedTransaction = await mongoFunctions.findOneAndUpdate("Transaction", { tId: txd }, transactionUpdate);
+            const updatedTransaction = await mongoFunctions.findOneAndUpdate("Transaction", { tId: txd }, {$set: { "others.settlement": true } }, { new: true });   
 
           await saveStats("deposits", coin, parsedAmount, new Date(), controllers.getPrecisionByCoin(0, coin));
     

@@ -3,6 +3,8 @@
 const { getExactLength } = require("./controllers");
 const mongofunctions = require("./mongoFunctions");
 const producer = require('./producer')
+const { ethers } = require("ethers");
+
 
 // const rediscon = require("./redis");
 const {
@@ -16,12 +18,12 @@ const { log } = require("winston");
 const delay = 1500;
 async function all_deposits() {
   console.log("Starting all_deposits cron job...");
-  // let check_ALL_cron_status = await rediscon.get("TOP_ALL_CRONS");
+  let check_ALL_cron_status = await rediscon.get("CPG_ALL_CRONS");
   // // console.log("check_ALL_cron_status-->", check_ALL_cron_status);
 
-  // if (check_ALL_cron_status) {
-  //   let cron_status = await rediscon.get("TOP_ALL_CRONS");
-  //   if (cron_status) {
+  if (check_ALL_cron_status) {
+    let cron_status = await rediscon.get("CPG_ALL_CRONS");
+    if (cron_status) {
       let users = await mongofunctions.find("Transaction", {status:"PENDING"}, { _id: -1 });
       let count = users.length;
       // console.log("users length", users.length);
@@ -338,7 +340,10 @@ async function all_deposits() {
                     if (test_balance) {
                       // console.log("tron_balance-->", tron_balance);
   
-                      const api_bal = parseFloat(e.value) / 1000000;
+                      // const api_bal = parseFloat(e.value) / 1000000;
+
+const api_bal = ethers.formatUnits(e.value, 2); 
+console.log(api_bal);
                       // let fee = parseFloat(api_bal) >= 25 ? 0 : 2.5;
                       let fee = each.fee //parseFloat(api_bal) >= 25 ? 0 : 2.5;
                       // console.log({
@@ -411,8 +416,8 @@ async function all_deposits() {
         return true;
         // process.exit(0);
       }
-  //   }
-  // }
+    }
+  }
   setTimeout(() => {
     // process.exit(0);
     return true;

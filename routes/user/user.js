@@ -835,9 +835,12 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     // fee validations
     const totalFee_chain = currentChain.fee
     if(totalFee_chain > hash_dec.amount) return res.status(400).send("Fee Is Greater Than Amount");
+    let finalAmount = hash_dec.amount;
 
-    // create transaction
-    const finalAmount = hash_dec.amount + totalFee_chain
+    // Apply fee only if fee_type is exactly "USER"
+    if (hash_dec?.fee_type === "USER") {
+        finalAmount = hash_dec.amount + totalFee_chain;
+    }
     // const address = '0x289A53817F0ed41e743112aDb0Db5437c953482F'
     // const address = cryptojs.generateRandomString(10)
     // const address ="0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8"
@@ -855,6 +858,7 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
         ..._.pick(currentCoin, ['coinId', 'coinName', 'coinTicker']),
         ..._.pick(currentChain, ['chainId', 'chainName']),
         fee: totalFee_chain,
+        fee_type :hash_dec,
         comment: `Deposit to ${address} with fee "${totalFee_chain}"`,
         status:"PENDING",
         type:"DEPOSIT",
