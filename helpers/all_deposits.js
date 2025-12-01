@@ -304,7 +304,7 @@ async function all_deposits() {
             }
             await new Promise((resolve) => setTimeout(resolve, delay));
           }
-          else if(each.chainName === "sepolia") {
+          else if(each.chainName.toLowerCase() === "sepolia") {
             console.log("------------> in BSC testnet-------------------");
             await new Promise((resolve) => setTimeout(resolve, delay));
 //             const API_KEY = "3UPEGEFB3A7RZPYSMM587W7E912GFBX29F";
@@ -387,12 +387,9 @@ async function all_deposits() {
                                 coin:each.coinName,
                                 chain:each.chainName,
                                 fee:fee,
-                                amount:each.formattedAmount,
+                                amount:api_bal,
                                 address:e.to
                         });
-
-
-
                         await new Promise((resolve) =>
                           setTimeout(resolve, delay)
                         );
@@ -423,4 +420,7 @@ async function all_deposits() {
 }
 
 // exports.all_deposits = all_deposits;
-all_deposits();
+// all_deposits();
+
+
+module.exports = { all_deposits };
