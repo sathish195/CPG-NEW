@@ -355,7 +355,9 @@ console.log(api_bal);
                         parseFloat(getExactLength(test_balance, 3)) >=
                           parseFloat(getExactLength(api_bal, 3)) &&
                         parseFloat(getExactLength(api_bal, 3)) > 1 &&
-                        parseFloat(getExactLength(api_bal, 3)) > fee
+                        parseFloat(getExactLength(api_bal, 3)) > fee &&
+                        parseFloat(getExactLength(api_bal, 3)) === parseFloat(getExactLength(each.amount,3))
+
                       ) {
 
 

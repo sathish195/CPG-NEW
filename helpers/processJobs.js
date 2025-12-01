@@ -479,6 +479,7 @@ module.exports = {
     },
 
     cryptoo_settlement: async (job) => {
+        log("Deposit settlement job data:", job.data);
         const { tid, userId, amount, fee, coin, chain, hash, txd } = job.data;
     
         try {
@@ -500,24 +501,42 @@ module.exports = {
     
             // Step 3: Find the coin object in the user's balances array based on coinName
             const user_balance = user.balances.find(c => c.coinName.toLowerCase() === coin.toLowerCase());
+            console.log("User balance object:", user_balance);
+            return false
     
             if (!user_balance) {
                 console.log(`Coin ${coin} not found in user's balance.`);
                 return false;
             }
     
-            // Step 4: Calculate the amount to add after deducting the fee
-            const precesion = coin.toLowerCase() === 'bitcoin' ? 8 : coin.toLowerCase() === 'ethereum' ? 18 : 2;
-            const parsedFee = parseFloat(getExactLength(fee,precesion));
-            const parsedAmount = parseFloat(getExactLength(amount,precesion));
-            const amountToAdd = parsedAmount - parsedFee;
-    
-            // Update the user's balance by adding the amount
-            const updatedBalance = parseFloat(user_balance.balance) + amountToAdd;
-    
-            console.log("Current balance:", user_balance.balance);
-            console.log("Amount to add:", amountToAdd);
-            console.log("Updated balance:", updatedBalance);
+       // Step 4: Calculate the amount to add after deducting the fee
+const precesion =
+coin.toLowerCase() === 'bitcoin' ? 8 :
+coin.toLowerCase() === 'ethereum' ? 18 :
+2;
+const parsedFsee = parseFloat(getExactLength(20.23, precesion)).toFixed(precesion);
+console.log("parsed Fee--------------------------------->", parsedFsee);
+
+console.log("parsed Fee--------------------------------->", parsedFsee);
+
+const parsedFee = parseFloat(getExactLength(fee, precesion));
+log("Parsed fee:", parsedFee);
+
+const parsedAmount = parseFloat(getExactLength(amount, precesion));
+console.log("parsed Amount--------------------------------->", parsedAmount);
+
+const amountToAdd = parsedAmount - parsedFee;
+
+// Update the user's balance by adding the amount
+const updatedBalanceRaw = parseFloat(user_balance.balance) + amountToAdd;
+
+// Format final balance with exact decimals (NO EXTRA ADDING)
+const updatedBalance = updatedBalanceRaw.toFixed(precesion);
+
+console.log("Current balance:", user_balance.balance);
+console.log("Amount to add:", amountToAdd.toFixed(precesion));
+console.log("Updated balance:", updatedBalance);
+
     
             // Step 5: Update the user's balance in the database
             const filter = {
@@ -530,7 +549,7 @@ module.exports = {
                     "balances.$.balance": updatedBalance 
                 }
             };
-    
+            // return true
             const updatedUser = await mongoFunctions.findOneAndUpdate("User", filter, update, { new: true });
     
             if (!updatedUser) {
@@ -548,7 +567,7 @@ module.exports = {
     
             const updatedTransaction = await mongoFunctions.findOneAndUpdate("Transaction", { tId: txd }, {$set: { "others.settlement": true } }, { new: true });   
 
-          await saveStats("deposits", coin, parsedAmount, new Date(), controllers.getPrecisionByCoin(0, coin));
+        //   await saveStats("deposits", coin, parsedAmount, new Date(), controllers.getPrecisionByCoin(0, coin));
     
             if (!updatedTransaction) {
                 console.log(`Failed to update transaction status for tId ${txd}.`);

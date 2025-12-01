@@ -33,7 +33,7 @@ const handleJobs = {
 }
 
 const worker = new bullMQ.Worker('cpg_queue', async(job) => {
-    console.log(job,"------------------------------>");
+    // console.log(job,"------------------------------>");
     if(job.data.type) await handleJobs[job.data.type](job)
 }, { connection, limiter: { max: 1, duration: 1200 } })
 

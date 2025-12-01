@@ -838,9 +838,9 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     let finalAmount = hash_dec.amount;
 
     // Apply fee only if fee_type is exactly "USER"
-    // if (hash_dec?.fee_type === "USER") {
+    if (hash_dec?.fee_type === "USER") {
         finalAmount = hash_dec.amount + totalFee_chain;
-    // }
+    }
     // const address = '0x289A53817F0ed41e743112aDb0Db5437c953482F'
     // const address = cryptojs.generateRandomString(10)
     // const address ="0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8"

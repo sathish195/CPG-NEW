@@ -778,9 +778,9 @@ module.exports = {
             chain: Joi.string().pattern(/^[A-Z0-9]+$/).min(3).max(15).required().messages({
                 'string.pattern.base': "Chain Id Should Not Contain Any Special Characters"
             }),
-            // fee_type : Joi.string().valid("USER", "MERCHANT").required().messages({
-            //     'any.only': "Fee Type Must Be 'USER' or 'MERCHANT'"
-            // })
+            fee_type : Joi.string().valid("USER", "MERCHANT").required().messages({
+                'any.only': "Fee Type Must Be 'USER' or 'MERCHANT'"
+            })
         })
 
         return schema.validate(data)
