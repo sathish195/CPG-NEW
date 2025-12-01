@@ -17,13 +17,13 @@ const { log } = require("winston");
 // const { log } = require("winston");
 const delay = 1500;
 async function all_deposits() {
-  console.log("Starting all_deposits cron job...");
-  let check_ALL_cron_status = await rediscon.get("CPG_ALL_CRONS");
-  // // console.log("check_ALL_cron_status-->", check_ALL_cron_status);
+  // console.log("Starting all_deposits cron job...");
+  // let check_ALL_cron_status = await rediscon.get("CPG_ALL_CRONS");
+  // // // console.log("check_ALL_cron_status-->", check_ALL_cron_status);
 
-  if (check_ALL_cron_status) {
-    let cron_status = await rediscon.get("CPG_ALL_CRONS");
-    if (cron_status) {
+  // if (check_ALL_cron_status) {
+  //   let cron_status = await rediscon.get("CPG_ALL_CRONS");
+  //   if (cron_status) {
       let users = await mongofunctions.find("Transaction", {status:"PENDING"}, { _id: -1 });
       let count = users.length;
       // console.log("users length", users.length);
@@ -416,8 +416,8 @@ console.log(api_bal);
         return true;
         // process.exit(0);
       }
-    }
-  }
+  //   }
+  // }
   setTimeout(() => {
     // process.exit(0);
     return true;

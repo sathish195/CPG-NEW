@@ -49,6 +49,7 @@ async function setExpire(key) {
 module.exports = {
     // to set a key 
     set: async (key, value, expire=true) => {
+        // log("Redis Set Key:", key)
         const response = await redisClient.set(key, JSON.stringify(value));
         if(expire) await setExpire(key) // set expire time
         return response
