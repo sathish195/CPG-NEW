@@ -8,7 +8,10 @@ const app = express()
 require('./helpers/appConfig')(app) // configurations
 require('./helpers/middlewares')(app, express) // middlewares
 require('./helpers/corn')
-require('./helpers/redis')
 
+// // (async () => {
+//   const results = await set("CPG_ALL_CRONS",true)
+
+// // })();
 
 dbConnect(app, 8080)

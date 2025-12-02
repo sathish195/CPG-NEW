@@ -249,10 +249,6 @@ module.exports = {
     //     }
     // },
     
-
-
-
-
     crypto_deposite: async (job) => {
         console.log("sathish----->>");
         // {userid,tid,fee,amount,coin,chain}
@@ -340,9 +336,6 @@ module.exports = {
             return false; // Return false on error
         }
     },
-    
-    
-
 
     admin_crypto_withdrawal_approve: async (job) => {
         try{
@@ -488,7 +481,7 @@ module.exports = {
             
             if (!user) {
                 console.log(`User with userId ${userId} not found or not active.`);
-                return false;
+                // return false;
             }
     
             // Step 2: Fetch the transaction based on tId and userId with SUCCESS status
@@ -502,7 +495,7 @@ module.exports = {
             // Step 3: Find the coin object in the user's balances array based on coinName
             const user_balance = user.balances.find(c => c.coinName.toLowerCase() === coin.toLowerCase());
             console.log("User balance object:", user_balance);
-            return false
+            // return false
     
             if (!user_balance) {
                 console.log(`Coin ${coin} not found in user's balance.`);
@@ -514,10 +507,7 @@ const precesion =
 coin.toLowerCase() === 'bitcoin' ? 8 :
 coin.toLowerCase() === 'ethereum' ? 18 :
 2;
-const parsedFsee = parseFloat(getExactLength(20.23, precesion)).toFixed(precesion);
-console.log("parsed Fee--------------------------------->", parsedFsee);
 
-console.log("parsed Fee--------------------------------->", parsedFsee);
 
 const parsedFee = parseFloat(getExactLength(fee, precesion));
 log("Parsed fee:", parsedFee);
@@ -565,9 +555,9 @@ console.log("Updated balance:", updatedBalance);
             //     }
             // };
     
-            const updatedTransaction = await mongoFunctions.findOneAndUpdate("Transaction", { tId: txd }, {$set: { "others.settlement": true } }, { new: true });   
+            const updatedTransaction = await mongoFunctions.findOneAndUpdate("Transaction", { tId: tid }, {$set: { "others.settlement": true } }, { new: true });   
 
-        //   await saveStats("deposits", coin, parsedAmount, new Date(), controllers.getPrecisionByCoin(0, coin));
+          await saveStats("deposits", parsedFee,coin);
     
             if (!updatedTransaction) {
                 console.log(`Failed to update transaction status for tId ${txd}.`);
@@ -578,7 +568,6 @@ console.log("Updated balance:", updatedBalance);
              telegram.alertDev(
                 `✅ New Deposit Settled ✅
                 Username: ${updatedUser.userName}
-                Amount: ${parsedAmount}
                 Coin: ${coin}
                 Chain: ${chain}
                 Fee: ${parsedFee}`

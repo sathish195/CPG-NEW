@@ -320,10 +320,12 @@ async function all_deposits() {
             await new Promise((resolve) => setTimeout(resolve, delay));
             // console.log("arr_data", arr_data.length);
             console.log("arr_data", arr_data);
-  
+  let i = 1;
             if (arr_data && arr_data.length > 0) {
               for (const e of arr_data) {
+                console.log(i++,"-------> sepolia txs",e.to,"===",address);
                 if (e.to === address) {
+
                   let nohistory = await check_history(e.tId);
                   console.log("nohistory-->", nohistory);
   
@@ -355,8 +357,8 @@ console.log(api_bal);
                         parseFloat(getExactLength(test_balance, 3)) >=
                           parseFloat(getExactLength(api_bal, 3)) &&
                         parseFloat(getExactLength(api_bal, 3)) > 1 &&
-                        parseFloat(getExactLength(api_bal, 3)) > fee &&
-                        parseFloat(getExactLength(api_bal, 3)) === parseFloat(getExactLength(each.amount,3))
+                        parseFloat(getExactLength(api_bal, 3)) > fee 
+                        // parseFloat(getExactLength(api_bal, 3)) === parseFloat(getExactLength(each.amount,3))
 
                       ) {
 
@@ -397,6 +399,7 @@ console.log(api_bal);
                                 amount:api_bal,
                                 address:e.to
                         });
+                  console.log("-----------> before adding to bullmq sepolia deposit");
                         await new Promise((resolve) =>
                           setTimeout(resolve, delay)
                         );

@@ -8,39 +8,43 @@ const DEFAULT_COINS = {
 };
 
 async function saveStats(type, amount, coin) {
-  // normalize inputs
-  coin = (coin || "").toLowerCase();
   const precision = coin === "bitcoin" ? 8 : 2;
 
-  log("Saving stats:", { type, amount, coin });
+  console.log("Saving stats:", { type, amount, coin });
 
   if (!["deposits", "withdraw"].includes(type)) {
     throw new Error('type must be "deposits" or "withdraw"');
   }
-  if (!coin) throw new Error("coin is required");
 
-  // Normalize amount using your helper (returns formatted string or number)
-  const amtStr = (amount === undefined || amount === null)
-    ? "0"
-    : controllers.getExactLength(amount, precision);
+  if (!coin) {
+    throw new Error("coin is required");
+  }
 
-  // date key (YYYY-MM-DD)
+  // normalize incoming amount
+  const amountStr = controllers.getExactLength(amount || "0", precision);
+
+  // Today in YYYY-MM-DD
   const date = new Date().toISOString().split("T")[0];
 
-  // get existing stats docs for today (your mongoFunctions.find returns an array)
-  const existing = await mongoFunctions.find("Statistics", {});
-  log("Existing stats for date", date, "count:", (existing || []).length);
+  // ❗ Get today's stats document only
+  const existing = await mongoFunctions.find("Statistics", { date });
+  console.log("Existing stats for today:", existing.length);
 
+  // ------------------------------------------------------------------
+  // CASE 1: Document doesn't exist → create new document
+  // ------------------------------------------------------------------
   if (!existing || existing.length === 0) {
-    log("No existing stats for date", date, "- creating new document");
+    console.log("No doc for today → creating new stats");
 
     const depositsObj = { ...DEFAULT_COINS };
     const withdrawObj = { ...DEFAULT_COINS };
 
-    if (type === "deposits") depositsObj[coin] = amtStr;
-    else withdrawObj[coin] = amtStr;
+    if (type === "deposits") {
+      depositsObj[coin] = amountStr;
+    } else {
+      withdrawObj[coin] = amountStr;
+    }
 
-    // create and return new document
     return await mongoFunctions.create("Statistics", {
       date,
       deposits: depositsObj,
@@ -48,38 +52,37 @@ async function saveStats(type, amount, coin) {
     });
   }
 
-  // document exists -> update only the provided field
-  let prevBal = existing[0][type] && existing[0][type][coin];
-  if (prevBal === undefined || prevBal === null) {
-    // if missing, assume default
-    prevBal = DEFAULT_COINS[coin] || "0";
+  // ------------------------------------------------------------------
+  // CASE 2: Document exists → update it
+  // ------------------------------------------------------------------
+
+  const doc = existing[0];
+
+  let prevBalance = doc[type][coin];
+  if (!prevBalance) {
+    prevBalance = DEFAULT_COINS[coin];
   }
 
-  // Use your controller to normalize prevBal and amount to correct precision
-  const prevNormalized = controllers.getExactLength(prevBal, precision);
-  const amountNormalized = controllers.getExactLength(amount, precision);
+  // normalize both values
+  const prevNormalized = controllers.getExactLength(prevBalance, precision);
+  const amtNormalized = controllers.getExactLength(amount, precision);
 
-  log("Previous Balance (normalized):", prevNormalized);
-  log("Amount to add (normalized):", amountNormalized);
-
-  // do arithmetic as numbers, then format to the required precision
   const prevNum = parseFloat(prevNormalized);
-  const addNum = parseFloat(amountNormalized);
+  const addNum = parseFloat(amtNormalized);
 
-  if (Number.isNaN(prevNum) || Number.isNaN(addNum)) {
-    throw new Error(`Invalid numeric value: prev='${prevNormalized}', amount='${amountNormalized}'`);
+  if (isNaN(prevNum) || isNaN(addNum)) {
+    throw new Error(`Invalid numeric values prev='${prevNormalized}' amount='${amtNormalized}'`);
   }
 
-  const newBalStr = (prevNum + addNum).toFixed(precision);
-  log("New balance computed:", newBalStr);
+  const newBalance = (prevNum + addNum).toFixed(precision);
 
-  const update = { $set: { [`${type}.${coin}`]: newBalStr } };
+  console.log("Updated balance:", newBalance);
 
-  // filter by date to update the right doc
+  // update ONLY today's document
   const updated = await mongoFunctions.findOneAndUpdate(
     "Statistics",
     { date },
-    update,
+    { $set: { [`${type}.${coin}`]: newBalance } },
     { new: true }
   );
 
