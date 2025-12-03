@@ -346,6 +346,7 @@ async function all_deposits() {
 
 const api_bal = ethers.formatUnits(e.value, 2); 
 console.log(api_bal);
+return true;
                       // let fee = parseFloat(api_bal) >= 25 ? 0 : 2.5;
                       let fee = each.fee //parseFloat(api_bal) >= 25 ? 0 : 2.5;
                       // console.log({

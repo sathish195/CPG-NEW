@@ -15,8 +15,9 @@ cron.schedule('* * * * *', async () => {
     // const stats = await saveStats();
     // const settlement = await Settlement();
 
-    // logic("Deposits fetched:", stats);
+    // console.log("Deposits fetched:", settlement);
     console.log("Deposits fetched:", deposits);
+    return deposits;
   } catch (err) {
     console.error("Error fetching deposits:", err);
   }
