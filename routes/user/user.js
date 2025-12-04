@@ -16,6 +16,7 @@ const producer = require('../../helpers/producer')
 const telegram = require('../../helpers/telegram')
 const controllers = require('../../helpers/controllers')
 const slowDownLimitter = require('../../helpers/slowDownLimitter')
+const {address_generate} =require("../../helpers/genCryptoAddress")
 
 const user = express.Router()
 
@@ -844,16 +845,19 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     // const address = '0x289A53817F0ed41e743112aDb0Db5437c953482F'
     // const address = cryptojs.generateRandomString(10)
     // const address ="0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8"
-    const address ="0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8"
 
-    const secret_key = cryptojs.generateRandomString(10)
+    const addressObj = await address_generate()
+    console.log(addressObj,"------addressObj-->");
+    // const address ="0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8"
+
+    // const secret_key = cryptojs.generateRandomString(10)
     console.log(secret_key,"------s-->");
     const transactionData = {
         tId: cryptojs.generateRandomString(15),
         invNo: hash_dec.invNo,
         amount: finalAmount,
-        address,
-        secret_key,
+        address:addressObj.address,
+        secret_key:addressObj.privateKey,
         ..._.pick(user, ['userId', 'userName', 'email']),
         ..._.pick(currentCoin, ['coinId', 'coinName', 'coinTicker']),
         ..._.pick(currentChain, ['chainId', 'chainName']),

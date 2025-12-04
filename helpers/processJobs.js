@@ -314,11 +314,11 @@ module.exports = {
           "Transaction",
           { tId: data.txd, status: "PENDING" }
         );
-        console.log(
-          "check_history_crypto",
-          "--------------->>",
-          check_history_crypto
-        );
+        // console.log(
+        //   "check_history_crypto",
+        //   "--------------->>",
+        //   check_history_crypto
+        // );
         // return true
         // 23D7A17877BE7DE3
 
