@@ -72,12 +72,16 @@ const address_generate = async (user,chain) => {
     }
 
     else if (chain === "sepolia") {
-const API_KEY = "3UPEGEFB3A7RZPYSMM587W7E912GFBX29F";
+// const API_KEY = "3UPEGEFB3A7RZPYSMM587W7E912GFBX29F"
 
-      const sepolia_rpc = `https://sepolia.infura.io/v3/${API_KEY}`;
-      const web3 = new Web3(sepolia_rpc);
+
+//       const sepolia_rpc = `https://sepolia.infura.io`;
+//       const web3 = new Web3(sepolia_rpc);
     
-      const account = web3.eth.accounts.create(); 
+//       const account = web3.eth.accounts.create(); 
+
+      const web3 = new Web3();
+      const account = web3.eth.accounts.create();
       console.log("Sepolia address created:", account.address);
     
       return account; // includes address + private key

@@ -689,7 +689,7 @@ const url = `https://api.etherscan.io/v2/api?module=account&action=balance&addre
   }
 }
 
-getTxByBlockRange();
+// getTxByBlockRange();
 
 
 
@@ -720,3 +720,22 @@ async function getBalance() {
 
 // Get the balance of the address
 // getBalance();
+
+const generate_addqress = async () => {
+        const {Web3} = require("web3");
+        try{
+                const API_KEY = "3UPEGEFB3A7RZPYSMM587W7E912GFBX29F";
+
+                const web3 = new Web3();
+                const account = web3.eth.accounts.create();
+    
+      console.log("Sepolia address created----:", account);
+    
+      return account; // includes address + private key
+        }
+        catch(err){
+                console.error("Error generating address:", err);
+        }
+}
+
+generate_addqress()

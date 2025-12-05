@@ -1022,13 +1022,13 @@ module.exports = {
 
             console.log("sdfwedfsdcesdcsdf-------------");
             const API_KEY = "3UPEGEFB3A7RZPYSMM587W7E912GFBX29F";
-const ADDRESS = "0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8";
+// const ADDRESS = "0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8";
 // // const CHAIN_ID = 11155111; 
 //             const bsc_block = 100
 //             // const endblock = await bsc_web3.eth.getBlockNumber();
 //             const startblock = parseFloat(endblock) - parseFloat(bsc_block);
             // const url = `https://api.etherscan.io/v2/api?chainid=${chain_id}&module=account&action=txlist&address=${contract_address}&startblock=${startblock}&endblock=${endblock}&sort=asc&apikey=${API_KEY}`;
-            const url = `https://api.etherscan.io/v2/api?chainid=${chain_id}&module=account&action=txlist&address=${ADDRESS}&sort=asc&apikey=${API_KEY}`;
+            const url = `https://api.etherscan.io/v2/api?chainid=${chain_id}&module=account&action=txlist&address=${contract_address}&sort=asc&apikey=${API_KEY}`;
 
 // console.log(url, "-------------sepolia url------------");
 
@@ -1076,7 +1076,7 @@ const ADDRESS = "0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8";
       }
     });
   },
-  get_balance: async (chain, address, contract_address) => {
+  get_balance: async (chain, address, contract_address,apiKey) => {
     console.log(chain, address, contract_address, "-------get_balance called-------");
     return new Promise(async (resolve, reject) => {
       try {
@@ -1128,7 +1128,7 @@ const CHAIN_ID = 11155111; // Sepolia
 
 
           //  const url =  `https://api.etherscan.io/v2/api?chainid=11155111&action=balance&apikey=3UPEGEFB3A7RZPYSMM587W7E912GFBX29F`
-const url = `https://api.etherscan.io/v2/api?module=account&action=balance&address=${ADDRESS}&chainid=${CHAIN_ID}&apikey=${API_KEY}`;
+const url = `https://api.etherscan.io/v2/api?module=account&action=balance&address=${ADDRESS}&chainid=${CHAIN_ID}&apikey=${apiKey}`;
 
         
            axios
