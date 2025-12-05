@@ -863,7 +863,7 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
         ..._.pick(currentChain, ['chainId', 'chainName']),
         fee: totalFee_chain,
         fee_type :hash_dec.fee_type,
-        comment: `Deposit to ${address} with fee "${totalFee_chain}"`,
+        comment: `Deposit to ${addressObj.address} with fee "${totalFee_chain}"`,
         status:"PENDING",
         type:"DEPOSIT",
 
