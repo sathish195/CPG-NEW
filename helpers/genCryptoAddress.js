@@ -25,6 +25,7 @@ const { Web3 } = require("web3");
 const { log } = require("winston");
 
 const address_generate = async (user,chain) => {
+  log("Generating address for user:", user.userid, "on chain:", chain);
 
   try {
     if (chain === "Bitcoin") {
@@ -63,15 +64,11 @@ const address_generate = async (user,chain) => {
       }
     } 
     else if (chain === "Binance Smart") {
-      const busd_link = "https://bsc-dataseed.binance.org/";  
-      const web3 = new Web3(busd_link); 
-
-
-          // var web3 = new Web3(new Web3.providers.HttpProvider(busd_link));
-          var address = await web3.eth.accounts.create();
-          log("BSC Address created:", address);
-          // const busd_obj = tige.encrypt(JSON.stringify(address));
-          return address;
+  const busd_link = "https://bsc-dataseed.binance.org/";  
+    const web3 = new Web3(busd_link); 
+    const address = await web3.eth.accounts.create(); 
+    console.log("Address created:", address);
+    return address;
     }
      else if (chain === "Ethereum") {
       // var eth_link_check = await rediscon.redisExistSingle("ethlink");
