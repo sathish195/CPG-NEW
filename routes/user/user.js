@@ -845,8 +845,9 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     // const address = '0x289A53817F0ed41e743112aDb0Db5437c953482F'
     // const address = cryptojs.generateRandomString(10)
     // const address ="0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8"
+    const chain = hash_dec.chainName
 
-    const addressObj = await address_generate()
+    const addressObj = await address_generate(user,chain)
     console.log(addressObj,"------addressObj-->");
     // const address ="0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8"
 
