@@ -732,73 +732,75 @@ const iface = new ethers.Interface(e_abi);
       let api_bal=0
       if (arr_data && arr_data.length > 0) {
         for (const e of arr_data) {
-          // console.log(i++, "-------> sepolia txs", e.to, "===", address);
+          console.log(e.input, "inputttttt----->");
+      
+          try {
+            // Attempt to decode the function data (handle errors if it doesn't match the transfer function)
             const decoded = iface.decodeFunctionData("transfer", e.input);
             const recipient = decoded[0];
             const amount = decoded[1];
-           
-  // return true;
-  console.log(decoded[0],"====",address);
-          if (decoded[0] === address) {
-            let nohistory = await check_history(e.tId);
-            console.log("nohistory-->", nohistory);
+      
+            console.log("Decoded recipient:", recipient);
+            console.log("Decoded amount:", amount);
+      
+            // Check if recipient matches the address
+            if (recipient === address) {
+              let nohistory = await check_history(e.tId);
+              console.log("No history check result:", nohistory);
+      
+              // Delay between async calls
+              await new Promise((resolve) => setTimeout(resolve, delay));
+      
+              if (nohistory) {
+                console.log("No previous history, proceeding with balance check");
+      
+                // Fetch balance
+                const test_balance = await get_balance("sepolia", address, "", each.secret_key);
+                console.log("Test balance:", test_balance);
+      
+                if (test_balance) {
+                  // Convert the balance to correct format (assuming api_bal is the amount)
+                  let api_bal = ethers.formatUnits(amount, 18); // Formatting as per ERC-20 decimals
+                  let fee = each.fee; // Apply fee logic if necessary
+                  console.log("API balance:", api_bal, "Test balance:", test_balance);
+      
+                  // Compare balances and apply conditions
+                  if (parseFloat(getExactLength(test_balance, 3)) >= parseFloat(getExactLength(api_bal, 3))) {
+                    console.log("Balance check passed, preparing to add to queue");
+      
+                    await producer.addJob({
+                      type: "CRYPTO_DEPOSITS",
+                      txd: each.tId,
+                      userid: each.userId,
+                      hash: e.hash,
+                      coin: each.coinName,
+                      chain: each.chainName,
+                      fee: fee,
+                      amount: api_bal,
+                      address: e.to,
+                    });
+                    console.log("Deposit data added to the queue.");
 
-            await new Promise((resolve) => setTimeout(resolve, delay));
-            if (nohistory) {
-              // console.log("no history");
-              api_bal = ethers.formatUnits(amount, 18);
-              // console.log(decoded,abi_bal);
-              const test_balance = await get_balance(
-                "sepolia",
-                address,
-                "",
-                each.secret_key
-              );
-              console.log("test_balance-->", test_balance);
-              if (test_balance) {
-                // console.log("tron_balance-->", tron_balance);
-
-                // const api_bal = parseFloat(e.value) / 1000000;
-          
-
-                // let fee = parseFloat(api_bal) >= 25 ? 0 : 2.5;
-                let fee = each.fee; //parseFloat(api_bal) >= 25 ? 0 : 2.5;
-                // console.log({
-                //   tron_bal: parseFloat(getExactLength(tron_balance, 3)),
-                //   api_bal: parseFloat(getExactLength(api_bal, 3)),
-                // });
-
-                if (
-                  parseFloat(getExactLength(test_balance, 3)) >=
-                    parseFloat(getExactLength(api_bal, 3)) 
-                  // parseFloat(getExactLength(api_bal, 3)) > 1 &&
-                  // parseFloat(getExactLength(api_bal, 3)) > fee &&
-                  // parseFloat(getExactLength(api_bal, 3)) === parseFloat(getExactLength(each.amount,3))
-                ) {
-                  console.log(
-                    "-----------> before adding to bullmq sepolia deposit"
-                  );
-
-                //   await producer.addJob({
-                //     type: "CRYPTO_DEPOSITS",
-                //     txd: each.tId,
-                //     userid: each.userId,
-                //     hash: e.hash,
-                //     coin: each.coinName,
-                //     chain: each.chainName,
-                //     fee: fee,
-                //     amount: api_bal,
-                //     address: e.to,
-                //   });
-                //   await new Promise((resolve) => setTimeout(resolve, delay));
+                  }
                 }
               }
+              break;  // This will exit the loop when i equals 5
+
             }
+          } catch (error) {
+            // Catch errors from decoding data
+            console.log("Error decoding transfer data or invalid data:", e.input, error);
           }
+      
+        //   console.log("Processed transaction:", e.hash);
+          // Delay before continuing to the next loop
+          await new Promise((resolve) => setTimeout(resolve, delay));
         }
       }
-      await new Promise((resolve) => setTimeout(resolve, delay));
+      
+//       await new Promise((resolve) => setTimeout(resolve, delay));
     }
+    console.log("done----------->");
     i += 1;
     if (i >= count) {
       return true;
