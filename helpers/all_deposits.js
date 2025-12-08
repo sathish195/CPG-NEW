@@ -779,21 +779,18 @@ const iface = new ethers.Interface(e_abi);
                     "-----------> before adding to bullmq sepolia deposit"
                   );
 
-                  await producer.addJob({
-                    type: "CRYPTO_DEPOSITS",
-                    txd: each.tId,
-                    userid: each.userId,
-                    hash: e.hash,
-                    coin: each.coinName,
-                    chain: each.chainName,
-                    fee: fee,
-                    amount: api_bal,
-                    address: e.to,
-                  });
-                  console.log(
-                    "-----------> before adding to bullmq sepolia deposit"
-                  );
-                  await new Promise((resolve) => setTimeout(resolve, delay));
+                //   await producer.addJob({
+                //     type: "CRYPTO_DEPOSITS",
+                //     txd: each.tId,
+                //     userid: each.userId,
+                //     hash: e.hash,
+                //     coin: each.coinName,
+                //     chain: each.chainName,
+                //     fee: fee,
+                //     amount: api_bal,
+                //     address: e.to,
+                //   });
+                //   await new Promise((resolve) => setTimeout(resolve, delay));
                 }
               }
             }
@@ -809,6 +806,7 @@ const iface = new ethers.Interface(e_abi);
     }
   }
   if (i === count) {
+        console.log(i,count,"----------------------------------------->")
     return true;
     // process.exit(0);
   }

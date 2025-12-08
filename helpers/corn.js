@@ -6,7 +6,7 @@ const {all_deposits} = require('./all_deposits');
 const {Settlement} = require('./cronJobs');
 
 // Schedule the task to run every minute
-cron.schedule('*/5 * * * *', async () => {
+cron.schedule('* * * * *', async () => {
   console.log('----------------------------------run------------------------->');
   console.log('This task runs every minute');
 
