@@ -430,10 +430,425 @@
                 "type": "function"
         }
         ];
+
+
+    const e_abi =    [
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "spender",
+                                        "type": "address"
+                                },
+                                {
+                                        "internalType": "uint256",
+                                        "name": "value",
+                                        "type": "uint256"
+                                }
+                        ],
+                        "name": "approve",
+                        "outputs": [
+                                {
+                                        "internalType": "bool",
+                                        "name": "",
+                                        "type": "bool"
+                                }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "initialOwner",
+                                        "type": "address"
+                                }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "constructor"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "spender",
+                                        "type": "address"
+                                },
+                                {
+                                        "internalType": "uint256",
+                                        "name": "allowance",
+                                        "type": "uint256"
+                                },
+                                {
+                                        "internalType": "uint256",
+                                        "name": "needed",
+                                        "type": "uint256"
+                                }
+                        ],
+                        "name": "ERC20InsufficientAllowance",
+                        "type": "error"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "sender",
+                                        "type": "address"
+                                },
+                                {
+                                        "internalType": "uint256",
+                                        "name": "balance",
+                                        "type": "uint256"
+                                },
+                                {
+                                        "internalType": "uint256",
+                                        "name": "needed",
+                                        "type": "uint256"
+                                }
+                        ],
+                        "name": "ERC20InsufficientBalance",
+                        "type": "error"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "approver",
+                                        "type": "address"
+                                }
+                        ],
+                        "name": "ERC20InvalidApprover",
+                        "type": "error"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "receiver",
+                                        "type": "address"
+                                }
+                        ],
+                        "name": "ERC20InvalidReceiver",
+                        "type": "error"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "sender",
+                                        "type": "address"
+                                }
+                        ],
+                        "name": "ERC20InvalidSender",
+                        "type": "error"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "spender",
+                                        "type": "address"
+                                }
+                        ],
+                        "name": "ERC20InvalidSpender",
+                        "type": "error"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "to",
+                                        "type": "address"
+                                },
+                                {
+                                        "internalType": "uint256",
+                                        "name": "amount",
+                                        "type": "uint256"
+                                }
+                        ],
+                        "name": "mint",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "owner",
+                                        "type": "address"
+                                }
+                        ],
+                        "name": "OwnableInvalidOwner",
+                        "type": "error"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "account",
+                                        "type": "address"
+                                }
+                        ],
+                        "name": "OwnableUnauthorizedAccount",
+                        "type": "error"
+                },
+                {
+                        "anonymous": false,
+                        "inputs": [
+                                {
+                                        "indexed": true,
+                                        "internalType": "address",
+                                        "name": "owner",
+                                        "type": "address"
+                                },
+                                {
+                                        "indexed": true,
+                                        "internalType": "address",
+                                        "name": "spender",
+                                        "type": "address"
+                                },
+                                {
+                                        "indexed": false,
+                                        "internalType": "uint256",
+                                        "name": "value",
+                                        "type": "uint256"
+                                }
+                        ],
+                        "name": "Approval",
+                        "type": "event"
+                },
+                {
+                        "anonymous": false,
+                        "inputs": [
+                                {
+                                        "indexed": true,
+                                        "internalType": "address",
+                                        "name": "previousOwner",
+                                        "type": "address"
+                                },
+                                {
+                                        "indexed": true,
+                                        "internalType": "address",
+                                        "name": "newOwner",
+                                        "type": "address"
+                                }
+                        ],
+                        "name": "OwnershipTransferred",
+                        "type": "event"
+                },
+                {
+                        "inputs": [],
+                        "name": "renounceOwnership",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "to",
+                                        "type": "address"
+                                },
+                                {
+                                        "internalType": "uint256",
+                                        "name": "value",
+                                        "type": "uint256"
+                                }
+                        ],
+                        "name": "transfer",
+                        "outputs": [
+                                {
+                                        "internalType": "bool",
+                                        "name": "",
+                                        "type": "bool"
+                                }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                },
+                {
+                        "anonymous": false,
+                        "inputs": [
+                                {
+                                        "indexed": true,
+                                        "internalType": "address",
+                                        "name": "from",
+                                        "type": "address"
+                                },
+                                {
+                                        "indexed": true,
+                                        "internalType": "address",
+                                        "name": "to",
+                                        "type": "address"
+                                },
+                                {
+                                        "indexed": false,
+                                        "internalType": "uint256",
+                                        "name": "value",
+                                        "type": "uint256"
+                                }
+                        ],
+                        "name": "Transfer",
+                        "type": "event"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "from",
+                                        "type": "address"
+                                },
+                                {
+                                        "internalType": "address",
+                                        "name": "to",
+                                        "type": "address"
+                                },
+                                {
+                                        "internalType": "uint256",
+                                        "name": "value",
+                                        "type": "uint256"
+                                }
+                        ],
+                        "name": "transferFrom",
+                        "outputs": [
+                                {
+                                        "internalType": "bool",
+                                        "name": "",
+                                        "type": "bool"
+                                }
+                        ],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "newOwner",
+                                        "type": "address"
+                                }
+                        ],
+                        "name": "transferOwnership",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "owner",
+                                        "type": "address"
+                                },
+                                {
+                                        "internalType": "address",
+                                        "name": "spender",
+                                        "type": "address"
+                                }
+                        ],
+                        "name": "allowance",
+                        "outputs": [
+                                {
+                                        "internalType": "uint256",
+                                        "name": "",
+                                        "type": "uint256"
+                                }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                },
+                {
+                        "inputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "account",
+                                        "type": "address"
+                                }
+                        ],
+                        "name": "balanceOf",
+                        "outputs": [
+                                {
+                                        "internalType": "uint256",
+                                        "name": "",
+                                        "type": "uint256"
+                                }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                },
+                {
+                        "inputs": [],
+                        "name": "decimals",
+                        "outputs": [
+                                {
+                                        "internalType": "uint8",
+                                        "name": "",
+                                        "type": "uint8"
+                                }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                },
+                {
+                        "inputs": [],
+                        "name": "name",
+                        "outputs": [
+                                {
+                                        "internalType": "string",
+                                        "name": "",
+                                        "type": "string"
+                                }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                },
+                {
+                        "inputs": [],
+                        "name": "owner",
+                        "outputs": [
+                                {
+                                        "internalType": "address",
+                                        "name": "",
+                                        "type": "address"
+                                }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                },
+                {
+                        "inputs": [],
+                        "name": "symbol",
+                        "outputs": [
+                                {
+                                        "internalType": "string",
+                                        "name": "",
+                                        "type": "string"
+                                }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                },
+                {
+                        "inputs": [],
+                        "name": "totalSupply",
+                        "outputs": [
+                                {
+                                        "internalType": "uint256",
+                                        "name": "",
+                                        "type": "uint256"
+                                }
+                        ],
+                        "stateMutability": "view",
+                        "type": "function"
+                }
+        ]
         // const provider = new ethers.JsonRpcProvider(BSC_TESTNET.rpcUrls[0]);
 
         // / Create an Interface object for decoding the data
-        // const iface = new ethers.Interface(tokenAbi);
+        const iface = new ethers.Interface(e_abi);
 
         // async function getTransactionsInBlockRange(startBlock, endBlock, pendingHistory) {
         //         const transactions = [];
@@ -653,7 +1068,8 @@ const axios = require("axios");
 // const { ethers } = require("ethers");
 
 const API_KEY = "3UPEGEFB3A7RZPYSMM587W7E912GFBX29F";
-const ADDRESS = "0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8";
+const ADDRESS = "0x4CCc8accD389e3E536Bf199F93826FdcaF4dfF09";
+// const ADDRESS = "0x7F99B606893668A4834E528C2bc1864FC450909D";
 const CHAIN_ID = 11155111; // Sepolia
 const START_BLOCK = 9700000;
 const END_BLOCK = 9725000;
@@ -662,13 +1078,42 @@ async function getTxByBlockRange() {
 //   const url = `https://api.etherscan.io/v2/api?chainid=${CHAIN_ID}&module=account&action=txlist&address=${ADDRESS}&startblock=${START_BLOCK}&endblock=${END_BLOCK}&sort=asc&apikey=${API_KEY}`;
 //   const url = `https://api.etherscan.io/v2/api?chainid=${CHAIN_ID}&module=account&action=txlist&address=${ADDRESS}&sort=asc&apikey=${API_KEY}`;
 //   const url =  `https://api.etherscan.io/v2/api?chainid=11155111&action=balance&apikey=3UPEGEFB3A7RZPYSMM587W7E912GFBX29F`
- 
 
 // Construct the API URL with the address, chainId, and API Key
-const url = `https://api.etherscan.io/v2/api?module=account&action=balance&address=${ADDRESS}&chainid=${CHAIN_ID}&apikey=${API_KEY}`;
+// const url = `https://api.etherscan.io/v2/api?module=account&action=balance&address=${ADDRESS}&chainid=${CHAIN_ID}&apikey=${API_KEY}`;
 
 
-  
+// const url = `https://api-sepolia.etherscan.io/api
+// ?module=account
+// &action=txlist
+// &address=${ADDRESS}
+// &startblock=0
+// &endblock=99999999
+// &page=1
+// &offset=10
+// &sort=desc
+// &apikey=${API_KEY}`;
+
+// const url = `https://api.etherscan.io/v2/api?${CHAIN_ID}=1&action=balance&apikey=${API_KEY}`;
+// const url = `https://api.etherscan.io/v2/api?chainid=${CHAIN_ID}&action=balance&apikey=${API_KEY}&address=${ADDRESS}`;
+// const url = `https://api-sepolia.etherscan.io/api?module=account&action=balance&address=${ADDRESS}&tag=latest&apikey=${API_KEY}`;
+// const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${ADDRESS}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${API_KEY}`;
+// const url = `https://api.polygonscan.com/api?module=account&action=txlist&address=${ADDRESS}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${API_KEY}`;
+
+
+// const url = `https://api.etherscan.io/v2/api?chainid=${CHAIN_ID}&action=balance&apikey=${API_KEY}&address=${ADDRESS}`;
+// const url = `https://api.etherscan.io/v2/api?chainid=${CHAIN_ID}&module=account&action=getdeposittxs&address=${ADDRESS}&page=1&offset=10&sort=desc&apikey=${API_KEY}`;
+// const url = `https://api.etherscan.io/v2/api?module=account&action=txlist&address=${ADDRESS}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${API_KEY}`;
+
+
+const url = `https://api.etherscan.io/v2/api?module=account&action=txlist&address=${ADDRESS}&sort=desc&chainid=${CHAIN_ID}&apikey=${API_KEY}`;
+
+// {
+//   status: '0',
+//   message: 'NOTOK',
+//   result: 'Error! Missing Or invalid Module name (#2)'
+// }
+
 
   try {
     const { data } = await axios.get(url);
@@ -678,6 +1123,11 @@ const url = `https://api.etherscan.io/v2/api?module=account&action=balance&addre
       console.log(`Found ${data.result.length} transactions between blocks ${START_BLOCK} and ${END_BLOCK}:`);
 
       data.result.forEach((tx) => {
+        const decoded = iface.decodeFunctionData("transfer", tx.input);
+        const recipient = decoded[0];
+        const amount = decoded[1];
+        abi_bal = ethers.formatUnits(amount, 18);
+        console.log(decoded);
         const valueInEth = ethers.formatEther(tx.value);
         console.log(`Block: ${tx.blockNumber} | From: ${tx.from} | To: ${tx.to} | Amount: ${valueInEth} ETH | TxHash: ${tx.hash}`);
       });
@@ -689,7 +1139,7 @@ const url = `https://api.etherscan.io/v2/api?module=account&action=balance&addre
   }
 }
 
-// getTxByBlockRange();
+getTxByBlockRange();
 
 
 
@@ -738,4 +1188,4 @@ const generate_addqress = async () => {
         }
 }
 
-generate_addqress()
+// generate_addqress()
