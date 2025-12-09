@@ -564,8 +564,11 @@ user.post('/initWithdraw', auth, authUser, slowDownLimitter, rateLimitter, async
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
     // validate payload
+    console.log(payload,"------------------->");
     const { error } = validations.initiateWithdraw(payload)
     if(error) return res.status(400).send(error.details[0].message)
+    console.log(payload,"------------------->");
+
 
     // requested amount
     let requestedAmount = Number(payload.amount)

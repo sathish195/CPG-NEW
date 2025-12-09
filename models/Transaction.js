@@ -23,7 +23,7 @@ const transactionSchema = mongoose.Schema({
     amount: { type: Number, required: true },
     address: { type: String, required: true },
     fee: { type: Number, required: true },
-    fee_type: { type: String, required: true, enum  : { values: ["USER", "MERCHANT"], message: "${VALUE} is not supported" } },
+    fee_type: { type: String, required: true,default:"0", enum  : { values: ["USER", "MERCHANT"], message: "${VALUE} is not supported" } },
     comment: { type: String, default:"" },
     status: { type: String, required: true, enum: { values: ["PENDING", "SUCCESS", "FAILED"], message: "${VALUE} is not supported" } },
     others: { type: Object, default: {} }
