@@ -11,7 +11,8 @@ module.exports = async function (req, res, next) {
 
         // get captcha result by decrypting x-captcha-token
         const captchaResult = cryptojs.decrypt(req.headers['x-captcha-token'])
-        console.log(captchaResult);
+        console.log(captchaResult,"------------------------------>");
+        console.log(secretKey,"-------------------------------sec");
         
         // validate captcha
         const rawResponse = await axios({
@@ -22,6 +23,7 @@ module.exports = async function (req, res, next) {
             'Content-Type': 'application/x-www-form-urlencoded',
             },
         });
+        console.log(rawResponse,"----------------------------------------raw");
         if(!rawResponse || !rawResponse?.data?.success) return res.status(401).send("Invalid captcha. Please try again.")
 
         next();
