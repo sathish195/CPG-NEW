@@ -867,9 +867,9 @@ member.post('/getTransactions', auth, authMember, slowDownLimitter, rateLimitter
 member.post("/getControls", slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get admin controls
     const adminControls = await controllers.getAdminControls()
-    log("adminControls -->", adminControls)
+    // log("adminControls -->", adminControls)
     // send encrypted response
-    return res.status(200).send(cryptojs.encrypt(adminControls))
+    return res.status(200).send(adminControls)
 }))
 
 // @METHOD: POST

@@ -76,7 +76,7 @@ const getAdminControls = async () => {
         // save controls in redis
         await redis.hSet("cpg_admin", "controls", JSON.stringify(adminControls))
     }
-console.log("adminControls--->",adminControls);
+// console.log("adminControls--->",adminControls);
     return adminControls
 }
 
