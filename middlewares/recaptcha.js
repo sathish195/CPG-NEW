@@ -13,10 +13,10 @@ module.exports = async function (req, res, next) {
         
         // get captcha result by decrypting x-captcha-token
         const captchaResult =await cryptojs.decrypt(req.headers['x-captcha-token'])
-        console.log(captchaResult,"------------------------------>");
+        console.log(captchaResult,"--------------rrrrr---------------->");
         console.log(secretKey,"-------------------------------sec");
         if(captchaResult ==="U2FsdGVkX19/fS1OTDVoxd+fGoJycQ+QEZM0NQtmyEMbjF7lhhesFlTdL1MzLHZF"){
-        next();
+       return next();
         }
         
         // validate captcha
