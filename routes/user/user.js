@@ -49,7 +49,7 @@ user.post('/register', slowDownLimitter, rateLimitter, recaptcha, asyncFun (asyn
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -98,7 +98,7 @@ user.post('/register', slowDownLimitter, rateLimitter, recaptcha, asyncFun (asyn
     await redis.setEx(`cpg-register-otp-${user.email}`, '123456', '180')
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "OTP Sent To Email" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "OTP Sent To Email" }))
 }))
 
 // @METHOD: POST
@@ -115,7 +115,7 @@ user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (a
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -136,8 +136,8 @@ user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (a
 
     // generate key
     const appKey = await getAppKey()
-    const secretKey = cryptojs.encryptAPI({ email: user.email, appName: payload.appName })
-    const appId = cryptojs.encryptAPI({ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl })
+    const secretKey =await cryptojs.encrypt({ email: user.email, appName: payload.appName })
+    const appId =await cryptojs.encrypt({ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl })
     const whiteList_ip = [payload.whiteList_ip]
     const key = {
         appId: tigerBalm.encrypt(appId),
@@ -158,7 +158,7 @@ user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (a
     const updatedUser = await mongoFunctions.findOneAndUpdate("User", { email: user.email }, update, { new: true });
     await redis.hSet("cpg_users", user.email, JSON.stringify(updatedUser))
 
-    return res.status(200).send(cryptojs.encryptObj({ appKey, secretKey, whiteList_ip }))
+    return res.status(200).send(await cryptojs.encrypt({ appKey, secretKey, whiteList_ip }))
 }))
 
 // @METHOD: POST
@@ -175,7 +175,7 @@ user.post('/updateAppKey', auth, authUser, slowDownLimitter, rateLimitter, async
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty");
 
@@ -214,7 +214,7 @@ user.post('/updateAppKey', auth, authUser, slowDownLimitter, rateLimitter, async
     // update app key
     if(Object.keys(update['$set']).length) {
         // generate new app Id
-        const appId = cryptojs.encryptAPI({ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl })
+        const appId =await cryptojs.encrypt({ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl })
         update['$set']['keys.$.appId'] = tigerBalm.encrypt(appId)
 
         // update user
@@ -225,7 +225,7 @@ user.post('/updateAppKey', auth, authUser, slowDownLimitter, rateLimitter, async
         await redis.hSet("cpg_users", user.email, JSON.stringify(updatedUser))
     }
 
-    return res.status(200).send(cryptojs.encryptObj({ message: "App Key Updated Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "App Key Updated Successfully" }))
 }))
 
 // @METHOD: POST
@@ -242,7 +242,7 @@ user.post('/deleteAppKey', auth, authUser, slowDownLimitter, rateLimitter, async
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -269,7 +269,7 @@ user.post('/deleteAppKey', auth, authUser, slowDownLimitter, rateLimitter, async
     const updatedUser = await mongoFunctions.findOneAndUpdate("User", filter, update, { new: true })
     await redis.hSet("cpg_users", user.email, JSON.stringify(updatedUser))
 
-    return res.status(200).send(cryptojs.encryptObj({ message: "App Key Deleted Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "App Key Deleted Successfully" }))
 }))
 
 // @METHOD: POST
@@ -286,7 +286,7 @@ user.post('/addIp', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (as
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -309,7 +309,7 @@ user.post('/addIp', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (as
     await redis.hSet("cpg_users", user.email, JSON.stringify(updatedUser))
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "IP Added Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "IP Added Successfully" }))
 }))
 
 // @METHOD: POST
@@ -323,7 +323,7 @@ user.post('/getKeys', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (
 
     // get keys
     let keys = user.keys
-    if(!keys.length) return res.status(200).send(cryptojs.encryptObj([]));
+    if(!keys.length) return res.status(200).send(await cryptojs.encrypt([]));
 
     // decrypt keys
     keys = keys.map(key => {
@@ -334,7 +334,7 @@ user.post('/getKeys', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (
             notifyUrl: key.notifyUrl,
         }
     })
-    return res.status(200).send(cryptojs.encryptObj(keys))
+    return res.status(200).send(await cryptojs.encrypt(keys))
 }))
 
 // @METHOD: POST
@@ -348,7 +348,7 @@ user.post('/getProfile', auth, authUser, slowDownLimitter, rateLimitter, asyncFu
     const response = _.pick(user, ['userId', 'userName', 'email', 'withdrawStatus', 'transactionStatus'])
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj(response))
+    return res.status(200).send(await cryptojs.encrypt(response))
 }))
 
 // @METHOD: POST
@@ -363,7 +363,7 @@ user.post('/riseTicket', auth, authUser, slowDownLimitter, rateLimitter, asyncFu
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -398,7 +398,7 @@ user.post('/riseTicket', auth, authUser, slowDownLimitter, rateLimitter, asyncFu
 	status --> ${ticket.status} ${ticket.status === "OPEN" ? '🛑' : '🟢'}`)
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "Your Support Request Has Been Submitted Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Your Support Request Has Been Submitted Successfully" }))
 }))
 
 // @METHOD: POST
@@ -413,7 +413,7 @@ user.post('/replyTicket', auth, authUser, slowDownLimitter, rateLimitter, asyncF
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -537,7 +537,7 @@ user.post('/updateSettlement', auth, authUser, slowDownLimitter, rateLimitter, a
         const updatedUser = await mongoFunctions.findOneAndUpdate("User", { email: user.email, 'balances.coinId': payload.coin }, update, { new: true })
     }
 
-    return res.status(200).send(cryptojs.encryptObj({ message: "Settlement Type Updated" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Settlement Type Updated" }))
 }))
 
 // @METHOD: POST
@@ -559,7 +559,7 @@ user.post('/initWithdraw', auth, authUser, slowDownLimitter, rateLimitter, async
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -625,7 +625,7 @@ user.post('/initWithdraw', auth, authUser, slowDownLimitter, rateLimitter, async
 	address --> ${payload.address}`)
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "OTP Sent To Email", tId: transaction.tId }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "OTP Sent To Email", tId: transaction.tId }))
 }))
 
 // @METHOD: POST
@@ -648,7 +648,7 @@ user.post('/withdraw', auth, authUser, slowDownLimitter, rateLimitter, asyncFun 
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -693,7 +693,7 @@ console.log(payload);
     await producer.addJob({ type: "cryptoWithdraw", tId: transaction.tId, userId: user.userId })
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ tId: transaction.tId }))
+    return res.status(200).send(await cryptojs.encrypt({ tId: transaction.tId }))
 }))
 
 // @METHOD: POST
@@ -717,7 +717,7 @@ user.post('/generateHash', slowDownLimitter, rateLimitter, asyncFun (async (req,
     if(!currentKey || !currentKey?.appId) return res.status(400).send("Invalid App Key");
     const appId = tigerBalm.decrypt(currentKey.appId)
     if(!appId || appId === 'tberror') return re.status(400).send("Invalid App Key. Please Generate New App Key")
-    const appIdData = cryptojs.decryptAPI(appId)
+    const appIdData =await cryptojs.decrypt(appId)
     if(!appIdData || !Object.keys(appIdData).length) return res.status(400).send("No Data Found In Given App Key")
 
     // get payload
@@ -768,7 +768,7 @@ user.post('/generateHash', slowDownLimitter, rateLimitter, asyncFun (async (req,
         timestamp: Date.now()
     }
     const secretKey = tigerBalm.decrypt(currentKey.secretKey)
-    const hash = cryptojs.encryptAPI(data, secretKey)
+    const hash =await cryptojs.encrypt(data, secretKey)
 
     return res.status(200).send({ hash })
 }))
@@ -807,7 +807,7 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
 
     // decrypt hash
     const secretKey = tigerBalm.decrypt(currentKey.secretKey)
-    const hash_dec = cryptojs.decryptAPI(payload.hash, secretKey)
+    const hash_dec =await cryptojs.decrypt(payload.hash, secretKey)
     if(!hash_dec || hash_dec === 'tberror') return res.status(400).send("Invalid Hash");
 
     // hash key validations
@@ -901,7 +901,7 @@ user.post('/get_transaction',auth, slowDownLimitter, rateLimitter, asyncFun (asy
     // req.body = {enc : cryptojs.encryptObj(req.body)}
 
         console.log(req.body);
-        const payload = cryptojs.decryptObj(req.body.enc)
+        const payload =await cryptojs.decrypt(req.body.enc)
         console.log(payload);
         if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
         if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
@@ -911,7 +911,7 @@ user.post('/get_transaction',auth, slowDownLimitter, rateLimitter, asyncFun (asy
 
     const pending_withdrawals = await mongoFunctions.find("Transaction", {tId:payload.tid },{_id:0, __v:0,invNo:0})
     // console.log(pending_withdrawals);
-    return res.status(200).send(cryptojs.encryptObj(pending_withdrawals))
+    return res.status(200).send(await cryptojs.encrypt(pending_withdrawals))
 
 
 }))
