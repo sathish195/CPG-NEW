@@ -12,7 +12,7 @@ module.exports = async function (req, res, next) {
         console.log(captchaRdesult,"============----------------------kkkkkkk");
         
         // get captcha result by decrypting x-captcha-token
-        const captchaResult = cryptojs.decrypt(req.headers['x-captcha-token'])
+        const captchaResult =await cryptojs.decrypt(req.headers['x-captcha-token'])
         console.log(captchaResult,"------------------------------>");
         console.log(secretKey,"-------------------------------sec");
         

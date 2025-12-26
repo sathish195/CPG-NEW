@@ -31,7 +31,7 @@ admin.post('/register', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -53,7 +53,7 @@ admin.post('/register', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
 
     // create admin
     let adminData = {
-        adminId: 'CPG'+cryptojs.generateRandomString(),
+        adminId: 'CPG'+ cryptojs.generateRandomString(),
         ...payload,
         status: "PENDING",
     }
@@ -62,7 +62,7 @@ admin.post('/register', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     // send otp
     await redis.setEx(`cpg-register-otp-${admin.email}`, '123456', '180')
 
-    return res.status(200).send(cryptojs.encryptObj({ message: "OTP Send To Email" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "OTP Send To Email" }))
 }))
 
 // @METHOD: POST
@@ -74,7 +74,7 @@ admin.post('/getAdmins', auth, authAdmin, slowDownLimitter, rateLimitter, asyncF
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -92,7 +92,7 @@ admin.post('/getAdmins', auth, authAdmin, slowDownLimitter, rateLimitter, asyncF
     const admins = await mongoFunctions.find("Admin", { }, options)
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj(admins))
+    return res.status(200).send(await cryptojs.encrypt(admins))
 }))
 
 // @METHOD: POST
@@ -104,7 +104,7 @@ admin.post('/getUsers', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -133,7 +133,7 @@ admin.post('/getUsers', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     console.log(users,"users------->");
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj(users))
+    return res.status(200).send(await cryptojs.encrypt(users))
 }))
 
 // @METHOD: POST
@@ -173,7 +173,7 @@ admin.post('/getUsers/:search', auth, authAdmin, slowDownLimitter, rateLimitter,
     }
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj(user))
+    return res.status(200).send(await cryptojs.encrypt(user))
 }))
 
 // @METHOD: POST
@@ -197,7 +197,7 @@ admin.post('/updateUser/:userId', auth, authAdmin, slowDownLimitter, rateLimitte
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -231,7 +231,7 @@ admin.post('/updateUser/:userId', auth, authAdmin, slowDownLimitter, rateLimitte
 	}
 
 	// send encrypted response
-	return res.status(200).send(cryptojs.encryptObj({ message: "User Updated Successfully" }))
+	return res.status(200).send(await cryptojs.encrypt({ message: "User Updated Successfully" }))
 }))
 
 // @METHOD: POST
@@ -247,7 +247,7 @@ admin.post('/deleteUser', auth, authAdmin, slowDownLimitter, rateLimitter, async
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -266,7 +266,7 @@ admin.post('/deleteUser', auth, authAdmin, slowDownLimitter, rateLimitter, async
     await redis.hDel("cpg_users", payload.email)
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "User Deleted Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "User Deleted Successfully" }))
 }))
 
 // @METHOD: POST
@@ -294,7 +294,7 @@ admin.post('/updateAdmin/:adminId', auth, authAdmin, slowDownLimitter, rateLimit
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -317,7 +317,7 @@ admin.post('/updateAdmin/:adminId', auth, authAdmin, slowDownLimitter, rateLimit
         await redis.hSet("cpg_admin", updatedCurrentAdmin.email, JSON.stringify(updatedCurrentAdmin))
     }
 
-    return res.status(200).send(cryptojs.encryptObj({ message: "Admin Updated Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Admin Updated Successfully" }))
 }))
 
 // @METHOD: POST
@@ -333,7 +333,7 @@ admin.post('/deleteAdmin', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -352,7 +352,7 @@ admin.post('/deleteAdmin', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     await redis.hDel("cpg_admins", payload.email)
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "Admin Deleted Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Admin Deleted Successfully" }))
 }))
 
 // @METHOD: POST
@@ -370,7 +370,7 @@ admin.post('/updateControls', auth, authAdmin, slowDownLimitter, rateLimitter, a
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -402,7 +402,7 @@ admin.post('/updateControls', auth, authAdmin, slowDownLimitter, rateLimitter, a
     by --> ${admin.email}`)
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj(adminControls))
+    return res.status(200).send(await cryptojs.encrypt(adminControls))
 }))
 
 // @METHOD: POST
@@ -420,7 +420,7 @@ admin.post('/getCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -437,7 +437,7 @@ admin.post('/getCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
     if(!currentCoin) return res.status(400).send("No Coin Found With Given Coin ID. Please Try Again")
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ ..._.pick(currentCoin, ['_id', 'coinId', 'coinName', 'coinLogo', 'coinTicker', 'coinStatus', 'note', 'precision', 'withdraw', 'deposit', 'settlementMin']) }))
+    return res.status(200).send(await cryptojs.encrypt({ ..._.pick(currentCoin, ['_id', 'coinId', 'coinName', 'coinLogo', 'coinTicker', 'coinStatus', 'note', 'precision', 'withdraw', 'deposit', 'settlementMin']) }))
 }))
 
 // @METHOD: POST
@@ -455,7 +455,7 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -510,7 +510,7 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
 	by --> ${admin.email}`)
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "Coin Added Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Coin Added Successfully" }))
 }))
 
 // @METHOD: POST
@@ -528,7 +528,7 @@ admin.post('/updateCoin', auth, authAdmin, slowDownLimitter, rateLimitter, async
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -612,7 +612,7 @@ admin.post('/updateCoin', auth, authAdmin, slowDownLimitter, rateLimitter, async
     await redis.hSet("cpg_admins", admin.email, JSON.stringify(updatedAdmin)) // update in redis
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "Coin Updated Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Coin Updated Successfully" }))
 }))
 
 // @METHOD: POST
@@ -630,7 +630,7 @@ admin.post('/addChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -665,7 +665,7 @@ admin.post('/addChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     await redis.hSet("cpg_admin", "controls", JSON.stringify(updatedAdminControls))
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "Chain Added Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Chain Added Successfully" }))
 }))
 
 // @METHOD: POST
@@ -683,7 +683,7 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -735,7 +735,7 @@ admin.post('/updateChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
         await redis.hSet("cpg_admin", "controls", JSON.stringify(updatedAdminControls))
     }
 
-    return res.status(200).send(cryptojs.encryptObj({ message: "Chain Updated Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Chain Updated Successfully" }))
 }))
 
 // @METHOD: POST
@@ -753,7 +753,7 @@ admin.post('/deleteChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -781,7 +781,7 @@ admin.post('/deleteChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     const updatedAdminControls = await mongoFunctions.findOneAndUpdate("AdminControls", filter, update, { new: true })
     await redis.hSet("cpg_admin", "controls", JSON.stringify(updatedAdminControls))
 
-    return res.status(200).send(cryptojs.encryptObj({ message: "Chain Deleted Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Chain Deleted Successfully" }))
 }))
 
 // @METHOD: POST
@@ -799,7 +799,7 @@ admin.post('/updateReferral', auth, authAdmin, slowDownLimitter, rateLimitter, a
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -831,7 +831,7 @@ admin.post('/updateReferral', auth, authAdmin, slowDownLimitter, rateLimitter, a
 	by --> ${admin.email}`)
 
     // send encrypted respnse
-    return res.status(200).send(cryptojs.encryptObj({ message: "Referral Controls Updated Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Referral Controls Updated Successfully" }))
 }))
 
 // @METHOD: POST
@@ -846,7 +846,7 @@ admin.post('/updateTicket', auth, authAdmin, slowDownLimitter, rateLimitter, asy
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -889,7 +889,7 @@ admin.post('/updateTicket', auth, authAdmin, slowDownLimitter, rateLimitter, asy
 	status --> ${ticket.status} ${ticket.status === "OPEN" ? '🛑' : '🟢'}`)
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "Ticket Updated Successfully", ticket: updatedTicket }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Ticket Updated Successfully", ticket: updatedTicket }))
 }))
 
 admin.post('/set_up', asyncFun (async (req, res) => {
@@ -935,7 +935,7 @@ admin.post('/accept_reject_withdrwals', slowDownLimitter, rateLimitter, asyncFun
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -973,7 +973,7 @@ console.log(payload);
 
 
         //   }
-    return res.status(200).send(cryptojs.encryptObj({ status: "Request Processing..!" }));
+    return res.status(200).send(await cryptojs.encrypt({ status: "Request Processing..!" }));
 
 
         }))

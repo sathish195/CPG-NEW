@@ -9,7 +9,7 @@ module.exports = async (req, res, next) => {
         if(!token_enc) return res.status(401).send('Access Denied. No Token Provided!')
 
         // decrypt token
-        const token = cryptojs.decryptObj(token_enc)
+        const token =await cryptojs.jwt_decrypt(token_enc)
         if(token === 'tberror') return res.status(400).send("Invalid Token. Please Re-Login And Try Again")
 
         // decode token
@@ -26,7 +26,6 @@ module.exports = async (req, res, next) => {
 
         // assign to req.member
         req.member = member
-
         next() // proceed to move
     }catch(err) {
         telegram.alertDev(`❌❌❌❌❌❌ \n err in route CPG 👉🏻👉🏻👉🏻 ${req.originalUrl} \n\n ${err.stack}  \n ❌❌❌❌❌❌`)

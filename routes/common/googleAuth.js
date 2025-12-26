@@ -49,7 +49,7 @@ googleAuth.post('/', rateLimitter, asyncFun (async (req, res) => {
     })
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ url: consentUrl }))
+    return res.status(200).send(await cryptojs.encrypt({ url: consentUrl }))
 }))
 // @METHOD: GET
 // @ROUTE: /api/googlAuth/callback
@@ -67,7 +67,7 @@ googleAuth.get('/callback', rateLimitter, async (req, res) => {
         const { code, error } = req.query
     
         // redirect to home page
-        if(!code || error) return res.redirect(`${loginUrl}?err=${encodeURIComponent(cryptojs.encryptObj("Something Went Wrong! Try Again"))}`)
+        if(!code || error) return res.redirect(`${loginUrl}?err=${encodeURIComponent(cryptojs.encrypt("Something Went Wrong! Try Again"))}`)
 
         // create redirect url
         const redirect = process.env.NODE_ENV === "staging" ? `${req.protocol}://${req.hostname}/api/googleAuth/callback` : redirectUrl;
@@ -83,7 +83,7 @@ googleAuth.get('/callback', rateLimitter, async (req, res) => {
     
         // get access token
         const accessToken = auth2Client.credentials.access_token
-        if(!accessToken) return res.redirect(`${loginUrl}?err=${encodeURIComponent(cryptojs.encryptObj("Something Went Wrong! Please Try Again"))}`)
+        if(!accessToken) return res.redirect(`${loginUrl}?err=${encodeURIComponent(await cryptojs.encrypt("Something Went Wrong! Please Try Again"))}`)
 
         // get user
         const result = await getUserData(accessToken)
@@ -95,13 +95,13 @@ googleAuth.get('/callback', rateLimitter, async (req, res) => {
         if(!member) {
             member = await mongoFunctions.findOne("Admin", { email: result.email }) // in admins
         }
-        if(member && member.status === "BLOCKED") return res.redirect(`${loginUrl}?err=${encodeURIComponent(cryptojs.encryptObj("You Are Not Allowed To Process Current Request! Contact Admin"))}`)
+        if(member && member.status === "BLOCKED") return res.redirect(`${loginUrl}?err=${encodeURIComponent(await cryptojs.encrypt("You Are Not Allowed To Process Current Request! Contact Admin"))}`)
 
         // Register User || Login member(Admin/User)
         if(!member) {
             // -- user registration --
             // check admin controls
-            if(member && member.status === "ENABLE") return res.redirect(`${loginUrl}?err=${encodeURIComponent(cryptojs.encryptObj("Admin Has Disabled User Registration. Please Try Again After Some TIme"))}`)
+            if(member && member.status === "ENABLE") return res.redirect(`${loginUrl}?err=${encodeURIComponent(await cryptojs.encrypt("Admin Has Disabled User Registration. Please Try Again After Some TIme"))}`)
                 const merchantFee = {type:"FLAT", value:0} // default merchant fee
 
             // create balances from admin controls
@@ -110,7 +110,7 @@ googleAuth.get('/callback', rateLimitter, async (req, res) => {
 
             // create user data
             const userData = {
-                userId: 'CPG'+cryptojs.generateRandomString(),
+                userId: 'CPG'+await cryptojs.generateRandomString(),
                 email: result.email,
                 balances,
                 password: "0",
@@ -125,7 +125,7 @@ googleAuth.get('/callback', rateLimitter, async (req, res) => {
             // -- member login --
             if(!member.isAdmin) {
                 // check admin controls
-                if(adminControls.login !== "ENABLE") return res.redirect(`${loginUrl}?err=${encodeURIComponent(cryptojs.encryptObj("Admin Has Disabled Login. Please Try Again After Some TIme"))}`)
+                if(adminControls.login !== "ENABLE") return res.redirect(`${loginUrl}?err=${encodeURIComponent(cryptojs.encrypt("Admin Has Disabled Login. Please Try Again After Some TIme"))}`)
             }
 
             // check google auth in member
@@ -149,10 +149,10 @@ googleAuth.get('/callback', rateLimitter, async (req, res) => {
         const jwtToken = jwt.sign(member)
     
         // redirect to app url
-        return res.redirect(`${loginUrl}?data=${encodeURIComponent(cryptojs.encryptObj(jwtToken))}`)
+        return res.redirect(`${loginUrl}?data=${encodeURIComponent(cryptojs.encrypt(jwtToken))}`)
     }catch(err) {
         alertDev(err)
-        return res.redirect(`${appUrl}/login?err=${encodeURIComponent(cryptojs.encryptObj(err.message))}`)
+        return res.redirect(`${appUrl}/login?err=${encodeURIComponent(cryptojs.encrypt(err.message))}`)
     }
 })
 

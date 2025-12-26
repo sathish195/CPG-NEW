@@ -11,10 +11,9 @@ module.exports = async (req, res, next) => {
         const member = await redis.hGet(key, req.member.email, collection, { email: req.member.email })
         if(!member) return res.status(400).send("No Account Found With Your Email. Please Re-Login And Try Again!")
         if(member.status !== "ACTIVE") return res.status(401).send("Something Went Wrong! Contact Admin")
-
-        // assign to req.member
+            // assign to req.member
         req.member = member
-
+        
         next()
     }catch(err) {
         telegram.alertDev(`❌❌❌❌❌❌ \n err in route CPG 👉🏻👉🏻👉🏻 ${req.originalUrl} \n\n ${err.stack}  \n ❌❌❌❌❌❌`)

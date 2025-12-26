@@ -13,7 +13,7 @@ const getAdminControls = async () => {
         const adminControlsData = {
             coins: [
                 {
-                    coinId: cryptojs.generateRandomString(),
+                    coinId:await cryptojs.generateRandomString(),
                     coinName: "bitcoin",
                     coinTicker: "BTC",
                     coinStatus: "ENABLE",
@@ -32,7 +32,7 @@ const getAdminControls = async () => {
                     },
                 },
                 {
-                    coinId: cryptojs.generateRandomString(),
+                    coinId:await cryptojs.generateRandomString(),
                     coinName: "usdt",
                     coinTicker: "USDT",
                     coinStatus: "ENABLE",
@@ -51,7 +51,7 @@ const getAdminControls = async () => {
                     },
                 },
                 {
-                    coinId: cryptojs.generateRandomString(),
+                    coinId:await cryptojs.generateRandomString(),
                     coinName: "usdc",
                     coinTicker: "USDC",
                     coinStatus: "ENABLE",

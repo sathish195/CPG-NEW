@@ -17,6 +17,7 @@ const tfa = require('speakeasy')
 const controllers = require('../../helpers/controllers')
 const moment = require('moment')
 const slowDownLimitter = require('../../helpers/slowDownLimitter')
+const { log } = require('winston')
 
 const member = express.Router()
 
@@ -35,7 +36,8 @@ member.post('/login', slowDownLimitter, rateLimitter, recaptcha, asyncFun (async
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
+    console.log("payload login -->", payload)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -69,7 +71,7 @@ member.post('/login', slowDownLimitter, rateLimitter, recaptcha, asyncFun (async
          await redis.setEx(`cpg-login-otp-${member.email}`, '123456', '180')
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: member.tfaStatus === "ENABLE" ? "Proceed To Verify 2FA Code" : "OTP Sent To Email", email: member.email, tfaStatus: member.tfaStatus }))
+    return res.status(200).send(await cryptojs.encrypt({ message: member.tfaStatus === "ENABLE" ? "Proceed To Verify 2FA Code" : "OTP Sent To Email", email: member.email, tfaStatus: member.tfaStatus }))
 }))
 
 // @METHOD: POST
@@ -84,7 +86,7 @@ member.post('/verifyOtp_login', slowDownLimitter, rateLimitter, asyncFun (async 
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -142,7 +144,7 @@ member.post('/verifyOtp_login', slowDownLimitter, rateLimitter, asyncFun (async 
     const jwtToken = jwt.sign(member)
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj(jwtToken))
+    return res.status(200).send(await cryptojs.encrypt(jwtToken))
 }))
 
 // @METHOD: POST
@@ -157,7 +159,7 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -233,11 +235,11 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
         }
 
         // send encrypted response
-        return res.status(200).send(cryptojs.encryptObj(jwtToken))
+        return res.status(200).send(await cryptojs.encrypt(jwtToken))
     }
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "Code Verified Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Code Verified Successfully" }))
 
 }))
 
@@ -250,7 +252,7 @@ member.post('/resendOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
     console.log("payload -->", payload)
@@ -279,7 +281,7 @@ member.post('/resendOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
     await redis.setEx(`cpg-${payload.key}-otp-${member.email}`, '123456', '180')
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "OTP Sent To Email" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "OTP Sent To Email" }))
 }))
 
 // @METHOD: POST
@@ -291,7 +293,7 @@ member.post('/forgot', slowDownLimitter, rateLimitter, recaptcha, asyncFun (asyn
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -314,7 +316,7 @@ member.post('/forgot', slowDownLimitter, rateLimitter, recaptcha, asyncFun (asyn
     if(member.tfaStatus !== "ENABLE") await redis.setEx(`cpg-forgot-otp-${member.email}`, '123456', '180')
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: member.tfaStatus !== "ENABLE" ? "OTP Sent To Email" : "Proceed To Verify 2FA Code", tfaStatus: member.tfaStatus }))
+    return res.status(200).send(await cryptojs.encrypt({ message: member.tfaStatus !== "ENABLE" ? "OTP Sent To Email" : "Proceed To Verify 2FA Code", tfaStatus: member.tfaStatus }))
 }))
 
 // @METHOD: POST
@@ -326,7 +328,7 @@ member.post('/reset', slowDownLimitter, rateLimitter, asyncFun (async (req, res)
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -392,7 +394,7 @@ member.post('/reset', slowDownLimitter, rateLimitter, asyncFun (async (req, res)
     await redis.hSet(key, member.email, JSON.stringify(updatedMember))
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "Reset Password Successful" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Reset Password Successful" }))
 }))
 
 // @METHOD: POST
@@ -422,7 +424,7 @@ member.post('/tfa', auth, authMember, slowDownLimitter, rateLimitter, asyncFun (
     await redis.hSet(key, member.email, JSON.stringify(updatedMember))
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ url: secret.otpauth_url }))
+    return res.status(200).send(await cryptojs.encrypt({ url: secret.otpauth_url }))
 }))
 
 // @METHOD: POST
@@ -441,7 +443,7 @@ member.post('/verifyTfa', auth, authMember, slowDownLimitter, rateLimitter, asyn
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -468,7 +470,7 @@ member.post('/verifyTfa', auth, authMember, slowDownLimitter, rateLimitter, asyn
     await redis.hSet(key, member.email, JSON.stringify(updatedMember))
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "2FA Enabled Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "2FA Enabled Successfully" }))
 }))
 
 // @METHOD: POST
@@ -487,7 +489,7 @@ member.post('/disableTfa', auth, authMember, slowDownLimitter, rateLimitter, asy
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -522,7 +524,7 @@ member.post('/disableTfa', auth, authMember, slowDownLimitter, rateLimitter, asy
     await redis.delete(`cpg-tfa-otp-${member.email}`)
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "2FA Disabled Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "2FA Disabled Successfully" }))
 }))
 
 // @METHOD: POST
@@ -539,7 +541,7 @@ member.post('/changePassword', auth, authMember, slowDownLimitter, rateLimitter,
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -597,7 +599,7 @@ member.post('/changePassword', auth, authMember, slowDownLimitter, rateLimitter,
     await redis.hSet(key, member.email, JSON.stringify(updatedMember))
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "Password Changed Successfully" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Password Changed Successfully" }))
 }))
 
 // @METHOD: POST
@@ -673,13 +675,14 @@ member.post('/getBalances', auth, authMember, slowDownLimitter, rateLimitter, as
         }) : defaultBalances
     }
     console.log("balances -->",balances)
-    return res.status(200).send(cryptojs.encryptObj(balances))
+    return res.status(200).send(await cryptojs.encrypt(balances))
 }))
 
 // @METHOD: POST
 // @ROUTE: /api/member/getStats
 // @DESC: To get stats for dashboard
 member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
+    console.log("get stats called -->");
     // get stats
     const totalInvMatch = { $match: { type: "DEPOSIT" } }
     const tdyInvMatch = { $match: { type: "DEPOSIT", createdAt: { $gte: controllers.getTodayStart(), $lt: controllers.getTmrwStart() } } }
@@ -702,6 +705,7 @@ member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, async
         }
     ]
     const result = await mongoFunctions.aggregate("Transaction", pipeline)
+    log("result -->", result)
     const {
         totalInvoices,
         todayInvoices,
@@ -716,7 +720,7 @@ member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, async
         failedInvoices: failedInvoices[0]?.count || 0
     }
 
-    return res.status(200).send(cryptojs.encryptObj(stats))
+    return res.status(200).send(await cryptojs.encrypt(stats))
 }))
 
 // @METHOD: POST
@@ -734,7 +738,7 @@ member.post('/getTickets', auth, authMember, slowDownLimitter, rateLimitter, asy
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -756,7 +760,7 @@ member.post('/getTickets', auth, authMember, slowDownLimitter, rateLimitter, asy
     const tickets = await mongoFunctions.find("Ticket", filter, options)
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj(tickets))
+    return res.status(200).send(await cryptojs.encrypt(tickets))
 }))
 
 // @METHOD: POST
@@ -779,7 +783,7 @@ member.post('/getTickets/:search', auth, authMember, slowDownLimitter, rateLimit
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -801,7 +805,7 @@ member.post('/getTickets/:search', auth, authMember, slowDownLimitter, rateLimit
     if(!tickets || !tickets.length) return res.status(400).send("No Ticket Found. Please Try Again")
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj(tickets))
+    return res.status(200).send(await cryptojs.encrypt(tickets))
 }))
 
 // @METHOD: POST
@@ -816,7 +820,7 @@ member.post('/getTransactions', auth, authMember, slowDownLimitter, rateLimitter
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -854,7 +858,7 @@ member.post('/getTransactions', auth, authMember, slowDownLimitter, rateLimitter
     const transactions = await mongoFunctions.find("Transaction", filter, options)
     console.log("payload, filter, trasactions length -->", payload, filter, transactions.length)
 
-    return res.status(200).send(cryptojs.encryptObj(transactions))
+    return res.status(200).send(cryptojs.encrypt(transactions))
 }))
 
 // @METHOD: POST
@@ -865,7 +869,7 @@ member.post("/getControls", slowDownLimitter, rateLimitter, asyncFun (async (req
     const adminControls = await controllers.getAdminControls()
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj(adminControls))
+    return res.status(200).send(cryptojs.encrypt(adminControls))
 }))
 
 // @METHOD: POST
@@ -877,7 +881,7 @@ member.post('/getChains', auth, authMember, slowDownLimitter, rateLimitter, asyn
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -894,8 +898,17 @@ member.post('/getChains', auth, authMember, slowDownLimitter, rateLimitter, asyn
     const currentCoin = coin.coins[0]
     if(!currentCoin) return res.status(400).send("No Coin Found With Given Coin Id");
     const chains = currentCoin?.chains || []
+    console.log("chains -->", chains)
 
-    return res.status(200).send(cryptojs.encryptObj(chains))
+    const enc =await cryptojs.encrypt(chains)
+    log("enc -->", enc)
+
+    const dec =await cryptojs.decrypt(enc)
+    log("dec -->", dec)
+
+    // return res.status(200).send(cryptojs.encryptObj(chains))
+    return res.status(200).send(chains)
+
 }))
 
 module.exports = member

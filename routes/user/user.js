@@ -23,7 +23,7 @@ const user = express.Router()
 // generate and get app key
 async function getAppKey() {
     // generate app key
-    const appKey = cryptojs.generateRandomString(15)
+    const appKey =await cryptojs.generateRandomString(15)
 
     // check key in db
     let appKeyExists = await mongoFunctions.findOne("User", { 'keys.appKey': appKey })
@@ -84,7 +84,7 @@ user.post('/register', slowDownLimitter, rateLimitter, recaptcha, asyncFun (asyn
     const merchantFee = {type:"FLAT", value:0} 
     // const merchantFee = {type : "PERCENTAGE", value : 0}
     const userData = {
-        userId: 'CPG'+cryptojs.generateRandomString(),
+        userId: 'CPG'+await cryptojs.generateRandomString(),
         ...payload,
         status: "PENDING",
         balances,
@@ -373,14 +373,14 @@ user.post('/riseTicket', auth, authUser, slowDownLimitter, rateLimitter, asyncFu
 
     // create ticket
     const ticketData = {
-        ticketId: cryptojs.generateRandomString(),
+        ticketId:await cryptojs.generateRandomString(),
         userId: user.userId,
         userName: user.userName,
         email: user.email,
         // title: payload.title,
         messages: [
             {
-                msgId: cryptojs.generateRandomString(),
+                msgId:await cryptojs.generateRandomString(),
                 personId: user.userId,
                 personName: user.userName,
                 personEmail: user.email,
@@ -431,7 +431,7 @@ user.post('/replyTicket', auth, authUser, slowDownLimitter, rateLimitter, asyncF
     const update = {
         $push: {
             messages: {
-                msgId: cryptojs.generateRandomString(),
+                msgId:await cryptojs.generateRandomString(),
                 personId: user.userId,
                 personName: user.userName,
                 personEmail: user.email,
@@ -450,7 +450,7 @@ user.post('/replyTicket', auth, authUser, slowDownLimitter, rateLimitter, asyncF
 	status --> ${updatedTicket.status} ${updatedTicket.status === "OPEN" ? '🛑' : '🟢'}`)
 
     // send encrypted response
-    return res.status(200).send(cryptojs.encryptObj({ message: "Message Sent Successfully", ticket: updatedTicket }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Message Sent Successfully", ticket: updatedTicket }))
 }))
 
 // @METHOD: POST
@@ -467,7 +467,7 @@ user.post('/updateSettlement', auth, authUser, slowDownLimitter, rateLimitter, a
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty");
     console.log("payload -->", payload)
@@ -600,7 +600,7 @@ user.post('/initWithdraw', auth, authUser, slowDownLimitter, rateLimitter, async
 
     // create transaction
     const transactionData = {
-        tId: cryptojs.generateRandomString(15),
+        tId:await cryptojs.generateRandomString(15),
         type: "WITHDRAWAL",
         amount: requestedAmount,
         address: payload.address,
@@ -859,7 +859,7 @@ console.log(currentChain,"----->hash_dec");
     // const secret_key = cryptojs.generateRandomString(10)
     // console.log(secret_key,"------s-->");
     const transactionData = {
-        tId: cryptojs.generateRandomString(15),
+        tId:await cryptojs.generateRandomString(15),
         invNo: hash_dec.invNo,
         amount: finalAmount,
         address:addressObj.address,
