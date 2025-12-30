@@ -6,7 +6,6 @@ const secretKey = process.env.CAPTCHA_SECRET_KEY;
 
 module.exports = async function (req, res, next) {
     try {
-        console.log(req.headers);
         // validate captha value
         if (!req.headers['x-captcha-token'] || req.headers['x-captcha-token'] === undefined) return res.status(401).send('Invalid Captcha ..!');
         const captchaRdesult = req.headers['x-captcha-token']
