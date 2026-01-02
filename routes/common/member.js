@@ -860,7 +860,7 @@ member.post('/getTransactions', auth, authMember, slowDownLimitter, rateLimitter
     console.log("payload, filter, trasactions length -->", payload, filter, transactions.length)
     // return res.status(200).send(transactions)
 
-    return res.status(200).send(cryptojs.encrypt(transactions))
+    return res.status(200).send(await cryptojs.encrypt(transactions))
 }))
 
 // @METHOD: POST
