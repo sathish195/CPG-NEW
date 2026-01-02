@@ -858,9 +858,9 @@ member.post('/getTransactions', auth, authMember, slowDownLimitter, rateLimitter
     const transactions = await mongoFunctions.find("Transaction", filter, options)
     console.log(transactions);
     console.log("payload, filter, trasactions length -->", payload, filter, transactions.length)
-    return res.status(200).send(transactions)
+    // return res.status(200).send(transactions)
 
-    // return res.status(200).send(cryptojs.encrypt(transactions))
+    return res.status(200).send(cryptojs.encrypt(transactions))
 }))
 
 // @METHOD: POST
