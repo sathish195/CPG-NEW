@@ -107,7 +107,6 @@ googleAuth.get('/callback', rateLimitter, async (req, res) => {
             // create balances from admin controls
             const coins = adminControls.coins
             const balances = controllers.getDefaultBalances(coins)
-
             // create user data
             const userData = {
                 userId: 'CPG'+await cryptojs.generateRandomString(),

@@ -856,6 +856,7 @@ member.post('/getTransactions', auth, authMember, slowDownLimitter, rateLimitter
         select: member.isAdmin ? 'tId invNo userId userName email type status coinName coinTicker chainName amount status fee address comment createdAt' : 'tId invNo type status coinName coinTicker chainName amount status fee address comment createdAt'
     }
     const transactions = await mongoFunctions.find("Transaction", filter, options)
+    console.log(transactions);
     console.log("payload, filter, trasactions length -->", payload, filter, transactions.length)
 
     return res.status(200).send(cryptojs.encrypt(transactions))
