@@ -53,10 +53,11 @@ admin.post('/register', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
 
     // create admin
     let adminData = {
-        adminId: 'CPG'+ cryptojs.generateRandomString(),
+        adminId: 'CPG'+await cryptojs.generateRandomString(),
         ...payload,
         status: "PENDING",
     }
+    console.log(adminData,"adminData------->");
     const admin = await mongoFunctions.create("Admin", adminData)
 
     // send otp
