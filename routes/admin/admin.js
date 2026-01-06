@@ -885,7 +885,7 @@ admin.post('/updateTicket', auth, authAdmin, slowDownLimitter, rateLimitter, asy
     if(payload.message) {
         update.$push = {
             messages: {
-                msgId: cryptojs.generateRandomString(),
+                msgId:await cryptojs.generateRandomString(),
                 personId: admin.adminId,
                 personName: admin.userName,
                 personEmail: admin.email,
@@ -918,7 +918,7 @@ admin.post('/set_up', asyncFun (async (req, res) => {
 
     // create admin
     const adminData = {
-        adminId: 'CPG'+cryptojs.generateRandomString(),
+        adminId: 'CPG'+await cryptojs.generateRandomString(),
         userName: "cpgadmin",
         email: "cpgadmin@gmail.com",
         password: "Admin@123",

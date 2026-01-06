@@ -731,7 +731,7 @@ module.exports = {
     // To initiate withdraw
     initiateWithdraw: (data) => {
         const schema = Joi.object({
-            coin: Joi.string().pattern(/^[a-zA-Z0-9]+$/).min(7).max(15).required().messages({
+            coin: Joi.string().pattern(/^[a-zA-Z0-9]+$/).min(3).max(15).required().messages({
                 'string.pattern.base': "Coin ID Should Not Contain Any Special Characters"
             }),
             amount: Joi.number().greater(0).required(),
