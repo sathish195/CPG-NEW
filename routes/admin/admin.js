@@ -633,11 +633,12 @@ admin.post('/updateCoin', auth, authAdmin, slowDownLimitter, rateLimitter, async
 // @DESC: To add new chain in controls
 admin.post('/addChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get admin
-    console.log(req,"req------->");
-    console.log(req.admin,"req------->");
-
-
+    // console.log(req,"req------->");
+    
+    
     const { admin } = req
+    console.log(req.admin,"req------->");
+    console.log(admin,"admin------->");
 
     // admin validations
     if(admin?.adminType !== "1") return res.status(401).send("You Are Not Allowed To Add New Chain");
