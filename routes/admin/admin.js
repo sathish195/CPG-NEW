@@ -446,8 +446,9 @@ admin.post('/getCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
 // @DESC: To add new coin to admin controls and user
 admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get admin
-    console.log(req);
     const { admin } = req
+    console.log(req.admin,"req------->");
+    console.log(admin,"admin------->");
 
 
 
