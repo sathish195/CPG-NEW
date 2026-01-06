@@ -446,7 +446,9 @@ admin.post('/getCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
 // @DESC: To add new coin to admin controls and user
 admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get admin
-    const { admin } = req
+    // console.log(req);
+    const { admin } = req.admin
+
 
     // admin validations
     if(admin.adminType !== "1") return res.status(401).send("You Are Not Allowed To Update Admin Controls")
