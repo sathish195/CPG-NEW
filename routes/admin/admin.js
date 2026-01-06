@@ -464,6 +464,7 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
     // validate payload
     const { error } = validations.addCoin(payload)
     if(error) return res.status(400).send(error.details[0].message);
+    console.log(1,"payload------->");
 
     // get admin controls
     let adminControls = await controllers.getAdminControls()
@@ -474,6 +475,7 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
     if(coinExists) return res.status(400).send("Coin Name Already Exists")
     coinExists = (allCoins.filter(coin => coin.coinTicker === payload.coinTicker))[0]
     if(coinExists) return res.status(400).send("Coin Ticker Already Exists")
+        console.log(2,"payload------->");
     
     // update admin controls
     const newCoin = {
@@ -482,6 +484,7 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
     }
     adminControls = await mongoFunctions.findOneAndUpdate("AdminControls", { }, { $push: { coins: newCoin } }, { new: true })
     await redis.hSet("cpg_admin", "controls", JSON.stringify(adminControls)) // update in redis
+    console.log(3,"payload------->");
     
     // update users
     const newBalance = {
@@ -490,6 +493,7 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
     }
     await mongoFunctions.updateMany("User", { }, { $push: { balances: newBalance } })
     await redis.delete("cpg_users") // remove users from redis
+    console.log(3,"payload------->");
 
     // update admin
     const updatedAdmin = await mongoFunctions.findOneAndUpdate("Admin", { email: admin.email }, { ip: payload.ip, browserId: payload.browserId }, { new: true })
