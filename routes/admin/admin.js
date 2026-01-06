@@ -483,10 +483,11 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
     
     // update admin controls
     const newCoin = {
-        coinId: cryptojs.generateRandomString(),
+        coinId:await cryptojs.generateRandomString(),
         ..._.pick(payload, ['coinName', 'coinTicker', 'coinStatus', 'note', 'precision', 'withdraw', 'deposit', 'settlementMin', 'coinLogo']),
     }
     adminControls = await mongoFunctions.findOneAndUpdate("AdminControls", { }, { $push: { coins: newCoin } }, { new: true })
+    console.log(adminControls,"adminControls------->");
     await redis.hSet("cpg_admin", "controls", JSON.stringify(adminControls)) // update in redis
     console.log(3,"payload------->");
     
