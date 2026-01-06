@@ -498,6 +498,7 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
     // update admin
     const updatedAdmin = await mongoFunctions.findOneAndUpdate("Admin", { email: admin.email }, { ip: payload.ip, browserId: payload.browserId }, { new: true })
     console.log(updatedAdmin,"payload------->");
+    console.log(admin,"payload------->");
 
     await redis.hSet("cpg_admins", admin.email, JSON.stringify(updatedAdmin)) // update in redis
     console.log(4,"payload------->");
