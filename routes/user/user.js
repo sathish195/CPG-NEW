@@ -576,7 +576,7 @@ user.post('/initWithdraw', auth, authUser, slowDownLimitter, rateLimitter, async
     // check balance
     const userBalances = user.balances
     console.log(userBalances,"------------------->");
-    const currentCoinBalance = (userBalances.filter(balance => balance.coinName.toLowerCase() === payload.coin))[0].toLowerCase()
+    const currentCoinBalance = (userBalances.filter(balance => balance.coinName === payload.coin))[0]
     console.log(currentCoinBalance,"------------------->");
     if(!currentCoinBalance) return res.status(400).send("No Such Coin Found In Your Account To Inititate Withdraw") // check current coin in balances
     if(currentCoinBalance?.balance < requestedAmount) return res.status(400).send("Insufficient Balance") // balance of coin in current coin balance
