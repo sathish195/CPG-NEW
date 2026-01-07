@@ -653,6 +653,7 @@ user.post('/withdraw', auth, authUser, slowDownLimitter, rateLimitter, asyncFun 
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
     // validate payload
+    console.log(payload,"withdraw payload");
     const { error } = validations.withdrawBalance(payload)
     if(error) return res.status(400).send(error.details[0].message)
 
