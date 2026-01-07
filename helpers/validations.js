@@ -386,17 +386,18 @@ module.exports = {
     // To get users list
     getUsers: (data) => {
         const schema = Joi.object({
-            skip: Joi.number().integer().positive().allow(0).required(),
-            limit: Joi.number().integer().greater(0).required(),
-            filters: Joi.object({
-            search: Joi.string().min(3).max(30).required().allow('').messages({
-            })
-            }).required()
-        })
-
+          skip: Joi.number().integer().positive().allow(0).required(),
+          limit: Joi.number().integer().greater(0).required(),
+          filters: Joi.object({
+            search: Joi.string().min(3).max(30).allow('').optional()
+          }).allow('').messages({
+            'alternatives.match': "Invalid Id or Email"
+          })
+        }).required()
+      
         return schema.validate(data)
-    },
-
+      }
+      ,
     // To get transactions list
     getTransactions: (data) => {
         const schema = Joi.object({
@@ -723,7 +724,7 @@ module.exports = {
     // To initiate withdraw
     initiateWithdraw: (data) => {
         const schema = Joi.object({
-            coin: Joi.string().pattern(/^[a-zA-Z0-9]+$/).min(3).max(15).required().messages({
+            coin: Joi.string().pattern(/^[a-zA-Z0-9]+$/).min(7).max(15).required().messages({
                 'string.pattern.base': "Coin ID Should Not Contain Any Special Characters"
             }),
             amount: Joi.number().greater(0).required(),
