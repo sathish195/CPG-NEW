@@ -117,6 +117,7 @@ admin.post('/getUsers', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     const filter = {}
     const filters = payload.filters
     const { search } = filters
+    console.log(search,"search------->");
     if(search) {
         // filter['$or'] = [{ userId: search.toUpperCase() }, { email: search.toLowerCase() }]
         
