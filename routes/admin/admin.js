@@ -118,18 +118,14 @@ admin.post('/getUsers', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     const filters = payload.filters
     const { search } = filters
     console.log(search,"search------->");
+    // filter['$or'] = [{ userId: search.toUpperCase() }, { email: search.toLowerCase() }]
     if(search) {
-        // filter['$or'] = [{ userId: search.toUpperCase() }, { email: search.toLowerCase() }]
-        
-
         filter['$or'] = [
             { userId: { $regex: `^${search}`, $options: 'i' } },
             { email: { $regex: `^${search}`, $options: 'i' } }
           ]
-
     }
     console.log(payload,"payload------->");
-
     console.log(filter,"search------->");
     const options = {
         sort: { createdAt: -1 },

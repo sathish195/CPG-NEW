@@ -389,16 +389,8 @@ module.exports = {
             skip: Joi.number().integer().positive().allow(0).required(),
             limit: Joi.number().integer().greater(0).required(),
             filters: Joi.object({
-                search: Joi.alternatives().try(
-                    Joi.string().pattern(/^[a-zA-Z0-9]+$/).min(7).max(30).required().allow('').messages({
-                        'string.pattern.base': "User ID Should Not Contain Any Special Characters"
-                    }),
-                    Joi.string().email().regex(/^[a-z0-9._%+-]+@[a-z.-]+\.[a-z]{2,}$/).min(5).max(35).required().allow('').messages({
-                        'string.pattern.base': 'Email Should Not Contain Special Characters And Capital Case Letters'
-                    })
-                ).allow('').messages({
-                    'alternatives.match': "Invalid Id or Email"
-                })
+            search: Joi.string().min(3).max(30).required().allow('').messages({
+            })
             }).required()
         })
 
