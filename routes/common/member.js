@@ -213,10 +213,24 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
     // update member
     const collection = member.isAdmin ? "Admin" : "User"
     const update = { ip: payload.ip, browserId: payload.browserId }
-    if(payload.key === "register" || member && member.balance.length === 0) {
-        update.status = "ACTIVE";
-        if(!member.isAdmin) update.balances = controllers.getDefaultBalances(adminControls.coins);
-    }
+    // if(payload.key === "register" || member && member.balance.length === 0) {
+    //     update.status = "ACTIVE";
+    //     if(!member.isAdmin) update.balances = controllers.getDefaultBalances(adminControls.coins);
+    // }
+
+
+    if (
+        payload?.key === "register" ||
+        (Array.isArray(member?.balance) && member.balance.length === 0)
+      ) {
+          update.status = "ACTIVE";
+          if (!member?.isAdmin) {
+              update.balances = controllers.getDefaultBalances(adminControls.coins);
+          }
+      }
+      
+
+
     const updatedMember = await mongoFunctions.findOneAndUpdate(collection, { email: member.email }, update, { new: true })
 
     // update member in redis
