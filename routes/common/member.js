@@ -213,19 +213,10 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
     // update member
     const collection = member.isAdmin ? "Admin" : "User"
     const update = { ip: payload.ip, browserId: payload.browserId }
-    // if(member.balance === "register") {
-    //     update.status = "ACTIVE";
-    //     if(!member.isAdmin) update.balances = controllers.getDefaultBalances(adminControls.coins);
-    // }
-
-    if ((Array.isArray(member.balance) && member.balance.length === 0) || payload.key === "register") {
+    if(payload.key === "register" || member && member.balance.length === 0) {
         update.status = "ACTIVE";
-        if (!member.isAdmin) {
-            update.balances = controllers.getDefaultBalances(adminControls.coins);
-        }
+        if(!member.isAdmin) update.balances = controllers.getDefaultBalances(adminControls.coins);
     }
-
-
     const updatedMember = await mongoFunctions.findOneAndUpdate(collection, { email: member.email }, update, { new: true })
 
     // update member in redis
@@ -423,7 +414,6 @@ member.post('/tfa', auth, authMember, slowDownLimitter, rateLimitter, asyncFun (
     }
     // const { secret, qr } = tfa.generateSecret(options)
     const secret = tfa.generateSecret(options)
-    console.log(secret,"------->");
 
     // update member with tfaKey & tfaStatus
     const tfaKey = tigerBalm.encrypt(secret.base32)
@@ -435,7 +425,9 @@ member.post('/tfa', auth, authMember, slowDownLimitter, rateLimitter, asyncFun (
     await redis.hSet(key, member.email, JSON.stringify(updatedMember))
 
     // send encrypted response
+    // return res.status(200).send(await cryptojs.encrypt({ url: secret.otpauth_url }))
     return res.status(200).send(await cryptojs.encrypt({secret_key :secret.base32 , url: secret.otpauth_url }))
+
 }))
 
 // @METHOD: POST
