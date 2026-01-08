@@ -250,8 +250,8 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
         // }
 
         // send encrypted response
-        return res.status(200).send(await cryptojs.encrypt(jwtToken))
     }
+    return res.status(200).send(await cryptojs.encrypt(jwtToken))
 
     // send encrypted response
     return res.status(200).send(await cryptojs.encrypt({ message: "Code Verified Successfully" }))
