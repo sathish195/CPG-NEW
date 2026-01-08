@@ -161,7 +161,6 @@ admin.post('/getUsers/:search', auth, authAdmin, slowDownLimitter, rateLimitter,
         select: 'dateOfRegister userId userName email status tfaStatus balances keys referralStatus transactionStatus withdrawStatus merchantFee createdAt'
     }
     const user = await mongoFunctions.findOne("User", filter, options)
-
     if(!user) return res.status(400).send("No User Found. Please Try Again");
     let keys = user.keys
     if(keys && keys.length) {
@@ -177,7 +176,6 @@ admin.post('/getUsers/:search', auth, authAdmin, slowDownLimitter, rateLimitter,
     }else {
         keys = []
     }
-    let adminControls = await controllers.getAdminControls()
 
     // send encrypted response
     return res.status(200).send(await cryptojs.encrypt(user))
