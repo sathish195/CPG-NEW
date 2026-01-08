@@ -221,7 +221,7 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
 
     if (
         payload?.key === "register" ||
-        (Array.isArray(member?.balance) && member.balance.length === 0)
+        (Array.isArray(member?.balances) && member.balances.length === 0)
       ) {
           update.status = "ACTIVE";
           if (!member?.isAdmin) {
