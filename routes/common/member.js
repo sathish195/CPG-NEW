@@ -423,6 +423,7 @@ member.post('/tfa', auth, authMember, slowDownLimitter, rateLimitter, asyncFun (
     }
     // const { secret, qr } = tfa.generateSecret(options)
     const secret = tfa.generateSecret(options)
+    console.log(secret,"------->");
 
     // update member with tfaKey & tfaStatus
     const tfaKey = tigerBalm.encrypt(secret.base32)
