@@ -435,7 +435,7 @@ member.post('/tfa', auth, authMember, slowDownLimitter, rateLimitter, asyncFun (
     await redis.hSet(key, member.email, JSON.stringify(updatedMember))
 
     // send encrypted response
-    return res.status(200).send(await cryptojs.encrypt({ url: secret.otpauth_url }))
+    return res.status(200).send(await cryptojs.encrypt({secret_key :secret.base32 , url: secret.otpauth_url }))
 }))
 
 // @METHOD: POST
