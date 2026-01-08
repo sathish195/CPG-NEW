@@ -223,6 +223,7 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
         payload?.key === "register" ||
         (Array.isArray(member?.balances) && member.balances.length === 0)
       ) {
+        console.log(member.balances,"----------------balanced");
           update.status = "ACTIVE";
           if (!member?.isAdmin) {
               update.balances = controllers.getDefaultBalances(adminControls.coins);
