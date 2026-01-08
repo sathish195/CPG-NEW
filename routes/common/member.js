@@ -220,7 +220,7 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
 
 
     if (
-        payload?.key === "register" ||
+        payload.key === "register" ||
         (Array.isArray(member?.balances) && member.balances.length === 0)
       ) {
         console.log(member.balances,"----------------balanced");
