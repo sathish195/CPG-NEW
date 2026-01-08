@@ -175,7 +175,7 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
     }
     if(!member) return res.status(400).send("No Account Found With Given Email")
     if(member && member.status === "BLOCKED") return res.status(401).send("You Are Not Allowed To Process Current Request! Contact Admin")
-    if(member && payload.key !== "register" && member.status !== "ACTIVE") return res.status(401).send("Someting Went Wrong! Contact Admin")
+    // if(member && payload.key !== "register" && member.status !== "ACTIVE") return res.status(401).send("Someting Went Wrong! Contact Admin")
 
     // otp validations
     // if(payload.key === "register" || payload.key === "tfa") {
@@ -278,6 +278,7 @@ member.post('/resendOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
 
     // send otp
     console.log("redis key -->", `cpg-${payload.key}-otp-${member.email}`)
+
     await redis.setEx(`cpg-${payload.key}-otp-${member.email}`, '123456', '180')
 
     // send encrypted response
@@ -579,6 +580,7 @@ member.post('/changePassword', auth, authMember, slowDownLimitter, rateLimitter,
 
         // get otp
         const otp = await redis.get(`cpg-change-otp-${member.email}`)
+        console.log(otp);
         if(!otp) return res.status(400).send("OTP Expired. Please Try Resend OTP")
         if(otp !== payload.otp) return res.status(400).send("Incorrect OTP. Please Try Again")
 
