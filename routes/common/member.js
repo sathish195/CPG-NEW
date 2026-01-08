@@ -239,7 +239,7 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
     await redis.hSet(key, member.email, JSON.stringify(updatedMember))
 
     // create token
-    if(payload.key === "register" || payload.key === 'login') {
+    // if(payload.key === "register" || payload.key === 'login') {
         const jwtToken = jwt.sign(member)
 
         if(payload.key === 'register') {
@@ -247,7 +247,7 @@ member.post('/verifyOtp', slowDownLimitter, rateLimitter, asyncFun (async (req, 
             telegram.alertDev(`✅ New ${member.isAdmin ? 'admin' : 'user'} registered ✅ %0A
             email --> ${updatedMember.email} %0A
             ${member.isAdmin ? 'admin type --> ' + updatedMember.adminType : ''}`)
-        }
+        // }
 
         // send encrypted response
         return res.status(200).send(await cryptojs.encrypt(jwtToken))
