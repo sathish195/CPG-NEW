@@ -260,7 +260,7 @@ module.exports = {
     // To delete app key
     deleteAppKey: (data) => {
         const schema = Joi.object({
-            appKey: Joi.string().pattern(/^[A-Z0-9]+$/).min(15).max(20).required().messages({
+            appKey: Joi.string().pattern(/^[A-Z0-9]+$/).min(10).max(20).required().messages({
                 'string.pattern.base': "App Key Should Not Contain Special Characters",
             }),
             ip: Joi.string().ip({ version: ['ipv4', 'ipv6'] }).required().messages({
