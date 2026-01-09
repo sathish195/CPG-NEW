@@ -434,7 +434,7 @@ member.post('/tfa', auth, authMember, slowDownLimitter, rateLimitter, asyncFun (
     // update member with tfaKey & tfaStatus
     const tfaKey = tigerBalm.encrypt(secret.base32)
     const collection = req.member.isAdmin ? "Admin" : "User"
-    const updatedMember = await mongoFunctions.findOneAndUpdate(collection, { email: member.email }, { tfaKey, tfaStatus: "ACTIVE" }, { new: true })
+    const updatedMember = await mongoFunctions.findOneAndUpdate(collection, { email: member.email }, { tfaKey }, { new: true })
 
     // update member in redis
     const key = req.member.isAdmin ? "cpg_admins" : "cpg_users"
