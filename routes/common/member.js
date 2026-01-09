@@ -455,6 +455,7 @@ member.post('/verifyTfa', auth, authMember, slowDownLimitter, rateLimitter, asyn
     member = await mongoFunctions.findOne(member.isAdmin ? "Admin" : "User", { email: member.email })
     if(!member) return res.status(400).send("No Account Found With Given Email")
 
+
     // validate tfa status
     if(member.tfaStatus === "ENABLE") return res.status(400).send("2FA Status Has Already Enabled")
     // if(member.tfaStatus === "DISABLE") return res.status(400).send("Unable To Process. Please Try Again (or) Try After Re-Login")
@@ -471,7 +472,7 @@ member.post('/verifyTfa', auth, authMember, slowDownLimitter, rateLimitter, asyn
     // validate payload
     const { error } = validations.verifyTfa(payload)
     if(error) return res.status(400).send(error.details[0].message)
-
+console.log(member,"------member------");
     // verify tfa code
     const tfaKey = tigerBalm.decrypt(member.tfaKey)
     console.log(tfaKey,"-----tfaKey----");
@@ -536,7 +537,7 @@ member.post('/disableTfa', auth, authMember, slowDownLimitter, rateLimitter, asy
 
     // update tfa status of member
     const collection = member.isAdmin ? "Admin" : "User"
-    const updatedMember = await mongoFunctions.findOneAndUpdate(collection, { email: member.email }, { tfaKey: "0", tfaStatus: "DISABLE", ip: payload.ip, browserId: payload.browserId }, { new: true })
+    const updatedMember = await mongoFunctions.findOneAndUpdate(collection, { email: member.email }, { tfaStatus: "DISABLE", ip: payload.ip, browserId: payload.browserId }, { new: true })
 
     // update member in redis
     const key = member.isAdmin ? "cpg_admins" : "cpg_users"
