@@ -717,6 +717,7 @@ user.post('/generateHash', slowDownLimitter, rateLimitter, asyncFun (async (req,
 
     // app key validations
     const currentKey = user.keys.filter(key => key.appKey === appKey_enc)[0]
+    console.log(currentKey,"currentKey");
     if(!currentKey || !currentKey?.appId) return res.status(400).send("Invalid App Key");
     const appId = tigerBalm.decrypt(currentKey.appId)
     if(!appId || appId === 'tberror') return re.status(400).send("Invalid App Key. Please Generate New App Key")
