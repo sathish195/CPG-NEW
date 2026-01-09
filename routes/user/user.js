@@ -778,7 +778,9 @@ console.log(appIdData,"appIdData");
     }
     const secretKey = tigerBalm.decrypt(currentKey.secretKey)
     const hash =await cryptojs.encrypt(data, secretKey)
-console.log(hash,"generated hash");
+    const dhash =await cryptojs.decrypt(data, secretKey)
+
+console.log(dhash,"generated hash");
     return res.status(200).send({ hash })
 }))
 
