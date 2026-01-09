@@ -455,7 +455,7 @@ member.post('/verifyTfa', auth, authMember, slowDownLimitter, rateLimitter, asyn
 
     // validate tfa status
     if(member.tfaStatus === "ENABLE") return res.status(400).send("2FA Status Has Already Enabled")
-    if(member.tfaStatus === "DISABLE") return res.status(400).send("Unable To Process. Please Try Again (or) Try After Re-Login")
+    // if(member.tfaStatus === "DISABLE") return res.status(400).send("Unable To Process. Please Try Again (or) Try After Re-Login")
 
     // get enc
     const { error: payloadError } = validations.getEnc(req.body)
