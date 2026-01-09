@@ -451,7 +451,7 @@ member.post('/tfa', auth, authMember, slowDownLimitter, rateLimitter, asyncFun (
 // @DESC: To verify 2fa code to enable 2fa status for member
 member.post('/verifyTfa', auth, authMember, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get member
-    const { member } = req
+    let { member } = req
     member = await mongoFunctions.findOne(member.isAdmin ? "Admin" : "User", { email: member.email })
     if(!member) return res.status(400).send("No Account Found With Given Email")
 
