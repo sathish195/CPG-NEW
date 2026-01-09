@@ -13,7 +13,7 @@ const UserSchema = new mongoose.Schema({
     fcmToken: { type: String, required: this, default: "0" },
     status: { type: String, required: true, enum: { values: ["ACTIVE", "PENDING", "BLOCKED"], message: "${VALUE} is not supported" }, default: "PENDING" },
     tfaKey: { type: String, required: true, default: "0" },
-    tfaStatus: { type: String, required: true, enum: { values: ["ENABLE", "DISABLE", "ACTIVE"], message: "${VALUE} is not supported" }, default: "DISABLE" },
+    tfaStatus: { type: String, required: true, enum: { values: ["ENABLE", "DISABLE", "ACTIVE"], message: "${VALUE} is not supported" }, default: "PENDING" },
     referralId: { type: String, required: true, default: "0" },
     referralStatus: { type: String, required: true, enum: { values: ["ACTIVE", "PENDING"], message: "${VALUE} is not supported" }, default: "PENDING" },
     keys: {
