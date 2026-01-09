@@ -778,7 +778,7 @@ console.log(appIdData,"appIdData");
     }
     const secretKey = tigerBalm.decrypt(currentKey.secretKey)
     const hash =await cryptojs.encrypt(data, secretKey)
-
+console.log(hash,"generated hash");
     return res.status(200).send({ hash })
 }))
 
@@ -942,3 +942,4 @@ module.exports = user
 // 8mm 50
 // 7mm long 50
 // 10kg binding
+
