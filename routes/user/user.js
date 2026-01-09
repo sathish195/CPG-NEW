@@ -785,6 +785,8 @@ console.log(appIdData,"appIdData");
 user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get app key from headers
     const appKey = req.headers["x-app-key"]
+    console.log(appKey,"--------------------------------------------------------------->appKey");
+
     if(!appKey) return res.status(400).send("App Key Is Required");
 
     // encrypt apiKey
@@ -814,6 +816,7 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     // decrypt hash
     const secretKey = tigerBalm.decrypt(currentKey.secretKey)
     const hash_dec =await cryptojs.decrypt(payload.hash, secretKey)
+
     if(!hash_dec || hash_dec === 'tberror') return res.status(400).send("Invalid Hash");
 
     // hash key validations
