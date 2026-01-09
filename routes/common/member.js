@@ -472,6 +472,7 @@ member.post('/verifyTfa', auth, authMember, slowDownLimitter, rateLimitter, asyn
 
     // verify tfa code
     const tfaKey = tigerBalm.decrypt(member.tfaKey)
+    console.log(tfaKey,"-----tfaKey----");
     const tfaResult = tfa.totp.verifyDelta({
         secret: tfaKey,
         encoding: 'base32',
