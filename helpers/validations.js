@@ -236,7 +236,7 @@ module.exports = {
     // To update app key for user
     updateAppKey: (data) => {
         const schema = Joi.object({
-            appKey: Joi.string().pattern(/^[A-Z0-9]+$/).min(15).max(20).required().messages({
+            appKey: Joi.string().pattern(/^[A-Z0-9]+$/).min(10).max(20).required().messages({
                 'string.pattern.base': "App Key Should Not Contain Special Characters",
             }),
             successUrl: Joi.string().uri({ scheme: ['https'] }).optional().messages({
