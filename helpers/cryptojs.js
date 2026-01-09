@@ -58,7 +58,7 @@ const PASSWORD = "Sectrect_pass!234__UYGLAISBCI";
 
 const ITERATIONS = 150000;
 
-const MAX_AGE_MS = 3 * 60 * 1000;
+const MAX_AGE_MS = 10 * 60 * 1000;
 
 const usedNonces = new Set();
 
