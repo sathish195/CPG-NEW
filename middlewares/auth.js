@@ -23,7 +23,8 @@ module.exports = async (req, res, next) => {
 
         // get member
         const member = jwt.verify(token)
-
+        console.log(member,"member in auth");
+         
         // assign to req.member
         req.member = member
         next() // proceed to move

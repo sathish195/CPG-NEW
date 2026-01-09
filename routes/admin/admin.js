@@ -96,6 +96,22 @@ admin.post('/getAdmins', auth, authAdmin, slowDownLimitter, rateLimitter, asyncF
     return res.status(200).send(await cryptojs.encrypt(admins))
 }))
 
+
+admin.post('/getProfile', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
+    // get user
+    const { admin } = req;
+    // console.log(admin,"admin in getProfile");
+
+    
+    // create response object
+    // const response = _.pick(user, ['userId', 'userName', 'email', 'withdrawStatus', 'transactionStatus','tfaStatus'])
+    // console.log(admin,"user in getProfile");
+
+    // send encrypted response
+    return res.status(200).send(await cryptojs.encrypt(admin))
+}))
+
+
 // @METHOD: POST
 // @ROUTE: /api/admin/getUsers
 // @DESC: To get all users list for admin

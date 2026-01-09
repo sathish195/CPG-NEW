@@ -345,10 +345,11 @@ user.post('/getProfile', auth, authUser, slowDownLimitter, rateLimitter, asyncFu
     const { user } = req
     
     // create response object
-    const response = _.pick(user, ['userId', 'userName', 'email', 'withdrawStatus', 'transactionStatus'])
+    // const response = _.pick(user, ['userId', 'userName', 'email', 'withdrawStatus', 'transactionStatus','tfaStatus'])
+    // console.log(user,"user in getProfile");
 
     // send encrypted response
-    return res.status(200).send(await cryptojs.encrypt(response))
+    return res.status(200).send(await cryptojs.encrypt(user))
 }))
 
 // @METHOD: POST
@@ -890,6 +891,7 @@ console.log(currentChain,"----->hash_dec");
 }))
 
 const stats =require('../../helpers/stats');
+const authAdmin = require('../../middlewares/authAdmin')
 // test stats
 user.post('/testStats', asyncFun (async (req, res) => {
     const s = await stats.saveStats("deposits","200","USDT" );
