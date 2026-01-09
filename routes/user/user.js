@@ -721,7 +721,9 @@ user.post('/generateHash', slowDownLimitter, rateLimitter, asyncFun (async (req,
     const appId = tigerBalm.decrypt(currentKey.appId)
     if(!appId || appId === 'tberror') return re.status(400).send("Invalid App Key. Please Generate New App Key")
         console.log(appId,"appId");
-    const appIdData =await cryptojs.decrypt(appId)
+    // const appIdData =await cryptojs.decrypt(appId)
+    const appIdData =appId
+
 
 console.log(appIdData,"appIdData");
     if(!appIdData || !Object.keys(appIdData).length) return res.status(400).send("No Data Found In Given App Key")
