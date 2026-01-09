@@ -704,6 +704,7 @@ console.log(payload);
 user.post('/generateHash', slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get app key from headers
     const appKey = req.headers["x-app-key"]
+    console.log(appKey,"appKey");
     if(!appKey) return res.status(400).send("App Key Is Required");
 
     // encrypt apiKey
