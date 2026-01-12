@@ -796,6 +796,7 @@ member.post('/getTickets/:search', auth, authMember, slowDownLimitter, rateLimit
 
     // get ticket id
     const { search } = req.params
+    console.log(search,"----search----");
     if(!search || search === "null" || search === "undefined") return res.status(400).send("Invalid Search. Please Try Again")
 
     // validate search
