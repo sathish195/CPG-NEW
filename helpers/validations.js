@@ -463,7 +463,7 @@ module.exports = {
                 Joi.string().pattern(/^[A-Z0-9]+$/).min(7).max(20).required().messages({
                     'string.pattern.base': "User ID Should Not Contain Any Special Characters"
                 }),
-                Joi.string().pattern(/^[a-z0-9]+$/).min(3).max(25).required().messages({
+                Joi.string().pattern(/^[A-Za-z0-9]+$/).min(3).max(25).required().messages({
                     'string.pattern.base': "Username Should Not Contain Special Characters",
                 })
             ).messages({
