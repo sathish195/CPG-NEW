@@ -803,19 +803,19 @@ member.post('/getTickets/:search', auth, authMember, slowDownLimitter, rateLimit
     const { error:searchError } = validations.validateIdOrUsername({ search })
     if(searchError) return res.status(400).send(searchError.details[0].message)
 
-    // get enc
-    const { error: payloadError } = validations.getEnc(req.body)
-    if(payloadError) return res.status(400).send(payloadError.details[0].message)
+    // // get enc
+    // const { error: payloadError } = validations.getEnc(req.body)
+    // if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
-    // decrypt payload
-    const payload =await cryptojs.decrypt(req.body.enc)
-    console.log(payload,"----payload----");
-    if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
-    if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
+    // // decrypt payload
+    // const payload =await cryptojs.decrypt(req.body.enc)
+    // console.log(payload,"----payload----");
+    // if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
+    // if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
-    // validate payload
-    const { error } = validations.getList(payload, member.isAdmin)
-    if(error) return res.status(400).send(error.details[0].message)
+    // // validate payload
+    // const { error } = validations.getList(payload, member.isAdmin)
+    // if(error) return res.status(400).send(error.details[0].message)
 
     // get ticket
     const filter = member.isAdmin ? { $or:[{ ticketId: search }, { userId: search }, { userName: search }] } : { userId: member.userId, ticketId: search }
@@ -823,11 +823,12 @@ member.post('/getTickets/:search', auth, authMember, slowDownLimitter, rateLimit
         sort: { createdAt: -1 },
         select: member.isAdmin ? 'ticketId userId userName email status messages closedBy createdAt' : 'ticketId status messages closedBy createdAt'
     }
-    if(member.isAdmin) {
-        skip = payload.skip
-        limit = payload.limit
-    }
+    // if(member.isAdmin) {
+    //     skip = payload.skip
+    //     limit = payload.limit
+    // }
     const tickets = await mongoFunctions.find("Ticket", filter, options)
+    console.log(tickets,"----tickets----");
     if(!tickets || !tickets.length) return res.status(400).send("No Ticket Found. Please Try Again")
 
     // send encrypted response
