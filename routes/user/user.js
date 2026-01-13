@@ -801,7 +801,11 @@ console.log(appIdData,"appIdData");
         timestamp: Date.now()
     }
     // console.log(data,"data to generate hash");
-    const secretKey = tigerBalm.decrypt(currentKey.secretKey)
+    // const secretKey = tigerBalm.decrypt(JSON.parse
+    //     (currentKey.secretKey))
+        const decryptedSecretKey = tigerBalm.decrypt(currentKey.secretKey); 
+const secretKey = JSON.parse(decryptedSecretKey); // Only if the decrypted result is a JSON string
+
     const hash =await cryptojs.encrypt(data, secretKey)
     // const dhash =await cryptojs.decrypt(hash)
 
