@@ -795,7 +795,7 @@ console.log(appIdData,"appIdData");
     console.log(requestedAmount,"requestedAmount before hash");
 
     const data = {
-        ...appIdData, // userId, successUrl & notifyUrl
+        ...JSON.parse(appIdData), // userId, successUrl & notifyUrl
         ...payload, // invNo, amount, coin, chain
         amount: requestedAmount,
         timestamp: Date.now()
