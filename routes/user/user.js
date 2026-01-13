@@ -724,7 +724,7 @@ user.post('/generateHash', slowDownLimitter, rateLimitter, asyncFun (async (req,
         console.log(appId,"app--------------Id");
     // const appIdData =await cryptojs.decrypt(appId)
     const appIdData =appId
-    
+
 
 
 console.log(appIdData,"appIdData");
@@ -781,13 +781,17 @@ console.log(appIdData,"appIdData");
     if(totalFee_chain > requestedAmount) return res.status(400).send("Fee Is Greater Than Amount");
 
     // generate hash
+    console.log(appIdData,"appIdData before hash");
+    console.log(payload,"payload before hash");
+    console.log(requestedAmount,"requestedAmount before hash");
+    
     const data = {
         ...appIdData, // userId, successUrl & notifyUrl
         ...payload, // invNo, amount, coin, chain
         amount: requestedAmount,
         timestamp: Date.now()
     }
-    console.log(data,"data to generate hash");
+    // console.log(data,"data to generate hash");
     const secretKey = tigerBalm.decrypt(currentKey.secretKey)
     const hash =await cryptojs.encrypt(data, secretKey)
     // const dhash =await cryptojs.decrypt(hash)
