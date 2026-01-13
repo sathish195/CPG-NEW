@@ -139,10 +139,19 @@ user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (a
     const secretKey ={ email: user.email, appName: payload.appName }
     const appId ={ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl }
     const whiteList_ip = [payload.whiteList_ip]
+    // const key = {
+    //     appId: tigerBalm.encrypt(appId),
+    //     appKey: tigerBalm.encrypt(appKey),
+    //     secretKey: tigerBalm.encrypt(secretKey),
+    //     appName: payload.appName,
+    //     successUrl: payload.successUrl,
+    //     notifyUrl: payload.notifyUrl,
+    //     whiteList_ip
+    // }
     const key = {
-        appId: tigerBalm.encrypt(appId),
-        appKey: tigerBalm.encrypt(appKey),
-        secretKey: tigerBalm.encrypt(secretKey),
+        appId: tigerBalm.encrypt(JSON.stringify(appId)), // Make sure it's a string
+        appKey: tigerBalm.encrypt(JSON.stringify(appKey)), // Serialize the appKey if it's an object
+        secretKey: tigerBalm.encrypt(JSON.stringify(secretKey)), // Serialize secretKey
         appName: payload.appName,
         successUrl: payload.successUrl,
         notifyUrl: payload.notifyUrl,
