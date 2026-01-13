@@ -406,7 +406,9 @@ module.exports = {
             filters: Joi.object({
                 type: Joi.string().valid("withdraw", "transaction").required(),
                 search: Joi.string().pattern(/^[A-Z0-9]+$/).min(7).max(30).required().allow('').messages({
-                    'string.pattern.base': "User ID/Transaction ID Should Not Contain Any Special Characters"
+                    'string.pattern.base': "User ID/Transaction ID Should Not Contain Any Special Characters",
+        'string.min': 'User ID/Transaction ID must have at least 7 characters',
+        'string.max': 'User ID/Transaction ID can have a maximum of 30 characters'
                 }),
                 fromDate: Joi.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().allow('').messages({
                     "string.pattern.base": "From Date Should Be In YYYY-MM-DD Format"
