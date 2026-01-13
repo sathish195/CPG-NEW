@@ -137,7 +137,7 @@ user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (a
     // generate key
     const appKey = await getAppKey()
     const secretKey =await cryptojs.encrypt({ email: user.email, appName: payload.appName })
-    const appId =await cryptojs.encrypt({ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl })
+    const appId ={ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl }
     const whiteList_ip = [payload.whiteList_ip]
     const key = {
         appId: tigerBalm.encrypt(appId),
