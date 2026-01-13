@@ -136,7 +136,7 @@ user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (a
 
     // generate key
     const appKey = await getAppKey()
-    const secretKey =await cryptojs.encrypt({ email: user.email, appName: payload.appName })
+    const secretKey ={ email: user.email, appName: payload.appName }
     const appId ={ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl }
     const whiteList_ip = [payload.whiteList_ip]
     const key = {
