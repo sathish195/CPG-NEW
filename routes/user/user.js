@@ -791,7 +791,7 @@ console.log(appIdData,"appIdData");
         amount: requestedAmount,
         timestamp: Date.now()
     }
-    console.log(data,"data to generate hash");
+    // console.log(data,"data to generate hash");
     const secretKey = tigerBalm.decrypt(currentKey.secretKey)
     const hash =await cryptojs.encrypt(data, secretKey)
     // const dhash =await cryptojs.decrypt(hash)
