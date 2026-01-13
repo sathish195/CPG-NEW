@@ -791,7 +791,7 @@ console.log(appIdData,"appIdData");
     // const dhash =await cryptojs.decrypt(hash)
 
 // console.log(dhash,"generated hash");
-    return res.status(200).send({ hash,secretKey  })
+    return res.status(200).send({ data,secretKey  })
 }))
 
 // @METHOD: POST
