@@ -729,8 +729,18 @@ user.post('/generateHash', slowDownLimitter, rateLimitter, asyncFun (async (req,
 console.log(appIdData,"appIdData");
     if(!appIdData || !Object.keys(appIdData).length) return res.status(400).send("No Data Found In Given App Key")
 
+            // get enc
+    const { error: payloadError } = validations.getEnc(req.body)
+    if(payloadError) return res.status(400).send(payloadError.details[0].message)
+
+    // decrypt payload
+    const payload =await cryptojs.decrypt(req.body.enc)
+    if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
+    if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
+
     // get payload
-    const payload = req.body
+    // const payload = req.body
+    console.log(req.body,"payload");
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Cannot Be Empty");
 
     // validate payload
