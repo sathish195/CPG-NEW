@@ -722,8 +722,8 @@ user.post('/generateHash', slowDownLimitter, rateLimitter, asyncFun (async (req,
     const appId = tigerBalm.decrypt(currentKey.appId)
     if(!appId || appId === 'tberror') return re.status(400).send("Invalid App Key. Please Generate New App Key")
         console.log(appId,"app--------------Id");
-    // const appIdData =await cryptojs.decrypt(appId)
-    const appIdData =appId
+    const appIdData =await cryptojs.decrypt(appId)
+    // const appIdData =appId
 
 
 console.log(appIdData,"appIdData");
@@ -788,11 +788,11 @@ console.log(appIdData,"appIdData");
     }
     console.log(data,"data to generate hash");
     const secretKey = tigerBalm.decrypt(currentKey.secretKey)
-    // const hash =await cryptojs.encrypt(data, secretKey)
+    const hash =await cryptojs.encrypt(data, secretKey)
     // const dhash =await cryptojs.decrypt(hash)
 
 // console.log(dhash,"generated hash");
-    return res.status(200).send({ data,secretKey  })
+    return res.status(200).send({ hash  })
 }))
 
 // @METHOD: POST
