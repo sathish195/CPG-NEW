@@ -405,7 +405,7 @@ module.exports = {
             limit: Joi.number().integer().greater(0).required(),
             filters: Joi.object({
                 type: Joi.string().valid("withdraw", "transaction").required(),
-                search: Joi.string().pattern(/^[A-Z0-9]+$/).min(7).max(30).required().allow('').messages({
+                search: Joi.string().pattern(/^[A-Z0-9]+$/).min(3).max(30).required().allow('').messages({
                     'string.pattern.base': "User ID/Transaction ID Should Not Contain Any Special Characters",
         'string.min': 'User ID/Transaction ID must have at least 7 characters',
         'string.max': 'User ID/Transaction ID can have a maximum of 30 characters'
