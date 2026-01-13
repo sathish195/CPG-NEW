@@ -316,7 +316,7 @@ module.exports = {
     // To update(reply & close) ticket for admin
     updateTicket: (data) => {
         const schema = Joi.object({
-            ticketId: Joi.string().pattern(/^[A-Z0-9]+$/).min(7).max(20).required().messages({
+            ticketId: Joi.string().pattern(/^[A-Z0-9]+$/).min(5).max(20).required().messages({
                 'string.pattern.base': "Ticket ID Should Not Contain Any Special Characters"
             }),
             message: Joi.string().trim().regex(/^[a-zA-Z0-9@.,!?]+(?: [a-zA-Z0-9@.,!?]+)*$/).min(10).max(200).optional().allow('').messages({
