@@ -873,9 +873,21 @@ member.post('/getTransactions', auth, authMember, slowDownLimitter, rateLimitter
     }
     if(!member.isAdmin) {
         filter['userId'] = member.userId
-        if(search) filter['tId'] = search
+        if(search) 
+
+            filter['$or'] = [
+            { userId: { $regex: `^${search}`, $options: 'i' } },
+            { tId: { $regex: `^${search}`, $options: 'i' } }
+          ]
+            // filter['tId'] = search
     }else {
-        if(search) filter['$or'] = [{ userId: search }, { tId: search }]
+        // filter['$or'] = [{ userId: search }, { tId: search }]
+        if(search) 
+        filter['$or'] = [
+            { userId: { $regex: `^${search}`, $options: 'i' } },
+            { tId
+                : { $regex: `^${search}`, $options: 'i' } }
+          ]
     }
     const options = {
         sort: { createdAt: -1 },
