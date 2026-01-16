@@ -234,7 +234,7 @@ admin.post('/updateUser/:userId', auth, authAdmin, slowDownLimitter, rateLimitte
 	if(payload.tfaStatus && payload.tfaStatus !== user.tfaStatus) {
         if((payload.tfaStatus).toLowerCase() === "disable") {
             update.tfaStatus = payload.tfaStatus
-            update.tfaKey = '0'
+            // update.tfaKey = '0'
         }
     }
     

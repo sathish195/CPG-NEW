@@ -223,8 +223,8 @@ user.post('/updateAppKey', auth, authUser, slowDownLimitter, rateLimitter, async
     // update app key
     if(Object.keys(update['$set']).length) {
         // generate new app Id
-        const appId =await cryptojs.encrypt({ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl })
-        update['$set']['keys.$.appId'] = tigerBalm.encrypt(appId)
+        const appId ={ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl }
+        update['$set']['keys.$.appId'] = tigerBalm.encrypt(JSON.stringify(appId))
 
         // update user
         const filter = { 'keys.appKey': appKey_enc }
