@@ -115,32 +115,77 @@ async function encrypt(userData) {
     })
   ).toString("base64");
 }
-async function decrypt(cipherText) {
-  const payload = JSON.parse(Buffer.from(cipherText, "base64").toString());
+// async function decrypt(cipherText) {
+//   const payload = JSON.parse(Buffer.from(cipherText, "base64").toString());
 
-  const key = await deriveKey(PASSWORD, new Uint8Array(payload.salt));
+//   const key = await deriveKey(PASSWORD, new Uint8Array(payload.salt));
 
-  const decrypted = await crypto.subtle.decrypt(
-    { name: "AES-GCM", iv: new Uint8Array(payload.iv) },
-    key,
-    new Uint8Array(payload.data)
-  );
+//   const decrypted = await crypto.subtle.decrypt(
+//     { name: "AES-GCM", iv: new Uint8Array(payload.iv) },
+//     key,
+//     new Uint8Array(payload.data)
+//   );
 
-  const decoded = JSON.parse(new TextDecoder().decode(decrypted));
-  console.log("decoded--->",decoded);
-  console.log({
-    ts:decoded.ts,dt: Date.now(),diff:  Date.now()-decoded.ts ,mx: MAX_AGE_MS
-  });
-  if (!decoded.ts || Date.now() - decoded.ts > MAX_AGE_MS) {
-    throw new Error("Request expired (replay blocked)");
+//   const decoded = JSON.parse(new TextDecoder().decode(decrypted));
+//   console.log("decoded--->",decoded);
+//   console.log({
+//     ts:decoded.ts,dt: Date.now(),diff:  Date.now()-decoded.ts ,mx: MAX_AGE_MS
+//   });
+//   if (!decoded.ts || Date.now() - decoded.ts > MAX_AGE_MS) {
+//     throw new Error("Request expired (replay blocked)");
+//   }
+
+//   if (usedNonces.has(decoded.nonce)) {
+//     throw new Error("Replay attack detected");
+//   }
+
+//   usedNonces.add(decoded.nonce);
+//   return decoded.data;
+// }
+
+
+async function decrypt(
+  cipherText,
+  { checkExpiry = true, allowReplay = false } = {}
+) {
+  try {
+    console.log(cipherText);
+    if (!cipherText) return null;
+    if (typeof cipherText === "object") return cipherText;
+
+    const payload = JSON.parse(decoder.decode(fromBase64(cipherText)));
+    const key = await deriveKey(PASSWORD, new Uint8Array(payload.salt));
+
+    const decrypted = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv: new Uint8Array(payload.iv) },
+      key,
+      new Uint8Array(payload.data)
+    );
+
+    console.log(decrypted, "decrypted");
+
+    const decoded = JSON.parse(decoder.decode(decrypted));
+    console.log(decoded, "decoded");
+    // ⏳ Expiry ONLY for API payloads
+    if (checkExpiry) {
+      if (!decoded.ts || Date.now() - decoded.ts > MAX_AGE_MS) {
+        throw new Error("Expired payload");
+      }
+    }
+
+    // 🔁 Replay ONLY for API payloads
+    if (!allowReplay) {
+      if (usedNonces.has(decoded.nonce)) {
+        throw new Error("Replay detected");
+      }
+      usedNonces.add(decoded.nonce);
+    }
+
+    return decoded.data;
+  } catch (err) {
+    console.error("Decrypt failed:", err);
+    return null;
   }
-
-  if (usedNonces.has(decoded.nonce)) {
-    throw new Error("Replay attack detected");
-  }
-
-  usedNonces.add(decoded.nonce);
-  return decoded.data;
 }
 async function jwt_decrypt(cipherText) {
     const payload = JSON.parse(Buffer.from(cipherText, "base64").toString());
