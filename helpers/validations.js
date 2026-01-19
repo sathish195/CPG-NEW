@@ -628,7 +628,7 @@ module.exports = {
     // To delete chain
     deleteChain: (data) => {
         const schema = Joi.object({
-            coin: Joi.string().pattern(/^[A-Z0-9]+$/).min(7).max(20).required().messages({
+            coin: Joi.string().pattern(/^[A-Z0-9]+$/).min(5).max(20).required().messages({
                 'string.pattern.base': "Coin Id Should Not Contain Any Special Characters"
             }),
             chain: Joi.string().pattern(/^[A-Z0-9]+$/).min(3).max(20).required().messages({
@@ -677,7 +677,7 @@ module.exports = {
     // To validate id --> user id/coin id/transaction id
     validteId: (data) => {
         const schema = Joi.object({
-            id: Joi.string().pattern(/^[A-Z0-9]+$/).min(7).max(20).required().messages({
+            id: Joi.string().pattern(/^[A-Z0-9]+$/).min(5).max(20).required().messages({
                 'string.pattern.base': "Id Should Not Contain Any Special Characters"
             })
         })
@@ -726,7 +726,7 @@ module.exports = {
     // To initiate withdraw
     initiateWithdraw: (data) => {
         const schema = Joi.object({
-            coin: Joi.string().pattern(/^[a-zA-Z0-9]+$/).min(7).max(15).required().messages({
+            coin: Joi.string().pattern(/^[a-zA-Z0-9]+$/).min(5).max(15).required().messages({
                 'string.pattern.base': "Coin ID Should Not Contain Any Special Characters"
             }),
             amount: Joi.number().greater(0).required(),
@@ -767,7 +767,8 @@ module.exports = {
                 'string.pattern.base': "Invoice Number Should Not Contain Any Special Characters"
             }),
             amount: Joi.number().greater(0).required(),
-            coin: Joi.string().pattern(/^[A-Z0-9]+$/).min(7).max(15).required().messages({
+            coin: Joi.string().pattern(/^[A-Z0-9]+$/).min(5
+            ).max(15).required().messages({
                 'string.pattern.base': "Coin Id Should Not Contain Any Special Characters"
             }),
             chain: Joi.string().pattern(/^[A-Z0-9]+$/).min(3).max(15).required().messages({

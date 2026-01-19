@@ -343,7 +343,7 @@ user.post('/getKeys', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (
             notifyUrl: key.notifyUrl,
         }
     })
-    return res.status(200).send(await cryptojs.encrypt(keys))
+    return res.status(200).send(await cryptojs.encrypt(keys))``
 }))
 
 // @METHOD: POST
