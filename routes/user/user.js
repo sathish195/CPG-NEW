@@ -150,7 +150,7 @@ user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (a
     // }
     const key = {
         appId: tigerBalm.encrypt(JSON.stringify(appId)), // Make sure it's a string
-        appKey: tigerBalm.encrypt(JSON.stringify(appKey)), // Serialize the appKey if it's an object
+        appKey: tigerBalm.encrypt(appKey), // Serialize the appKey if it's an object
         secretKey: tigerBalm.encrypt(JSON.stringify(secretKey)), // Serialize secretKey
         appName: payload.appName,
         successUrl: payload.successUrl,
