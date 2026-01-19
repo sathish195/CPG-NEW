@@ -63,6 +63,10 @@ const MAX_AGE_MS = 10 * 60 * 1000;
 const usedNonces = new Set();
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
+const toBase64 = (bytes) => btoa(String.fromCharCode(...bytes));
+
+const fromBase64 = (base64) =>
+  Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
 
 async function deriveKey(password, salt) {
   const enc = new TextEncoder();
@@ -133,6 +137,7 @@ async function decrypt(cipherText,{ checkExpiry = true, allowReplay = false } = 
       new Uint8Array(payload.data)
     );
 
+    
     console.log(decrypted, "decrypted");
 
     const decoded = JSON.parse(decoder.decode(decrypted));
