@@ -642,7 +642,7 @@ module.exports = {
     // To udpate settlement type
     updateSettlement: (data) => {
         const schema = Joi.object({
-            coin: Joi.string().pattern(/^[A-Z0-9]+$/).min(7).max(20).required().messages({
+            coin: Joi.string().pattern(/^[A-Z0-9]+$/).min(5).max(20).required().messages({
                 'string.pattern.base': "Coin Id Should Not Contain Any Special Characters"
             }),
             settlementType: Joi.string().valid("MONTHLY", "AMOUNT").required().messages({
