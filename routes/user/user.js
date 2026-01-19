@@ -845,6 +845,7 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
 
     // get payload
     const payload = req.body
+    console.log(payload,"payload");
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Cannot Be Empty");
 
     // check pending invoices
