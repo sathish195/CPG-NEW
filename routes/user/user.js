@@ -861,7 +861,8 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     const secretKey = tigerBalm.decrypt(currentKey.secretKey)
     console.log(secretKey,"--------->secretKey");
 
-    const hash_dec =await cryptojs.decrypt(payload.hash)
+    const hash_dec =await cryptojs.decrypt(payload.hash,secretKey)
+    console.log(hash_dec,"--------->hash_dec");
 
     if(!hash_dec || hash_dec === 'tberror') return res.status(400).send("Invalid Hash");
 
