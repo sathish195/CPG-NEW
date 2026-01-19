@@ -312,7 +312,7 @@ async function decrypt(
     console.error("Decrypt failed:", err);
     return null;
   }
-
+}
 
   async function generateRandomString(length = 7) {
     const randomBytes = crypto.getRandomValues(new Uint8Array(length / 2)); // Generates random bytes
@@ -349,7 +349,7 @@ async function jwt_decrypt(cipherText) {
   // usedNonces.add(decoded.nonce);
   return decoded.data;
 }
-}
+
 
 // ================= EXPORT (IMPORTANT) =================
 export default {
