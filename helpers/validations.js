@@ -702,7 +702,7 @@ module.exports = {
     // To validate id
     validateId: (data) => {
         const schema = Joi.object({
-            id: Joi.string().pattern(/^[A-Z0-9]+$/).min(7).max(30).required().messages({
+            id: Joi.string().pattern(/^[A-Z0-9]+$/).min(5).max(30).required().messages({
                 'string.pattern.base': "ID Should Not Contain Any Special Characters"
             })
         })
