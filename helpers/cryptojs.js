@@ -48,6 +48,152 @@
 
 // ---------new file cryptojs.js ends here ---------
 
+// require("dotenv").config();
+// const { webcrypto } = require("crypto");
+
+// global.crypto = webcrypto;
+
+// // ================= CONFIG =================
+// const PASSWORD = "Sectrect_pass!234__UYGLAISBCI";
+
+// const ITERATIONS = 150000;
+
+// const MAX_AGE_MS = 10 * 60 * 1000;
+
+// const usedNonces = new Set();
+
+// async function deriveKey(password, salt) {
+//   const enc = new TextEncoder();
+
+//   const keyMaterial = await crypto.subtle.importKey(
+//     "raw",
+//     enc.encode(password),
+//     "PBKDF2",
+//     false,
+//     ["deriveKey"]
+//   );
+
+//   return crypto.subtle.deriveKey(
+//     {
+//       name: "PBKDF2",
+//       salt,
+//       iterations: ITERATIONS,
+//       hash: "SHA-256",
+//     },
+//     keyMaterial,
+//     { name: "AES-GCM", length: 256 },
+//     false,
+//     ["encrypt", "decrypt"]
+//   );
+// }
+// async function encrypt(userData) {
+//   const enc = new TextEncoder();
+//   const iv = crypto.getRandomValues(new Uint8Array(12));
+//   const salt = crypto.getRandomValues(new Uint8Array(16));
+
+//   const key = await deriveKey(PASSWORD, salt);
+
+//   // 🔒 Internal security metadata
+//   const payload = {
+//     data: userData, // actual business data
+//     ts: Date.now(), // timestamp
+//     nonce: crypto.randomUUID(), // one-time token
+//   };
+
+//   const encrypted = await crypto.subtle.encrypt(
+//     { name: "AES-GCM", iv },
+//     key,
+//     enc.encode(JSON.stringify(payload))
+//   );
+
+//   return Buffer.from(
+//     JSON.stringify({
+//       v: 1,
+//       salt: Array.from(salt),
+//       iv: Array.from(iv),
+//       data: Array.from(new Uint8Array(encrypted)),
+//     })
+//   ).toString("base64");
+// }
+// async function decrypt(cipherText) {
+//   const payload = JSON.parse(Buffer.from(cipherText, "base64").toString());
+
+//   const key = await deriveKey(PASSWORD, new Uint8Array(payload.salt));
+
+//   const decrypted = await crypto.subtle.decrypt(
+//     { name: "AES-GCM", iv: new Uint8Array(payload.iv) },
+//     key,
+//     new Uint8Array(payload.data)
+//   );
+
+//   const decoded = JSON.parse(new TextDecoder().decode(decrypted));
+//   console.log("decoded--->",decoded);
+//   console.log({
+//     ts:decoded.ts,dt: Date.now(),diff:  Date.now()-decoded.ts ,mx: MAX_AGE_MS
+//   });
+//   if (!decoded.ts || Date.now() - decoded.ts > MAX_AGE_MS) {
+//     throw new Error("Request expired (replay blocked)");
+//   }
+
+//   if (usedNonces.has(decoded.nonce)) {
+//     throw new Error("Replay attack detected");
+//   }
+
+//   usedNonces.add(decoded.nonce);
+//   return decoded.data;
+// }
+// async function jwt_decrypt(cipherText) {
+//     const payload = JSON.parse(Buffer.from(cipherText, "base64").toString());
+  
+//     const key = await deriveKey(PASSWORD, new Uint8Array(payload.salt));
+  
+//     const decrypted = await crypto.subtle.decrypt(
+//       { name: "AES-GCM", iv: new Uint8Array(payload.iv) },
+//       key,
+//       new Uint8Array(payload.data)
+//     );
+  
+//     const decoded = JSON.parse(new TextDecoder().decode(decrypted));
+//     // if (!decoded.ts || Date.now() - decoded.ts > MAX_AGE_MS) {
+//     //   throw new Error("Request expired (replay blocked)");
+//     // }
+  
+//     // if (usedNonces.has(decoded.nonce)) {
+//     //   throw new Error("Replay attack detected");
+//     // }
+  
+//     // usedNonces.add(decoded.nonce);
+//     return decoded.data;
+//   }
+
+//   //  function generateRandomString(length=7)  {
+//   //       const randomBytes = CryptoJS.lib.WordArray.random(length/2);
+//   //       const randomString = CryptoJS.enc.Hex.stringify(randomBytes)
+
+//   //       return randomString.toUpperCase();
+//   //   }
+
+//     async function generateRandomString(length = 7) {
+//       const randomBytes = crypto.getRandomValues(new Uint8Array(length / 2)); // Generates random bytes
+//       let randomString = '';
+  
+//       // Convert random bytes to hex string (each byte is two hex characters)
+//       for (let i = 0; i < randomBytes.length; i++) {
+//           randomString += randomBytes[i].toString(16).padStart(2, '0').toUpperCase();
+//       }
+  
+//       return randomString;
+//   }
+  
+
+// module.exports = {
+//   encrypt,
+//   decrypt,
+//   jwt_decrypt,
+//   generateRandomString
+// };
+
+
 require("dotenv").config();
 const { webcrypto } = require("crypto");
 
@@ -55,13 +201,18 @@ global.crypto = webcrypto;
 
 // ================= CONFIG =================
 const PASSWORD = "Sectrect_pass!234__UYGLAISBCI";
-
 const ITERATIONS = 150000;
 
-const MAX_AGE_MS = 10 * 60 * 1000;
+// 30 minutes (safer for real infra)
+const MAX_AGE_MS = 30 * 60 * 1000;
 
-const usedNonces = new Set();
+// allow clock drift
+const CLOCK_SKEW_MS = 2 * 60 * 1000;
 
+// nonce -> timestamp
+const usedNonces = new Map();
+
+// ================= HELPERS =================
 async function deriveKey(password, salt) {
   const enc = new TextEncoder();
 
@@ -86,18 +237,19 @@ async function deriveKey(password, salt) {
     ["encrypt", "decrypt"]
   );
 }
+
+// ================= ENCRYPT =================
 async function encrypt(userData) {
   const enc = new TextEncoder();
+
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const salt = crypto.getRandomValues(new Uint8Array(16));
-
   const key = await deriveKey(PASSWORD, salt);
 
-  // 🔒 Internal security metadata
   const payload = {
-    data: userData, // actual business data
-    ts: Date.now(), // timestamp
-    nonce: crypto.randomUUID(), // one-time token
+    data: userData,
+    ts: Date.now(),
+    nonce: crypto.randomUUID(),
   };
 
   const encrypted = await crypto.subtle.encrypt(
@@ -115,6 +267,8 @@ async function encrypt(userData) {
     })
   ).toString("base64");
 }
+
+// ================= DECRYPT =================
 async function decrypt(cipherText) {
   const payload = JSON.parse(Buffer.from(cipherText, "base64").toString());
 
@@ -127,68 +281,69 @@ async function decrypt(cipherText) {
   );
 
   const decoded = JSON.parse(new TextDecoder().decode(decrypted));
-  console.log("decoded--->",decoded);
-  console.log({
-    ts:decoded.ts,dt: Date.now(),diff:  Date.now()-decoded.ts ,mx: MAX_AGE_MS
-  });
-  if (!decoded.ts || Date.now() - decoded.ts > MAX_AGE_MS) {
+  const now = Date.now();
+
+  // ⏱ timestamp validation (with skew)
+  if (
+    !decoded.ts ||
+    Math.abs(now - decoded.ts) > MAX_AGE_MS + CLOCK_SKEW_MS
+  ) {
     throw new Error("Request expired (replay blocked)");
   }
 
+  // 🧹 cleanup expired nonces
+  for (const [nonce, ts] of usedNonces) {
+    if (now - ts > MAX_AGE_MS) {
+      usedNonces.delete(nonce);
+    }
+  }
+
+  // 🔁 replay protection
   if (usedNonces.has(decoded.nonce)) {
     throw new Error("Replay attack detected");
   }
 
-  usedNonces.add(decoded.nonce);
+  usedNonces.set(decoded.nonce, now);
+
   return decoded.data;
 }
+
+// ================= JWT DECRYPT (NO REPLAY CHECK) =================
 async function jwt_decrypt(cipherText) {
-    const payload = JSON.parse(Buffer.from(cipherText, "base64").toString());
-  
-    const key = await deriveKey(PASSWORD, new Uint8Array(payload.salt));
-  
-    const decrypted = await crypto.subtle.decrypt(
-      { name: "AES-GCM", iv: new Uint8Array(payload.iv) },
-      key,
-      new Uint8Array(payload.data)
-    );
-  
-    const decoded = JSON.parse(new TextDecoder().decode(decrypted));
-    // if (!decoded.ts || Date.now() - decoded.ts > MAX_AGE_MS) {
-    //   throw new Error("Request expired (replay blocked)");
-    // }
-  
-    // if (usedNonces.has(decoded.nonce)) {
-    //   throw new Error("Replay attack detected");
-    // }
-  
-    // usedNonces.add(decoded.nonce);
-    return decoded.data;
+  const payload = JSON.parse(Buffer.from(cipherText, "base64").toString());
+  const key = await deriveKey(PASSWORD, new Uint8Array(payload.salt));
+
+  const decrypted = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: new Uint8Array(payload.iv) },
+    key,
+    new Uint8Array(payload.data)
+  );
+
+  const decoded = JSON.parse(new TextDecoder().decode(decrypted));
+  return decoded.data;
+}
+
+// ================= RANDOM STRING =================
+async function generateRandomString(length = 7) {
+  const randomBytes = crypto.getRandomValues(
+    new Uint8Array(Math.ceil(length / 2))
+  );
+
+  let randomString = "";
+  for (let i = 0; i < randomBytes.length; i++) {
+    randomString += randomBytes[i]
+      .toString(16)
+      .padStart(2, "0")
+      .toUpperCase();
   }
 
-  //  function generateRandomString(length=7)  {
-  //       const randomBytes = CryptoJS.lib.WordArray.random(length/2);
-  //       const randomString = CryptoJS.enc.Hex.stringify(randomBytes)
+  return randomString.slice(0, length);
+}
 
-  //       return randomString.toUpperCase();
-  //   }
-
-    async function generateRandomString(length = 7) {
-      const randomBytes = crypto.getRandomValues(new Uint8Array(length / 2)); // Generates random bytes
-      let randomString = '';
-  
-      // Convert random bytes to hex string (each byte is two hex characters)
-      for (let i = 0; i < randomBytes.length; i++) {
-          randomString += randomBytes[i].toString(16).padStart(2, '0').toUpperCase();
-      }
-  
-      return randomString;
-  }
-  
-
+// ================= EXPORTS =================
 module.exports = {
   encrypt,
   decrypt,
   jwt_decrypt,
-  generateRandomString
+  generateRandomString,
 };
