@@ -857,6 +857,7 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     if(error) return res.status(400).send(error.details[0].message);
 
     // decrypt hash
+    console.log(currentKey,"--------->currentKey");
     const secretKey = tigerBalm.decrypt(currentKey.secretKey)
     const hash_dec =await cryptojs.decrypt(payload.hash, secretKey)
 
