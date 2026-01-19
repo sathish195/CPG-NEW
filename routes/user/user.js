@@ -137,6 +137,7 @@ user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (a
     // generate key
     const appKey = await getAppKey()
     const secretKey ={ email: user.email, appName: payload.appName }
+    
     const appId ={ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl }
     const whiteList_ip = [payload.whiteList_ip]
     // const key = {
@@ -166,6 +167,7 @@ user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (a
     }
     const updatedUser = await mongoFunctions.findOneAndUpdate("User", { email: user.email }, update, { new: true });
     await redis.hSet("cpg_users", user.email, JSON.stringify(updatedUser))
+    secretKey = await cryptojs.encrypt(secretKey)
 
     return res.status(200).send(await cryptojs.encrypt({ appKey, secretKey, whiteList_ip }))
 }))
