@@ -343,7 +343,11 @@ user.post('/getKeys', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (
             notifyUrl: key.notifyUrl,
         }
     })
-console.log(keys,"------------------->");
+console.log(keys,"----------enc--------->");
+
+const enc = await cryptojs.encrypt(keys);
+const dec =await cryptojs.decrypt(enc);
+console.log(dec,"----------dec--------->");
     return res.status(200).send(await cryptojs.encrypt(keys))
 }))
 
