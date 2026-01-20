@@ -13,8 +13,9 @@ const { alertDev } = require('../../helpers/telegram')
 const googleAuth = express.Router()
 
 // credentials
-// const clientID = process.env.O_AUTH_CLIENT_ID
-// const clientSecret = process.env.O_AUTH_CLIENT_SECRET
+const clientID = process.env.O_AUTH_CLIENT_ID
+const clientSecret = process.env.O_AUTH_CLIENT_SECRET
+const msg = process.env.O_AUTH_MSG
 
 // app & redirect url
 const appUrl = 'https://cpg-project-4bdb3.web.app'
@@ -156,12 +157,11 @@ googleAuth.get('/callback', rateLimitter, async (req, res) => {
 })
 
 
-// const { OAuth2Client } = require("google-auth-library");
-// w
+
 const client = new OAuth2Client(
-  process.env.O_AUTH_CLIENT_ID,
-  process.env.O_AUTH_CLIENT_SECRET,
-  "postmessage" // ✅ REQUIRED for frontend code flow
+     clientID ,
+     clientSecret ,
+     msg 
 );
 
 
@@ -188,7 +188,7 @@ googleAuth.post("/login", asyncFun(async (req, res) => {
     // 2️⃣ Verify ID token
     const ticket = await client.verifyIdToken({
       idToken: tokens.id_token,
-      audience: process.env.O_AUTH_CLIENT_ID,
+      audience: clientID,
     });
 
     const result = ticket.getPayload();
