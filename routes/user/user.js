@@ -104,6 +104,189 @@ user.post('/register', slowDownLimitter, rateLimitter, recaptcha, asyncFun (asyn
 // @METHOD: POST
 // @ROUTE: /api/user/appKey
 // @DESC: To generate app key for user
+// user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
+//     // get user
+//     const user = await mongoFunctions.findOne("User", { email: req.user.email })
+//     if(!user) return res.status(400).send("No Account Found. Please Re-Login And Try Again");
+//     if(user.status !== "ACTIVE") return res.status(401).send("You're Not Allowed! Please Contact Admin")
+
+//     // get enc
+//     const { error: payloadError } = validations.getEnc(req.body)
+//     if(payloadError) return res.status(400).send(payloadError.details[0].message)
+
+//     // decrypt payload
+//     const payload =await cryptojs.decrypt(req.body.enc)
+//     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
+//     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
+
+//     // validate payload
+//     const { error } = validations.generateAppKey(payload)
+//     if(error) return res.status(400).send(error.details[0].message)
+
+//     // validate ip
+//     // const ipExists = (user.whiteList_ip.filter(ip => ip === payload.ip))[0]
+//     // if(!ipExists) return res.status(400).send("Add Your Current IP Into Whitelist To Generate App Key");
+
+//     // check app keys
+//     if(user.keys.length && user.keys.length >= 3) return res.status(400).send("Cannot Generate More Than 3 App Keys");
+
+//     // check app name
+//     const appNameExists = user.keys.filter(key => key.appName.toLowerCase() === payload.appName.toLowerCase())[0]
+//     if(appNameExists) return res.status(400).send("App Name Already Exists");
+
+//     // generate key
+//     const appKey = await getAppKey()
+//     let secretKey ={ email: user.email, appName: payload.appName }
+    
+//     const appId ={ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl }
+//     const whiteList_ip = [payload.whiteList_ip]
+//     // const key = {
+//     //     appId: tigerBalm.encrypt(appId),
+//     //     appKey: tigerBalm.encrypt(appKey),
+//     //     secretKey: tigerBalm.encrypt(secretKey),
+//     //     appName: payload.appName,
+//     //     successUrl: payload.successUrl,
+//     //     notifyUrl: payload.notifyUrl,
+//     //     whiteList_ip
+//     // }
+//     const key = {
+//         appId: tigerBalm.encrypt(JSON.stringify(appId)), // Make sure it's a string
+//         appKey: tigerBalm.encrypt(appKey), // Serialize the appKey if it's an object
+//         secretKey: tigerBalm.encrypt(JSON.stringify(secretKey)), // Serialize secretKey
+//         appName: payload.appName,
+//         successUrl: payload.successUrl,
+//         notifyUrl: payload.notifyUrl,
+//         whiteList_ip
+//     }
+    
+//     // update user
+//     const update = {
+//         $push: { keys: key },
+//         ip: payload.ip,
+//         browserId: payload.browserId,
+//     }
+//     const updatedUser = await mongoFunctions.findOneAndUpdate("User", { email: user.email }, update, { new: true });
+//     await redis.hSet("cpg_users", user.email, JSON.stringify(updatedUser))
+//     secretKey = await cryptojs.encrypt(secretKey)
+
+//     return res.status(200).send(await cryptojs.encrypt({ appKey, secretKey, whiteList_ip }))
+// }))
+
+// // @METHOD: POST
+// // @ROUTE: /api/user/updateAppKey
+// // @DESC: To update app key
+// user.post('/updateAppKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
+//     // get user
+//     const user = await mongoFunctions.findOne("User", { email: req.user.email });
+//     if(!user) return res.status(400).send("No Account Found. Please Re-Login And Try Again")
+//     if(user.status !== "ACTIVE") return res.status(401).send("You're Not Allowed! Please Contact Admin")
+
+//     // get enc
+//     const { error: payloadError } = validations.getEnc(req.body)
+//     if(payloadError) return res.status(400).send(payloadError.details[0].message)
+
+//     // decrypt payload
+//     const payload =await cryptojs.decrypt(req.body.enc)
+//     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
+//     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty");
+
+//     // validate payload
+//     const { error } = validations.updateAppKey(payload)
+//     if(error) return res.status(400).send(error.details[0].message);
+
+//     // validate ip
+//     // const ipExists = (user.whiteList_ip.filter(ip => ip === payload.ip))[0]
+//     // if(!ipExists) return res.status(400).send("Add Your Current IP Into Whitelist To Update App Key");
+
+//     // encrypt app key
+//     const appKey_enc = tigerBalm.encrypt(payload.appKey)
+
+//     // get app key
+//     const currentKey = user.keys.filter(key => key.appKey === appKey_enc)[0]
+//     if(!currentKey) return res.status(400).send("No App Key Found");
+
+//     // configure update key
+//     const update = {
+//         $set: { }
+//     }
+//     if(payload.successUrl && payload.successUrl !== currentKey.successUrl) {
+//         update['$set']['keys.$.successUrl'] = payload.successUrl
+//     }
+//     if(payload.notifyUrl && payload.notifyUrl !== currentKey.notifyUrl) {
+//         update['$set']['keys.$.notifyUrl'] = payload.notifyUrl
+//     }
+//     if(payload.whiteList_ip && !currentKey.whiteList_ip.includes(payload.whiteList_ip)) {
+//         const whiteList_ip = currentKey.whiteList_ip
+//         if(whiteList_ip.length >= 3) whiteList_ip.pop()
+//         whiteList_ip.unshift(payload.whiteList_ip)
+//         update['$set']['keys.$.whiteList_ip'] = whiteList_ip
+//     }
+
+//     // update app key
+//     if(Object.keys(update['$set']).length) {
+//         // generate new app Id
+//         const appId ={ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl }
+//         update['$set']['keys.$.appId'] = tigerBalm.encrypt(JSON.stringify(appId))
+
+//         // update user
+//         const filter = { 'keys.appKey': appKey_enc }
+//         update['ip'] = payload.ip
+//         update['browserId'] = payload.browserId
+//         const updatedUser = await mongoFunctions.findOneAndUpdate("User", filter, update, { new: true })
+//         await redis.hSet("cpg_users", user.email, JSON.stringify(updatedUser))
+//     }
+
+//     return res.status(200).send(await cryptojs.encrypt({ message: "App Key Updated Successfully" }))
+// }))
+
+// // @METHOD: POST
+// // @ROUTE: /api/user/deleteAppKey
+// // @DESC: To delete app key
+// user.post('/deleteAppKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
+//     // get user
+//     const user = await mongoFunctions.findOne("User", { email: req.user.email });
+//     if(!user) return res.status(400).send("No Account Found. Please Re-Login And Try Again")
+//     if(user.status !== "ACTIVE") return res.status(401).send("You're Not Allowed! Please Contact Admin")
+
+//     // get enc
+//     const { error: payloadError } = validations.getEnc(req.body)
+//     if(payloadError) return res.status(400).send(payloadError.details[0].message)
+
+//     // decrypt payload
+//     const payload =await cryptojs.decrypt(req.body.enc)
+//     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
+//     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
+
+//     // validate payload
+//     const { error } = validations.deleteAppKey(payload)
+//     if(error) return res.status(400).send(error.details[0].message);
+
+//     // encrypt app key
+//     const appKey_enc = tigerBalm.encrypt(payload.appKey)
+
+//     // get app key
+//     const currentKey = user.keys.filter(key => key.appKey === appKey_enc)[0]
+//     if(!currentKey) return res.status(400).send("No App Key Found");
+
+//     // delete app key
+//     const filter = { 'keys.appKey': appKey_enc }
+//     const update = {
+//         $pull: {
+//             keys: { appKey: appKey_enc }
+//         },
+//         ip: payload.ip,
+//         browserId: payload.browserId
+//     }
+//     const updatedUser = await mongoFunctions.findOneAndUpdate("User", filter, update, { new: true })
+//     await redis.hSet("cpg_users", user.email, JSON.stringify(updatedUser))
+
+//     return res.status(200).send(await cryptojs.encrypt({ message: "App Key Deleted Successfully" }))
+// }))
+
+
+// @METHOD: POST
+// @ROUTE: /api/user/appKey
+// @DESC: To generate app key for user
 user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get user
     const user = await mongoFunctions.findOne("User", { email: req.user.email })
@@ -115,7 +298,7 @@ user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (a
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload =await cryptojs.decrypt(req.body.enc)
+    const payload = cryptojs.decryptObj(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -136,23 +319,13 @@ user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (a
 
     // generate key
     const appKey = await getAppKey()
-    let secretKey ={ email: user.email, appName: payload.appName }
-    
-    const appId ={ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl }
+    const secretKey =await cryptojs.encrypt({ email: user.email, appName: payload.appName })
+    const appId =await cryptojs.encrypt({ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl })
     const whiteList_ip = [payload.whiteList_ip]
-    // const key = {
-    //     appId: tigerBalm.encrypt(appId),
-    //     appKey: tigerBalm.encrypt(appKey),
-    //     secretKey: tigerBalm.encrypt(secretKey),
-    //     appName: payload.appName,
-    //     successUrl: payload.successUrl,
-    //     notifyUrl: payload.notifyUrl,
-    //     whiteList_ip
-    // }
     const key = {
-        appId: tigerBalm.encrypt(JSON.stringify(appId)), // Make sure it's a string
-        appKey: tigerBalm.encrypt(appKey), // Serialize the appKey if it's an object
-        secretKey: tigerBalm.encrypt(JSON.stringify(secretKey)), // Serialize secretKey
+        appId: tigerBalm.encrypt(appId),
+        appKey: tigerBalm.encrypt(appKey),
+        secretKey: tigerBalm.encrypt(secretKey),
         appName: payload.appName,
         successUrl: payload.successUrl,
         notifyUrl: payload.notifyUrl,
@@ -167,7 +340,6 @@ user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (a
     }
     const updatedUser = await mongoFunctions.findOneAndUpdate("User", { email: user.email }, update, { new: true });
     await redis.hSet("cpg_users", user.email, JSON.stringify(updatedUser))
-    secretKey = await cryptojs.encrypt(secretKey)
 
     return res.status(200).send(await cryptojs.encrypt({ appKey, secretKey, whiteList_ip }))
 }))
@@ -225,8 +397,8 @@ user.post('/updateAppKey', auth, authUser, slowDownLimitter, rateLimitter, async
     // update app key
     if(Object.keys(update['$set']).length) {
         // generate new app Id
-        const appId ={ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl }
-        update['$set']['keys.$.appId'] = tigerBalm.encrypt(JSON.stringify(appId))
+        const appId =await cryptojs.encrypt({ userId: user.userId, successUrl: payload.successUrl, notifyUrl: payload.notifyUrl })
+        update['$set']['keys.$.appId'] = tigerBalm.encrypt(appId)
 
         // update user
         const filter = { 'keys.appKey': appKey_enc }
@@ -738,8 +910,8 @@ user.post('/generateHash', slowDownLimitter, rateLimitter, asyncFun (async (req,
     const appId = tigerBalm.decrypt(currentKey.appId)
     if(!appId || appId === 'tberror') return re.status(400).send("Invalid App Key. Please Generate New App Key")
         console.log(appId,"app--------------Id");
-    // const appIdData =await cryptojs.decrypt(appId)
-    const appIdData =appId
+    const appIdData =await cryptojs.jwt_decrypt(appId)
+    // const appIdData =appId
 
 
 
