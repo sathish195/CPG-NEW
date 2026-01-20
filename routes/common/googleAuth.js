@@ -222,7 +222,7 @@ const client = new OAuth2Client(
                  email: result.email,
                  balances,
                  password: "0",
-                 name : result.name,
+                 userName : result.name,
                  // ip: payload.ip,
                  // browserId: payload?.broswerId || "0",
                  status: "ACTIVE",
@@ -256,7 +256,8 @@ const client = new OAuth2Client(
   
          // get token
          const jwtToken = jwt.sign(member)
-   return res.status(200).json(await cryptojs.encrypt(jwtToken));
+   return res.status(200).send(await cryptojs.encrypt(jwtToken));
+
   
    
   }))
