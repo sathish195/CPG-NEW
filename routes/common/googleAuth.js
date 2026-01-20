@@ -15,6 +15,7 @@ const googleAuth = express.Router()
 // credentials
 const clientID = process.env.O_AUTH_CLIENT_ID
 const clientSecret = process.env.O_AUTH_CLIENT_SECRET
+const msg = process.env.O_AUTH_MSG
 
 // app & redirect url
 const appUrl = 'https://cpg-project-4bdb3.web.app'
