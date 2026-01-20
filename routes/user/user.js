@@ -974,7 +974,7 @@ console.log(appIdData,"appIdData");
     console.log(requestedAmount,"requestedAmount before hash");
 
     const data = {
-        ...JSON.parse(appIdData), // userId, successUrl & notifyUrl
+        ...appIdData, // userId, successUrl & notifyUrl
         ...payload, // invNo, amount, coin, chain
         amount: requestedAmount,
         timestamp: Date.now()
@@ -982,8 +982,8 @@ console.log(appIdData,"appIdData");
     // console.log(data,"data to generate hash");
     // const secretKey = tigerBalm.decrypt(JSON.parse
     //     (currentKey.secretKey))
-        const decryptedSecretKey = tigerBalm.decrypt(currentKey.secretKey); 
-const secretKey = JSON.parse(decryptedSecretKey); // Only if the decrypted result is a JSON string
+        const secretKey = tigerBalm.decrypt(currentKey.secretKey); 
+// const secretKey = JSON.parse(decryptedSecretKey); // Only if the decrypted result is a JSON string
 
     const hash =await cryptojs.encrypt(data, secretKey)
     // const dhash =await cryptojs.decrypt(hash)
