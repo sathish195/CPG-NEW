@@ -814,8 +814,8 @@ console.log(appIdData,"appIdData");
 const secretKey = JSON.parse(decryptedSecretKey); // Only if the decrypted result is a JSON string
 
     const hash =await cryptojs.encrypt(data, secretKey)
-    const dhash =await cryptojs.decrypt(hash)
-    telegram.alertDev("generated hash data",dhash);
+    // const dhash =await cryptojs.decrypt(hash)
+    // telegram.alertDev("generated hash data",dhash);
 
 console.log(dhash,"generated hash");
     return res.status(200).send({ hash  })
