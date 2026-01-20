@@ -15,7 +15,6 @@ const googleAuth = express.Router()
 // credentials
 const clientID = process.env.O_AUTH_CLIENT_ID
 const clientSecret = process.env.O_AUTH_CLIENT_SECRET
-const msg = process.env.O_AUTH_MSG
 
 // app & redirect url
 const appUrl = 'https://cpg-project-4bdb3.web.app'
@@ -158,6 +157,103 @@ googleAuth.get('/callback', rateLimitter, async (req, res) => {
 
 
 
-
+const client = new OAuth2Client(
+    clientID ,
+    clientSecret ,
+    msg 
+  );
+  
+  
+  
+  googleAuth.post("/login", asyncFun(async (req, res) => {
+  
+   const { code } = req.body;
+  
+   if (!code) {
+     return res.status(400).json({ message: "Authorization code missing" });
+   }
+  // get admin controls
+  const adminControls = await controllers.getAdminControls()
+  if(!adminControls) return res.status(401).send("Admin Controls Are Not Added");
+   // 1️⃣ Exchange auth code for tokens
+   const { tokens } = await client.getToken(code);
+  
+   // console.log(tokens,"---------------------->");
+  
+   if (!tokens.id_token) {
+     return res.status(400).json({ message: "Invalid Google token" });
+   }
+  
+   // 2️⃣ Verify ID token
+   const ticket = await client.verifyIdToken({
+     idToken: tokens.id_token,
+     audience: clientID,
+   });
+  
+   const result = ticket.getPayload();
+  console.log(result,"------------------>");
+  
+  
+         // check member
+         let member = await mongoFunctions.findOne("User", { email: result.email }) // in users
+         if(!member) {
+             member = await mongoFunctions.findOne("Admin", { email: result.email }) // in admins
+         }
+         if(member && member.status === "BLOCKED") return res.status(400).send("You Are Not Allowed To Process Current Request! Contact Admin")
+  
+         // Register User || Login member(Admin/User)
+         if(!member) {
+             // -- user registration --
+             // check admin controls
+             if(member && member.status === "ENABLE") return res.status(400).send("Admin Has Disabled User Registration. Please Try Again After Some TIme")
+                 const merchantFee = {type:"FLAT", value:0} // default merchant fee
+  
+             // create balances from admin controls
+             const coins = adminControls.coins
+             const balances = controllers.getDefaultBalances(coins)
+             // create user data
+             const userData = {
+                 userId: 'CPG'+await cryptojs.generateRandomString(),
+                 email: result.email,
+                 balances,
+                 password: "0",
+                 name : result.name,
+                 // ip: payload.ip,
+                 // browserId: payload?.broswerId || "0",
+                 status: "ACTIVE",
+                 auth: ["google"],
+                 merchantFee
+             }
+             member = await mongoFunctions.createDocument("User", userData)
+         }else {
+             // -- member login --
+             if(!member.isAdmin) {
+                 // check admin controls
+                 if(adminControls.login !== "ENABLE") return res.status(400).send("Admin Has Disabled Login. Please Try Again After Some TIme")
+             }
+  
+             // check google auth in member
+             const googleAuthExists = (member.auth.filter(ele => ele === "google"))[0]
+             if(!googleAuthExists){
+                 // update member
+                 const collection = member.isAdmin ? "Admin" : "User"
+                 const update = {
+                     $push: { auth: "google" },
+                     status: "ACTIVE"
+                 }
+                 member = await mongoFunctions.findOneAndUpdate(collection, { email: member.email }, update, { new: true })
+  
+                 // update member in redis
+                 const key = member.isAdmin ? "cpg_admins" : "cpg_users"
+                 await redis.hSet(key, member.email, JSON.stringify(member))
+             }
+         }
+  
+         // get token
+         const jwtToken = jwt.sign(member)
+   return res.status(200).json(await cryptojs.encrypt(jwtToken));
+  
+   
+  }))
 
 module.exports = googleAuth
