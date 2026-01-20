@@ -298,7 +298,7 @@ user.post('/appKey', auth, authUser, slowDownLimitter, rateLimitter, asyncFun (a
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
-    const payload = cryptojs.decryptObj(req.body.enc)
+    const payload =await cryptojs.decrypt(req.body.enc)
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
