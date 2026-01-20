@@ -179,20 +179,24 @@ const client = new OAuth2Client(
    // 1️⃣ Exchange auth code for tokens
    const { tokens } = await client.getToken(code);
   
-   // console.log(tokens,"---------------------->");
+   console.log(tokens,"---------------------->");
   
-   if (!tokens.id_token) {
+   if (!tokens) {
      return res.status(400).json({ message: "Invalid Google token" });
    }
   
    // 2️⃣ Verify ID token
    const ticket = await client.verifyIdToken({
      idToken: tokens.id_token,
-     audience: clientID,
+     audience: clientID
    });
+   if(!ticket) {
+     return res.status(400).json({ message: "Invalid ID token" });
+   }
   
    const result = ticket.getPayload();
   console.log(result,"------------------>");
+  if(!result) return res.status(400).send("User Data Not Found. Please Try Again")
   
   
          // check member
