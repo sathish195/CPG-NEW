@@ -6,6 +6,7 @@ module.exports = async (req, res, next) => {
         
         // get user
         const user = await redis.hGet("cpg_users", req.member.email, "User", { email: req.member.email })
+        
 
         if(!user) return res.status(400).send("No Account Found. Please Re-Login And Try Again!")
         if(user.status !== "ACTIVE") return res.status(401).send("You're Not Allowed! Contact Admin")

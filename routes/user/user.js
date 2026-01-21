@@ -804,6 +804,8 @@ user.post('/initWithdraw', auth, authUser, slowDownLimitter, rateLimitter, async
 
     // create otp
     await redis.setEx(`cpg-withdraw-otp-${user.email}`, '123456', '180')
+    const otp = await redis.get(`cpg-withdraw-otp-${user.email}`)
+
 
     // alert dev
     telegram.alertDev(`💵 Withdraw inititated 💵 %0A
@@ -857,7 +859,6 @@ console.log(payload);
     console.log(otp, payload.otp);
     if(!otp) return res.status(400).send("OTP Expired. Please Try Resend OTP")
     if(otp !== payload.otp) return res.status(400).send("Incorrect OTP. Please Try Again")
-    await redis.delete(`cpg-withdraw-otp-${user.email}`) // delete otp
 
     // verfiy 2fa
     if(user.tfaStatus === "ENABLE") {
@@ -880,6 +881,8 @@ console.log(payload);
     } 
 
     // withdraw balance
+    await redis.delete(`cpg-withdraw-otp-${user.email}`) // delete otp
+
     await producer.addJob({ type: "cryptoWithdraw", tId: transaction.tId, userId: user.userId })
 
     // send encrypted response
