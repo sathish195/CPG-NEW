@@ -877,7 +877,9 @@ member.post('/getTransactions', auth, authMember, slowDownLimitter, rateLimitter
 
             filter['$or'] = [
             { userId: { $regex: `^${search}`, $options: 'i' } },
-            { tId: { $regex: `^${search}`, $options: 'i' } }
+            { tId: { $regex: `^${search}`, $options: 'i' } },
+            { email: { $regex: `^${search}`, $options: 'i' } },
+            { invNo: { $regex: `^${search}`, $options: 'i' } }
           ]
             // filter['tId'] = search
     }else {
@@ -885,8 +887,9 @@ member.post('/getTransactions', auth, authMember, slowDownLimitter, rateLimitter
         if(search) 
         filter['$or'] = [
             { userId: { $regex: `^${search}`, $options: 'i' } },
-            { tId
-                : { $regex: `^${search}`, $options: 'i' } }
+            { tId: { $regex: `^${search}`, $options: 'i' } },
+            { email: { $regex: `^${search}`, $options: 'i' } },
+            { invNo: { $regex: `^${search}`, $options: 'i' } }
           ]
     }
     const options = {

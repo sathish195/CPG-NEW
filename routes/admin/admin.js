@@ -971,8 +971,8 @@ admin.post('/get_pending_withdrawals', auth, authAdmin, slowDownLimitter, rateLi
 // method post
  
 admin.post('/get_success_deposits',auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
-    const pending_withdrawals = await mongoFunctions.find("Transaction", {type : "DEPOSIT", status: "SUCCESS" },{_id:0, __v:0,invNo:0})
-    return res.status(200).send(pending_withdrawals)
+    const succesDeposit = await mongoFunctions.find("Transaction", {type : "DEPOSIT", status: "SUCCESS" },{_id:0, __v:0,invNo:0})
+    return res.status(200).send(succesDeposit)
 }))
 
 // addmin succes withdrawals
