@@ -444,7 +444,7 @@ async function all_deposits() {
 const iface = new ethers.Interface(e_abi);
   let users = await mongofunctions.find(
     "Transaction",
-    { status: "PENDING" },
+    { status: "PENDING",type:"DEPOSIT"},
     { _id: -1 }
   );
   let count = users.length;
