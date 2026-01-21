@@ -564,7 +564,7 @@ module.exports = {
     // To update coin to admin controls and user
     updateCoin: (data) => {
         const schema = Joi.object({
-            coinId: Joi.string().pattern(/^[A-Z0-9]+$/).min(7).max(20).required().messages({
+            coinId: Joi.string().pattern(/^[A-Z0-9]+$/).min(5).max(20).required().messages({
                 'string.pattern.base': "Coin Id Should Not Contain Any Special Characters"
             }),
             coinName: Joi.string().pattern(/^[a-z]+$/).min(3).max(15).required().messages({
