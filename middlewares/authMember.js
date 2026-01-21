@@ -6,7 +6,7 @@ module.exports = async (req, res, next) => {
         // configure key and collection
         const key = req.member.isAdmin ? "cpg_admins" : "cpg_users"
         const collection = req.member.isAdmin ? "Admin" : "User"
-
+console.log(key, collection);
         // get member
         const member = await redis.hGet(key, req.member.email, collection, { email: req.member.email })
         if(!member) return res.status(400).send("No Account Found With Your Email. Please Re-Login And Try Again!")
@@ -17,6 +17,6 @@ module.exports = async (req, res, next) => {
         next()
     }catch(err) {
         telegram.alertDev(`❌❌❌❌❌❌ \n err in route CPG 👉🏻👉🏻👉🏻 ${req.originalUrl} \n\n ${err.stack}  \n ❌❌❌❌❌❌`)
-        return res.status(500).send("Something Went Wrong! Please Try Login Again")
+        return res.status(400).send("Something Went Wrong! Please Try Login Again")
     }
 }

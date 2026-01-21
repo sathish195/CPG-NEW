@@ -763,7 +763,7 @@ module.exports = {
     // To generate hash
     generateHash: (data) => {
         const schema = Joi.object({
-            invNo: Joi.string().pattern(/^[A-Z0-9]+$/).min(7).max(30).required().messages({
+            invNo: Joi.string().pattern(/^[A-Z0-9a-z]+$/).min(7).max(30).required().messages({
                 'string.pattern.base': "Invoice Number Should Not Contain Any Special Characters"
             }),
             amount: Joi.number().greater(0).required(),

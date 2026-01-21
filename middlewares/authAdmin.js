@@ -16,6 +16,6 @@ module.exports = async (req, res, next) => {
         next()
     }catch(err) {
         telegram.alertDev(`❌❌❌❌❌❌ \n err in route CPG 👉🏻👉🏻👉🏻 ${req.originalUrl} \n\n ${err.stack}  \n ❌❌❌❌❌❌`)
-        return res.status(500).send("Something Went Wrong! Please Try Login Again")
+        return res.status(400).send("Something Went Wrong! Please Try Login Again")
     }
 }

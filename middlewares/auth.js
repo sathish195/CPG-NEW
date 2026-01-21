@@ -7,10 +7,9 @@ module.exports = async (req, res, next) => {
         // get token
         const token_enc = req.header('x-auth-token')
         if(!token_enc) return res.status(401).send('Access Denied. No Token Provided!')
-
         // decrypt token
         const token =await cryptojs.jwt_decrypt(token_enc)
-        if(token === 'tberror') return res.status(400).send("Invalid Token. Please Re-Login And Try Again")
+        if(!token || token === 'tberror') return res.status(400).send("Invalid Token. Please Re-Login And Try Again")
 
         // decode token
         const decoded = jwt.decode(token)
@@ -30,6 +29,6 @@ module.exports = async (req, res, next) => {
         next() // proceed to move
     }catch(err) {
         telegram.alertDev(`❌❌❌❌❌❌ \n err in route CPG 👉🏻👉🏻👉🏻 ${req.originalUrl} \n\n ${err.stack}  \n ❌❌❌❌❌❌`)
-        return res.status(500).send("Something Went Wrong! Please Try Login Again")
+        return res.status(400).send("Something Went Wrong! Please Try Login Again")
     }
 }
