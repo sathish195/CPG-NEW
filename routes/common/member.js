@@ -973,6 +973,7 @@ member.post('/getChains', auth, authMember, slowDownLimitter, rateLimitter, asyn
 
     // decrypt payload
     const payload =await cryptojs.decrypt(req.body.enc)
+    console.log(payload,"----payload----");
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
@@ -986,16 +987,18 @@ member.post('/getChains', auth, authMember, slowDownLimitter, rateLimitter, asyn
         projection: { 'coins.$': 1 }
     }
     const coin = await mongoFunctions.findOne("AdminControls", filter, options)
+    if(!coin) return res.status(400).send("No Coin Found With Given Coin Id");
+    console.log("coin -->", coin);
     const currentCoin = coin.coins[0]
     if(!currentCoin) return res.status(400).send("No Coin Found With Given Coin Id");
     const chains = currentCoin?.chains || []
     console.log("chains -->", chains)
 
-    const enc =await cryptojs.encrypt(chains)
-    log("enc -->", enc)
+    // const enc =await cryptojs.encrypt(chains)
+    // log("enc -->", enc)
 
-    const dec =await cryptojs.decrypt(enc)
-    log("dec -->", dec)
+    // const dec =await cryptojs.decrypt(enc)
+    // log("dec -->", dec)
 
     // return res.status(200).send(cryptojs.encryptObj(chains))
     return res.status(200).send(chains)
