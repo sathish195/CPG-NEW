@@ -798,11 +798,11 @@ member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, async
 
     const {
         totalInvoicesCredit,
-        todayInvoicesCredit,
+        // todayInvoicesCredit,
         successInvoicesCredit,
         failedInvoicesCredit,
         totalInvoicesDebit,
-        todayInvoicesDebit,
+        // todayInvoicesDebit,
         successInvoicesDebit,
         failedInvoicesDebit
     } = result[0];
@@ -811,13 +811,13 @@ member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, async
     const stats = {
         // CREDIT stats
         totalInvoicesCredit: totalInvoicesCredit[0]?.count || 0,
-        todayInvoicesCredit: todayInvoicesCredit[0]?.count || 0,
+        // todayInvoicesCredit: todayInvoicesCredit[0]?.count || 0,
         successInvoicesCredit: successInvoicesCredit[0]?.count || 0,
         failedInvoicesCredit: failedInvoicesCredit[0]?.count || 0,
 
         // DEBIT stats
         totalInvoicesDebit: totalInvoicesDebit[0]?.count || 0,
-        todayInvoicesDebit: todayInvoicesDebit[0]?.count || 0,
+        // todayInvoicesDebit: todayInvoicesDebit[0]?.count || 0,
         successInvoicesDebit: successInvoicesDebit[0]?.count || 0,
         failedInvoicesDebit: failedInvoicesDebit[0]?.count || 0
     };
