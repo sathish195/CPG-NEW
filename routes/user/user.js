@@ -1151,14 +1151,5 @@ module.exports = user
 
 
 
-// 12 mm 6
-// 39 long 
-// 30 width
 
-// 16mm 5
-// 12mm 35
-// 10mm 40
-// 8mm 50
-// 7mm long 50
-// 10kg binding
 

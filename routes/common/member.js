@@ -718,6 +718,17 @@ member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, async
         sucInvMatch.$match.userId = req.member.userId
         failInvMatch.$match.userId = req.member.userId
     }
+    // const pipeline = [
+    //     {
+    //         $facet: {
+    //             totalInvoices: [totalInvMatch, { $count: "count" }],
+    //             todayInvoices: [tdyInvMatch, { $count: "count" }],
+    //             successInvoices: [sucInvMatch, { $count: "count" }],
+    //             failedInvoices: [failInvMatch, { $count: "count" }],
+    //         }
+    //     }
+    // ]
+
     const pipeline = [
         {
             $facet: {
@@ -725,26 +736,51 @@ member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, async
                 todayInvoices: [tdyInvMatch, { $count: "count" }],
                 successInvoices: [sucInvMatch, { $count: "count" }],
                 failedInvoices: [failInvMatch, { $count: "count" }],
+                // Add coin amounts by coin type
+                coinAmounts: [
+                    totalInvMatch, 
+                    {
+                        $group: {
+                            _id: "$coin",  // Group by coin type
+                            totalAmount: { $sum: "$amount" }  // Sum the amount for each coin
+                        }
+                    }
+                ]
             }
         }
     ]
+    
     const result = await mongoFunctions.aggregate("Transaction", pipeline)
     log("result -->", result)
     const {
         totalInvoices,
         todayInvoices,
         successInvoices,
-        failedInvoices
+        failedInvoices,
+        coinAmounts
     } = result[0]
+
+    // const stats = {
+    //     totalInvoices: totalInvoices[0]?.count || 0,
+    //     todayInvoices: todayInvoices[0]?.count || 0,
+    //     successInvoices: successInvoices[0]?.count || 0,
+    //     failedInvoices: failedInvoices[0]?.count || 0
+    // }
+    console.log(coinAmounts,"----coinAmounts----");
 
     const stats = {
         totalInvoices: totalInvoices[0]?.count || 0,
         todayInvoices: todayInvoices[0]?.count || 0,
         successInvoices: successInvoices[0]?.count || 0,
-        failedInvoices: failedInvoices[0]?.count || 0
+        failedInvoices: failedInvoices[0]?.count || 0,
+        coinStats: coinAmounts.reduce((acc, coin) => {
+            acc[coin._id] = coin.totalAmount;
+            return acc;
+        }, {})
     }
-
+console.log(stats,"----stats----");
     return res.status(200).send(await cryptojs.encrypt(stats))
+
 }))
 
 // @METHOD: POST
