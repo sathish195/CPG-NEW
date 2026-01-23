@@ -705,126 +705,79 @@ member.post('/getBalances', auth, authMember, slowDownLimitter, rateLimitter, as
 // @METHOD: POST
 // @ROUTE: /api/member/getStats
 // @DESC: To get stats for dashboard
-// member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
-//     console.log("get stats called -->");
-//     // get stats
-//     const totalInvMatch = { $match: { type: "DEPOSIT" } }
-//     const tdyInvMatch = { $match: { type: "DEPOSIT", createdAt: { $gte: controllers.getTodayStart(), $lt: controllers.getTmrwStart() } } }
-//     const sucInvMatch = { $match: { type: "DEPOSIT", status: "SUCCESS" } }
-//     const failInvMatch = { $match: { type: "DEPOSIT", status: "FAILED" } }
-//     if(!req.member.isAdmin) {
-//         totalInvMatch.$match.userId = req.member.userId
-//         tdyInvMatch.$match.userId = req.member.userId
-//         sucInvMatch.$match.userId = req.member.userId
-//         failInvMatch.$match.userId = req.member.userId
-//     }
-//     const pipeline = [
-//         {
-//             $facet: {
-//                 totalInvoices: [totalInvMatch, { $count: "count" }],
-//                 todayInvoices: [tdyInvMatch, { $count: "count" }],
-//                 successInvoices: [sucInvMatch, { $count: "count" }],
-//                 failedInvoices: [failInvMatch, { $count: "count" }],
-//             }
-//         }
-//     ]
-//     const result = await mongoFunctions.aggregate("Transaction", pipeline)
-//     log("result -->", result)
-//     const {
-//         totalInvoices,
-//         todayInvoices,
-//         successInvoices,
-//         failedInvoices
-//     } = result[0]
-
-//     const stats = {
-//         totalInvoices: totalInvoices[0]?.count || 0,
-//         todayInvoices: todayInvoices[0]?.count || 0,
-//         successInvoices: successInvoices[0]?.count || 0,
-//         failedInvoices: failedInvoices[0]?.count || 0
-//     }
-
-//     return res.status(200).send(await cryptojs.encrypt(stats))
-// }))
-
-
 member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
-    // Match conditions for CREDIT transactions
-    const totalInvMatchCredit = { $match: { type: "CREDIT" } }
-    // const tdyInvMatchCredit = { $match: { type: "CREDIT", createdAt: { $gte: controllers.getTodayStart(), $lt: controllers.getTmrwStart() } } }
-    const sucInvMatchCredit = { $match: { type: "CREDIT", status: "SUCCESS" } }
-    const failInvMatchCredit = { $match: { type: "CREDIT", status: "FAILED" } }
+    console.log("get stats called -->");
+    // get stats
+    const totalInvMatch = { $match: { type: "DEPOSIT" } }
+    const tdyInvMatch = { $match: { type: "DEPOSIT", createdAt: { $gte: controllers.getTodayStart(), $lt: controllers.getTmrwStart() } } }
+    const sucInvMatch = { $match: { type: "DEPOSIT", status: "SUCCESS" } }
+    const failInvMatch = { $match: { type: "DEPOSIT", status: "FAILED" } }
 
     // Match conditions for DEBIT transactions
-    const totalInvMatchDebit = { $match: { type: "DEBIT" } }
-    // const tdyInvMatchDebit = { $match: { type: "DEBIT", createdAt: { $gte: controllers.getTodayStart(), $lt: controllers.getTmrwStart() } } }
-    const sucInvMatchDebit = { $match: { type: "DEBIT", status: "SUCCESS" } }
-    const failInvMatchDebit = { $match: { type: "DEBIT", status: "FAILED" } }
+    const totalInvMatchDebit = { $match: { type: "WITHDRAWAL" } }
+    const tdyInvMatchDebit = { $match: { type: "WITHDRAWAL", createdAt: { $gte: controllers.getTodayStart(), $lt: controllers.getTmrwStart() } } }
+    const sucInvMatchDebit = { $match: { type: "WITHDRAWAL", status: "SUCCESS" } }
+    const failInvMatchDebit = { $match: { type: "WITHDRAWAL", status: "FAILED" } }
 
-    // If the user is not an admin, filter by userId
     if(!req.member.isAdmin) {
-        totalInvMatchCredit.$match.userId = req.member.userId
-        // tdyInvMatchCredit.$match.userId = req.member.userId
-        sucInvMatchCredit.$match.userId = req.member.userId
-        failInvMatchCredit.$match.userId = req.member.userId
+        totalInvMatch.$match.userId = req.member.userId
+        tdyInvMatch.$match.userId = req.member.userId
+        sucInvMatch.$match.userId = req.member.userId
+        failInvMatch.$match.userId = req.member.userId
 
         totalInvMatchDebit.$match.userId = req.member.userId
-        // tdyInvMatchDebit.$match.userId = req.member.userId
+        tdyInvMatchDebit.$match.userId = req.member.userId
         sucInvMatchDebit.$match.userId = req.member.userId
         failInvMatchDebit.$match.userId = req.member.userId
-    }
 
-    // Aggregation pipeline
+    }
     const pipeline = [
         {
             $facet: {
-                // CREDIT statistics
-                totalInvoicesCredit: [totalInvMatchCredit, { $count: "count" }],
-                // todayInvoicesCredit: [tdyInvMatchCredit, { $count: "count" }],
-                successInvoicesCredit: [sucInvMatchCredit, { $count: "count" }],
-                failedInvoicesCredit: [failInvMatchCredit, { $count: "count" }],
-                
-                // DEBIT statistics
+                totalInvoices: [totalInvMatch, { $count: "count" }],
+                todayInvoices: [tdyInvMatch, { $count: "count" }],
+                successInvoices: [sucInvMatch, { $count: "count" }],
+                failedInvoices: [failInvMatch, { $count: "count" }],
+
+
+
+                                // DEBIT statistics
                 totalInvoicesDebit: [totalInvMatchDebit, { $count: "count" }],
-                // todayInvoicesDebit: [tdyInvMatchDebit, { $count: "count" }],
+                todayInvoicesDebit: [tdyInvMatchDebit, { $count: "count" }],
                 successInvoicesDebit: [sucInvMatchDebit, { $count: "count" }],
                 failedInvoicesDebit: [failInvMatchDebit, { $count: "count" }]
+
             }
-        }
+        },
+        
     ]
-
-    // Execute the aggregation
-    const result = await mongoFunctions.aggregate("Transaction", pipeline);
-
+    const result = await mongoFunctions.aggregate("Transaction", pipeline)
+    console.log("result -->", result)
     const {
-        totalInvoicesCredit,
-        // todayInvoicesCredit,
-        successInvoicesCredit,
-        failedInvoicesCredit,
-        totalInvoicesDebit,
-        // todayInvoicesDebit,
+        totalInvoices,
+        todayInvoices,
+        successInvoices,
+        failedInvoices,
+         totalInvoicesDebit,
+        todayInvoicesDebit,
         successInvoicesDebit,
         failedInvoicesDebit
-    } = result[0];
+    } = result[0]
 
-    // Prepare the stats object
     const stats = {
-        // CREDIT stats
-        totalInvoicesCredit: totalInvoicesCredit[0]?.count || 0,
-        // todayInvoicesCredit: todayInvoicesCredit[0]?.count || 0,
-        successInvoicesCredit: successInvoicesCredit[0]?.count || 0,
-        failedInvoicesCredit: failedInvoicesCredit[0]?.count || 0,
-
-        // DEBIT stats
+        totalInvoices: totalInvoices[0]?.count || 0,
+        todayInvoices: todayInvoices[0]?.count || 0,
+        successInvoices: successInvoices[0]?.count || 0,
+        failedInvoices: failedInvoices[0]?.count || 0,
         totalInvoicesDebit: totalInvoicesDebit[0]?.count || 0,
-        // todayInvoicesDebit: todayInvoicesDebit[0]?.count || 0,
+        todayInvoicesDebit: todayInvoicesDebit[0]?.count || 0,
         successInvoicesDebit: successInvoicesDebit[0]?.count || 0,
         failedInvoicesDebit: failedInvoicesDebit[0]?.count || 0
-    };
+    }
+    // return res.status(200).send(stats)
 
-    return res.status(200).send(await cryptojs.encrypt(stats));
-}));
-
+    return res.status(200).send(await cryptojs.encrypt(stats))
+}))
 
 // @METHOD: POST
 // @ROUTE: /api/member/getTickets
