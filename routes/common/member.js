@@ -751,25 +751,25 @@ member.post('/getBalances', auth, authMember, slowDownLimitter, rateLimitter, as
 member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // Match conditions for CREDIT transactions
     const totalInvMatchCredit = { $match: { type: "CREDIT" } }
-    const tdyInvMatchCredit = { $match: { type: "CREDIT", createdAt: { $gte: controllers.getTodayStart(), $lt: controllers.getTmrwStart() } } }
+    // const tdyInvMatchCredit = { $match: { type: "CREDIT", createdAt: { $gte: controllers.getTodayStart(), $lt: controllers.getTmrwStart() } } }
     const sucInvMatchCredit = { $match: { type: "CREDIT", status: "SUCCESS" } }
     const failInvMatchCredit = { $match: { type: "CREDIT", status: "FAILED" } }
 
     // Match conditions for DEBIT transactions
     const totalInvMatchDebit = { $match: { type: "DEBIT" } }
-    const tdyInvMatchDebit = { $match: { type: "DEBIT", createdAt: { $gte: controllers.getTodayStart(), $lt: controllers.getTmrwStart() } } }
+    // const tdyInvMatchDebit = { $match: { type: "DEBIT", createdAt: { $gte: controllers.getTodayStart(), $lt: controllers.getTmrwStart() } } }
     const sucInvMatchDebit = { $match: { type: "DEBIT", status: "SUCCESS" } }
     const failInvMatchDebit = { $match: { type: "DEBIT", status: "FAILED" } }
 
     // If the user is not an admin, filter by userId
     if(!req.member.isAdmin) {
         totalInvMatchCredit.$match.userId = req.member.userId
-        tdyInvMatchCredit.$match.userId = req.member.userId
+        // tdyInvMatchCredit.$match.userId = req.member.userId
         sucInvMatchCredit.$match.userId = req.member.userId
         failInvMatchCredit.$match.userId = req.member.userId
 
         totalInvMatchDebit.$match.userId = req.member.userId
-        tdyInvMatchDebit.$match.userId = req.member.userId
+        // tdyInvMatchDebit.$match.userId = req.member.userId
         sucInvMatchDebit.$match.userId = req.member.userId
         failInvMatchDebit.$match.userId = req.member.userId
     }
@@ -780,13 +780,13 @@ member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, async
             $facet: {
                 // CREDIT statistics
                 totalInvoicesCredit: [totalInvMatchCredit, { $count: "count" }],
-                todayInvoicesCredit: [tdyInvMatchCredit, { $count: "count" }],
+                // todayInvoicesCredit: [tdyInvMatchCredit, { $count: "count" }],
                 successInvoicesCredit: [sucInvMatchCredit, { $count: "count" }],
                 failedInvoicesCredit: [failInvMatchCredit, { $count: "count" }],
                 
                 // DEBIT statistics
                 totalInvoicesDebit: [totalInvMatchDebit, { $count: "count" }],
-                todayInvoicesDebit: [tdyInvMatchDebit, { $count: "count" }],
+                // todayInvoicesDebit: [tdyInvMatchDebit, { $count: "count" }],
                 successInvoicesDebit: [sucInvMatchDebit, { $count: "count" }],
                 failedInvoicesDebit: [failInvMatchDebit, { $count: "count" }]
             }
