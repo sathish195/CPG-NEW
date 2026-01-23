@@ -822,7 +822,7 @@ member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, async
         failedInvoicesDebit: failedInvoicesDebit[0]?.count || 0
     };
 
-    return res.status(200).send(cryptojs.encryptObj(stats));
+    return res.status(200).send(await cryptojs.encrypt(stats));
 }));
 
 
