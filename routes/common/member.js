@@ -711,24 +711,31 @@ member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, async
     const totalInvMatch = { $match: { type: "DEPOSIT" } }
     const tdyInvMatch = { $match: { type: "DEPOSIT", createdAt: { $gte: controllers.getTodayStart(), $lt: controllers.getTmrwStart() } } }
     const sucInvMatch = { $match: { type: "DEPOSIT", status: "SUCCESS" } }
+    const penInvMatch = { $match: { type: "DEPOSIT", status: "PENDING" } }
     const failInvMatch = { $match: { type: "DEPOSIT", status: "FAILED" } }
 
     // Match conditions for DEBIT transactions
     const totalInvMatchDebit = { $match: { type: "WITHDRAWAL" } }
     const tdyInvMatchDebit = { $match: { type: "WITHDRAWAL", createdAt: { $gte: controllers.getTodayStart(), $lt: controllers.getTmrwStart() } } }
     const sucInvMatchDebit = { $match: { type: "WITHDRAWAL", status: "SUCCESS" } }
+    const penInvMatchDebit = { $match: { type: "WITHDRAWAL", status: "PENDING" } }
     const failInvMatchDebit = { $match: { type: "WITHDRAWAL", status: "FAILED" } }
+
 
     if(!req.member.isAdmin) {
         totalInvMatch.$match.userId = req.member.userId
         tdyInvMatch.$match.userId = req.member.userId
         sucInvMatch.$match.userId = req.member.userId
         failInvMatch.$match.userId = req.member.userId
+        penInvMatch.$match.userId = req.member.userId
+
 
         totalInvMatchDebit.$match.userId = req.member.userId
         tdyInvMatchDebit.$match.userId = req.member.userId
         sucInvMatchDebit.$match.userId = req.member.userId
         failInvMatchDebit.$match.userId = req.member.userId
+        penInvMatchDebit.$match.userId = req.member.userId
+
 
     }
     const pipeline = [
@@ -737,6 +744,7 @@ member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, async
                 totalInvoices: [totalInvMatch, { $count: "count" }],
                 todayInvoices: [tdyInvMatch, { $count: "count" }],
                 successInvoices: [sucInvMatch, { $count: "count" }],
+                pendingInvoices: [penInvMatch, { $count: "count" }],
                 failedInvoices: [failInvMatch, { $count: "count" }],
 
 
@@ -745,6 +753,7 @@ member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, async
                 totalInvoicesDebit: [totalInvMatchDebit, { $count: "count" }],
                 todayInvoicesDebit: [tdyInvMatchDebit, { $count: "count" }],
                 successInvoicesDebit: [sucInvMatchDebit, { $count: "count" }],
+                pendingInvoicesDebit: [penInvMatchDebit, { $count: "count" }],
                 failedInvoicesDebit: [failInvMatchDebit, { $count: "count" }]
 
             }
@@ -757,23 +766,28 @@ member.post('/getStats', auth, authMember, slowDownLimitter, rateLimitter, async
         totalInvoices,
         todayInvoices,
         successInvoices,
+        pendingInvoices,
         failedInvoices,
-         totalInvoicesDebit,
+        totalInvoicesDebit,
         todayInvoicesDebit,
         successInvoicesDebit,
+        pendingInvoicesDebit,
         failedInvoicesDebit
-    } = result[0]
+    } = result[0];
 
+    // Format the response with counts for CREDIT and DEBIT, including Pending invoices
     const stats = {
         totalInvoices: totalInvoices[0]?.count || 0,
         todayInvoices: todayInvoices[0]?.count || 0,
         successInvoices: successInvoices[0]?.count || 0,
+        pendingInvoices: pendingInvoices[0]?.count || 0,
         failedInvoices: failedInvoices[0]?.count || 0,
         totalInvoicesDebit: totalInvoicesDebit[0]?.count || 0,
         todayInvoicesDebit: todayInvoicesDebit[0]?.count || 0,
         successInvoicesDebit: successInvoicesDebit[0]?.count || 0,
+        pendingInvoicesDebit: pendingInvoicesDebit[0]?.count || 0,
         failedInvoicesDebit: failedInvoicesDebit[0]?.count || 0
-    }
+    };
     // return res.status(200).send(stats)
 
     return res.status(200).send(await cryptojs.encrypt(stats))
