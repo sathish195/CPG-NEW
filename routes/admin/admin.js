@@ -15,7 +15,12 @@ const tfa = require('speakeasy')
 const tigerBalm = require('../../helpers/tigerBalm')
 const slowDownLimitter = require('../../helpers/slowDownLimitter')
 const producer = require('../../helpers/producer')
-
+const uploadImagesToGridFS = require('../../helpers/imsges_upload')
+const upload = require('../../helpers/multer') // path to multer.js
+const sharp = require('sharp')
+const mongoose = require('mongoose')
+// const { getGfs } = require('../../helpers/dbConnect')
+const { GridFSBucket } = require('mongodb')
 
 const admin = express.Router()
 
@@ -469,14 +474,14 @@ admin.post('/getCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
 // @METHOD: POST
 // @ROUTE: /api/admin/addCoin
 // @DESC: To add new coin to admin controls and user
-admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
+admin.post('/addCoin',upload.array('images', 8), auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get admin
     const { admin } = req
     console.log(req.admin,"req------->");
     console.log(admin,"admin------->");
-
-
-
+    const ids = await uploadImagesToGridFS(req.files);
+    if(!ids || !ids.length) return res.status(400).send("Error In Uploading Images");
+    // res.json({ success: true, imageIds: ids });
     // admin validations
     if(admin.adminType !== "1") return res.status(401).send("You Are Not Allowed To Update Admin Controls")
 
@@ -486,10 +491,11 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
 
     // decrypt payload
     const payload =await cryptojs.decrypt(req.body.enc)
+    payload.coinLogo = ids
     console.log(payload,"payload------->");
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
-
+        payload.coinLogo=ids
     // validate payload
     const { error } = validations.addCoin(payload)
     if(error) return res.status(400).send(error.details[0].message);
@@ -500,6 +506,7 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
 
     // get coin
     const allCoins = adminControls.coins
+
     let coinExists = (allCoins.filter(coin => coin.coinName === payload.coinName))[0]
     if(coinExists) return res.status(400).send("Coin Name Already Exists")
     coinExists = (allCoins.filter(coin => coin.coinTicker === payload.coinTicker))[0]
@@ -559,6 +566,8 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
 admin.post('/updateCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get admin
     const { admin } = req
+    const ids = await uploadImagesToGridFS(req.files);
+    if(!ids || !ids.length) return res.status(400).send("Error In Uploading Images");
 
     // admin validations
     if(admin.adminType !== "1") return res.status(401).send("You Are Not Allowed To Update Admin Controls")
@@ -1032,13 +1041,9 @@ console.log(payload);
 
 
         }))
-        const sharp = require('sharp')
-        const mongoose = require('mongoose')
-        const upload = require('../../helpers/multer') // path to multer.js
-        // const { getGfs } = require('../../helpers/dbConnect')
-const { GridFSBucket } = require('mongodb')
 
-// Upload route
+
+// // Upload route
 admin.post('/upload', upload.array('images', 8), async (req, res) => {
     try {
         if (!req.files || req.files.length === 0) {
@@ -1050,7 +1055,7 @@ admin.post('/upload', upload.array('images', 8), async (req, res) => {
             bucketName: 'uploads'
         })
 
-        const ids = []
+        let ids
 
         for (const file of req.files) {
             // Compress image to WebP
@@ -1070,14 +1075,14 @@ admin.post('/upload', upload.array('images', 8), async (req, res) => {
             // Wait until file is stored
             await new Promise((resolve, reject) => {
                 uploadStream.on('finish', () => {
-                    ids.push(uploadStream.id) // save GridFS _id
+                    ids=uploadStream.id // save GridFS _id
                     resolve()
                 })
                 uploadStream.on('error', reject)
             })
         }
 
-        res.json({ success: true, imageIds: ids })
+        res.json({ success: true, imageurl: `https://cpg-new.onrender.com/api/admin/image/${ids}` })
     } catch (err) {
         console.error('Upload error:', err)
         res.status(500).json({ success: false, message: 'Upload failed' })
@@ -1086,35 +1091,35 @@ admin.post('/upload', upload.array('images', 8), async (req, res) => {
 
 
 
-admin.get('/image/:id', async (req, res) => {
-    try {
-        const { id } = req.params
+// admin.get('/image/:id', async (req, res) => {
+//     try {
+//         const { id } = req.params
 
-        // Validate ObjectId
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ success: false, message: 'Invalid ID' })
-        }
+//         // Validate ObjectId
+//         if (!mongoose.Types.ObjectId.isValid(id)) {
+//             return res.status(400).json({ success: false, message: 'Invalid ID' })
+//         }
 
-        const bucket = new GridFSBucket(mongoose.connection.db, { bucketName: 'uploads' })
-        const _id = new mongoose.Types.ObjectId(id)
+//         const bucket = new GridFSBucket(mongoose.connection.db, { bucketName: 'uploads' })
+//         const _id = new mongoose.Types.ObjectId(id)
 
-        const downloadStream = bucket.openDownloadStream(_id)
+//         const downloadStream = bucket.openDownloadStream(_id)
 
-        // Set content-type as webp (because we converted images)
-        // res.set('Content-Type', 'image/webp')
-        res.set('Content-Type', 'image/webp');
-res.set('Cache-Control', 'public, max-age=31536000');
+//         // Set content-type as webp (because we converted images)
+//         // res.set('Content-Type', 'image/webp')
+//         res.set('Content-Type', 'image/webp');
+// res.set('Cache-Control', 'public, max-age=31536000');
 
-        downloadStream.pipe(res)
+//         downloadStream.pipe(res)
 
-        downloadStream.on('error', () => {
-            res.status(404).json({ success: false, message: 'Image not found' })
-        })
-    } catch (err) {
-        console.error('Retrieve error:', err)
-        res.status(500).json({ success: false, message: 'Server error' })
-    }
-})
+//         downloadStream.on('error', () => {
+//             res.status(404).json({ success: false, message: 'Image not found' })
+//         })
+//     } catch (err) {
+//         console.error('Retrieve error:', err)
+//         res.status(500).json({ success: false, message: 'Server error' })
+//     }
+// })
 
 
 
