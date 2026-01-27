@@ -29,6 +29,7 @@ admin.post('/register', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     // get enc
     const { error: payloadError } = validations.getEnc(req.body)
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
+        let adminControls = await controllers.getAdminControls()
 
     // decrypt payload
     const payload =await cryptojs.decrypt(req.body.enc)
