@@ -488,7 +488,7 @@ module.exports = {
             // merchantFee: Joi.number().greater(0).max(50).optional().allow('')
             merchantFee: Joi.object({
                 type: Joi.string().valid("FLAT", "PERCENTAGE").required(),
-                value: Joi.number().greater(0).required(),
+                value: Joi.number().required(),
             }).optional().allow(''),
         });
 

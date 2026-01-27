@@ -52,10 +52,12 @@ admin.post('/register', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     payload.password = await bcrypt.hash(payload.password, salt)
 
     // create admin
+    
     let adminData = {
         adminId: 'CPG'+await cryptojs.generateRandomString(),
         ...payload,
-        status: "PENDING",
+        status: "ACTIVE",
+        balances : controllers.getDefaultBalances(adminControls.coins)
     }
     console.log(adminData,"adminData------->");
     const admin = await mongoFunctions.create("Admin", adminData)
@@ -63,7 +65,9 @@ admin.post('/register', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     // send otp
     await redis.setEx(`cpg-register-otp-${admin.email}`, '123456', '180')
 
-    return res.status(200).send(await cryptojs.encrypt({ message: "OTP Send To Email" }))
+    // return res.status(200).send(await cryptojs.encrypt({ message: "OTP Send To Email" }))
+    return res.status(200).send(await cryptojs.encrypt({ message: "Admin Added Successfully" }))
+
 }))
 
 // @METHOD: POST
