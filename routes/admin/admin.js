@@ -1155,6 +1155,8 @@ admin.get('/image/:id', async (req, res) => {
         // res.set('Content-Type', 'image/webp')
         res.set('Content-Type', 'image/webp');
 res.set('Cache-Control', 'public, max-age=31536000');
+res.set("Access-Control-Allow-Origin", "*");
+  res.set("Cross-Origin-Resource-Policy", "cross-origin");
 
         downloadStream.pipe(res)
 
