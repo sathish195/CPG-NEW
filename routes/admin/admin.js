@@ -474,7 +474,7 @@ admin.post('/getCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
 // @METHOD: POST
 // @ROUTE: /api/admin/addCoin
 // @DESC: To add new coin to admin controls and user
-admin.post('/addCoin',upload.array('images', 8), auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
+admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter,upload.array('images', 8), asyncFun (async (req, res) => {
     // get admin
     const { admin } = req
     console.log(req.admin,"req------->");
@@ -563,7 +563,7 @@ admin.post('/addCoin',upload.array('images', 8), auth, authAdmin, slowDownLimitt
 // @METHOD: POST
 // @ROUTE: /api/admin/updateCoin
 // @DESC: To update coin in admin controls and user
-admin.post('/updateCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
+admin.post('/updateCoin', auth, authAdmin, slowDownLimitter, rateLimitter,upload.array('images', 8), asyncFun (async (req, res) => {
     // get admin
     const { admin } = req
     const ids = await uploadImagesToGridFS(req.files);
