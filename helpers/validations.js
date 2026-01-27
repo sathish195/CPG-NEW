@@ -535,7 +535,7 @@ module.exports = {
             coinTicker: Joi.string().pattern(/^[A-Z]+$/).min(3).max(5).required().messages({
                 'string.pattern.base': "Coin Ticker Should Not Contain Any Special Characters"
             }),
-            // coinLogo: Joi.string().required(),
+            coinLogo: Joi.string().required(),
             coinStatus: Joi.string().valid("ENABLE", "DISABLE").required(),
             precision: Joi.number().positive().greater(0).integer().required(),
             note: Joi.string().regex(/^[a-zA-Z0-9.,]+(?: [a-zA-Z0-9.,]+)*$/).min(5).max(255).allow("").required(),

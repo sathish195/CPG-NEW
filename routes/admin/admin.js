@@ -474,7 +474,7 @@ admin.post('/getCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
 // @METHOD: POST
 // @ROUTE: /api/admin/addCoin
 // @DESC: To add new coin to admin controls and user
-admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter,upload.array('images', 8), asyncFun (async (req, res) => {
+admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get admin
     const { admin } = req
     console.log(req.admin,"req------->");
@@ -491,11 +491,10 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter,upload.ar
 
     // decrypt payload
     const payload =await cryptojs.decrypt(req.body.enc)
-    payload.coinLogo = ids
     console.log(payload,"payload------->");
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
-        payload.coinLogo=ids
+
     // validate payload
     const { error } = validations.addCoin(payload)
     if(error) return res.status(400).send(error.details[0].message);
@@ -506,7 +505,6 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter,upload.ar
 
     // get coin
     const allCoins = adminControls.coins
-
     let coinExists = (allCoins.filter(coin => coin.coinName === payload.coinName))[0]
     if(coinExists) return res.status(400).send("Coin Name Already Exists")
     coinExists = (allCoins.filter(coin => coin.coinTicker === payload.coinTicker))[0]
@@ -563,11 +561,9 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter,upload.ar
 // @METHOD: POST
 // @ROUTE: /api/admin/updateCoin
 // @DESC: To update coin in admin controls and user
-admin.post('/updateCoin', auth, authAdmin, slowDownLimitter, rateLimitter,upload.array('images', 8), asyncFun (async (req, res) => {
+admin.post('/updateCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     // get admin
     const { admin } = req
-    const ids = await uploadImagesToGridFS(req.files);
-    if(!ids || !ids.length) return res.status(400).send("Error In Uploading Images");
 
     // admin validations
     if(admin.adminType !== "1") return res.status(401).send("You Are Not Allowed To Update Admin Controls")
@@ -1045,7 +1041,6 @@ console.log(payload);
 
 // // Upload route
 admin.post('/upload', upload.array('images', 8), async (req, res) => {
-    try {
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ success: false, message: 'No files uploaded' })
         }
@@ -1082,11 +1077,8 @@ admin.post('/upload', upload.array('images', 8), async (req, res) => {
             })
         }
 
-        res.json({ success: true, imageurl: `https://cpg-new.onrender.com/api/admin/image/${ids}` })
-    } catch (err) {
-        console.error('Upload error:', err)
-        res.status(500).json({ success: false, message: 'Upload failed' })
-    }
+        return res.status(200).send({ success: true, imageurl: `https://cpg-new.onrender.com/api/admin/image/${ids}` })
+ 
 })
 
 
@@ -1120,7 +1112,6 @@ admin.post('/upload', upload.array('images', 8), async (req, res) => {
 //         res.status(500).json({ success: false, message: 'Server error' })
 //     }
 // })
-
 
 
 
