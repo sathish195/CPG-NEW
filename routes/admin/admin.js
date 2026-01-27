@@ -1032,5 +1032,94 @@ console.log(payload);
 
 
         }))
+        const sharp = require('sharp')
+        const mongoose = require('mongoose')
+        const upload = require('../../helpers/multer') // path to multer.js
+        // const { getGfs } = require('../../helpers/dbConnect')
+const { GridFSBucket } = require('mongodb')
+
+// Upload route
+admin.post('/upload', upload.array('images', 8), async (req, res) => {
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ success: false, message: 'No files uploaded' })
+        }
+
+        // Initialize GridFSBucket
+        const bucket = new GridFSBucket(mongoose.connection.db, {
+            bucketName: 'uploads'
+        })
+
+        const ids = []
+
+        for (const file of req.files) {
+            // Compress image to WebP
+            const compressed = await sharp(file.buffer)
+                // .resize({ width: 1200 }) // resize max width
+                .webp({ quality: 90 })   // compress
+                .toBuffer()
+
+            // Upload to GridFS
+            const uploadStream = bucket.openUploadStream(
+                `${Date.now()}-${file.originalname}`,
+                { contentType: 'image/webp' }
+            )
+
+            uploadStream.end(compressed)
+
+            // Wait until file is stored
+            await new Promise((resolve, reject) => {
+                uploadStream.on('finish', () => {
+                    ids.push(uploadStream.id) // save GridFS _id
+                    resolve()
+                })
+                uploadStream.on('error', reject)
+            })
+        }
+
+        res.json({ success: true, imageIds: ids })
+    } catch (err) {
+        console.error('Upload error:', err)
+        res.status(500).json({ success: false, message: 'Upload failed' })
+    }
+})
+
+
+
+admin.get('/image/:id', async (req, res) => {
+    try {
+        const { id } = req.params
+
+        // Validate ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: 'Invalid ID' })
+        }
+
+        const bucket = new GridFSBucket(mongoose.connection.db, { bucketName: 'uploads' })
+        const _id = new mongoose.Types.ObjectId(id)
+
+        const downloadStream = bucket.openDownloadStream(_id)
+
+        // Set content-type as webp (because we converted images)
+        // res.set('Content-Type', 'image/webp')
+        res.set('Content-Type', 'image/webp');
+res.set('Cache-Control', 'public, max-age=31536000');
+
+        downloadStream.pipe(res)
+
+        downloadStream.on('error', () => {
+            res.status(404).json({ success: false, message: 'Image not found' })
+        })
+    } catch (err) {
+        console.error('Retrieve error:', err)
+        res.status(500).json({ success: false, message: 'Server error' })
+    }
+})
+
+
+
 
 module.exports = admin;
+
+
+
