@@ -479,8 +479,6 @@ admin.post('/addCoin', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun
     const { admin } = req
     console.log(req.admin,"req------->");
     console.log(admin,"admin------->");
-    const ids = await uploadImagesToGridFS(req.files);
-    if(!ids || !ids.length) return res.status(400).send("Error In Uploading Images");
     // res.json({ success: true, imageIds: ids });
     // admin validations
     if(admin.adminType !== "1") return res.status(401).send("You Are Not Allowed To Update Admin Controls")
