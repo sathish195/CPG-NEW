@@ -591,13 +591,13 @@ admin.post('/updateCoin', auth, authAdmin, slowDownLimitter, rateLimitter, async
     if(currentCoin.coinName !== payload.coinName) {
         const nameExists = allCoins.filter(coin => (coin.coinName).toLowerCase() === (payload.coinName).toLowerCase)[0]
         if(nameExists) return res.status(400).send("Coin Name Already Exists")
-        update.$set['coins.$.coinName'] = payload.coinName
+        // update.$set['coins.$.coinName'] = payload.coinName
     }
     if(currentCoin.coinTicker !== payload.coinTicker) {
         // check coin ticker
         const tickerExists = allCoins.filter(coin => (coin.coinTicker).toLowerCase() === (payload.coinTicker).toLowerCase)[0]
         if(tickerExists) return res.status(400).send("Coin Ticker Already Exists")
-        update.$set['coins.$.coinTicker'] = payload.coinTicker
+        // update.$set['coins.$.coinTicker'] = payload.coinTicker
     }
     if(currentCoin.coinStatus !== payload.coinStatus) update.$set['coins.$.coinStatus'] = payload.coinStatus
     if(currentCoin.note !== payload.note) update.$set['coins.$.note'] = payload.note
