@@ -1040,78 +1040,132 @@ console.log(payload);
 
 
 // // Upload route
-admin.post('/upload', upload.array('images', 8), async (req, res) => {
-        if (!req.files || req.files.length === 0) {
-            return res.status(400).json({ success: false, message: 'No files uploaded' })
-        }
-
-        // Initialize GridFSBucket
-        const bucket = new GridFSBucket(mongoose.connection.db, {
-            bucketName: 'uploads'
-        })
-
-        let ids
-
-        for (const file of req.files) {
-            // Compress image to WebP
-            const compressed = await sharp(file.buffer)
-                // .resize({ width: 1200 }) // resize max width
-                .webp({ quality: 90 })   // compress
-                .toBuffer()
-
-            // Upload to GridFS
-            const uploadStream = bucket.openUploadStream(
-                `${Date.now()}-${file.originalname}`,
-                { contentType: 'image/webp' }
-            )
-
-            uploadStream.end(compressed)
-
-            // Wait until file is stored
-            await new Promise((resolve, reject) => {
-                uploadStream.on('finish', () => {
-                    ids=uploadStream.id // save GridFS _id
-                    resolve()
-                })
-                uploadStream.on('error', reject)
-            })
-        }
-
-        return res.status(200).send({ success: true, imageurl: `https://cpg-new.onrender.com/api/admin/image/${ids}` })
- 
-})
-
-
-
-// admin.get('/image/:id', async (req, res) => {
+// admin.post('/upload', upload.array('images', 8), async (req, res) => {
 //     try {
-//         const { id } = req.params
-
-//         // Validate ObjectId
-//         if (!mongoose.Types.ObjectId.isValid(id)) {
-//             return res.status(400).json({ success: false, message: 'Invalid ID' })
+//         if (!req.files || req.files.length === 0) {
+//             return res.status(400).json({ success: false, message: 'No files uploaded' })
 //         }
 
-//         const bucket = new GridFSBucket(mongoose.connection.db, { bucketName: 'uploads' })
-//         const _id = new mongoose.Types.ObjectId(id)
-
-//         const downloadStream = bucket.openDownloadStream(_id)
-
-//         // Set content-type as webp (because we converted images)
-//         // res.set('Content-Type', 'image/webp')
-//         res.set('Content-Type', 'image/webp');
-// res.set('Cache-Control', 'public, max-age=31536000');
-
-//         downloadStream.pipe(res)
-
-//         downloadStream.on('error', () => {
-//             res.status(404).json({ success: false, message: 'Image not found' })
+//         // Initialize GridFSBucket
+//         const bucket = new GridFSBucket(mongoose.connection.db, {
+//             bucketName: 'uploads'
 //         })
+
+//         let ids
+
+//         for (const file of req.files) {
+//             // Compress image to WebP
+//             const compressed = await sharp(file.buffer)
+//                 // .resize({ width: 1200 }) // resize max width
+//                 .webp({ quality: 90 })   // compress
+//                 .toBuffer()
+
+//             // Upload to GridFS
+//             const uploadStream = bucket.openUploadStream(
+//                 `${Date.now()}-${file.originalname}`,
+//                 { contentType: 'image/webp' }
+//             )
+
+//             uploadStream.end(compressed)
+
+//             // Wait until file is stored
+//             await new Promise((resolve, reject) => {
+//                 uploadStream.on('finish', () => {
+//                     ids=uploadStream.id // save GridFS _id
+//                     resolve()
+//                 })
+//                 uploadStream.on('error', reject)
+//             })
+//         }
+
+//         return res.status(200).send({ success: true, imageurl: `https://cpg-new.onrender.com/api/admin/image/${ids}` })
 //     } catch (err) {
-//         console.error('Retrieve error:', err)
-//         res.status(500).json({ success: false, message: 'Server error' })
+//         console.error('Upload error:', err)
+//         res.status(400).send({ success: false, message: 'Upload failed' })
 //     }
 // })
+
+
+admin.post('/upload', upload.array('images', 8), async (req, res) => {
+    try {
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ success: false, message: 'No files uploaded' });
+      }
+  
+      const bucket = new GridFSBucket(mongoose.connection.db, {
+        bucketName: 'uploads',
+      });
+  
+      const ids = []; // ✅ must be array
+  
+      for (const file of req.files) {
+        const compressed = await sharp(file.buffer)
+          .webp({ quality: 90 })
+          .toBuffer();
+  
+        const uploadStream = bucket.openUploadStream(
+          `${Date.now()}-${file.originalname}`,
+          { contentType: 'image/webp' }
+        );
+  
+        uploadStream.end(compressed);
+  
+        await new Promise((resolve, reject) => {
+          uploadStream.on('finish', () => {
+            ids.push(uploadStream.id); // ✅ push, don’t overwrite
+            resolve();
+          });
+          uploadStream.on('error', reject);
+        });
+      }
+  
+      // ✅ return ALL image URLs
+      return res.status(200).json({
+        success: true,
+        imageUrls: ids.map(
+          id => `https://cpg-new.onrender.com/api/admin/image/${id}`
+        ),
+      });
+  
+    } catch (err) {
+      console.error('Upload error:', err);
+      res.status(500).json({ success: false, message: 'Upload failed' });
+    }
+  });
+  
+
+admin.get('/image/:id', async (req, res) => {
+    console.log("req.params------->",req.params);
+    try {
+        const { id } = req.params
+        console.log(id,"id------->");
+
+        // Validate ObjectId
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: 'Invalid ID' })
+        }
+
+        const bucket = new GridFSBucket(mongoose.connection.db, { bucketName: 'uploads' })
+        const _id = new mongoose.Types.ObjectId(id)
+        console.log(_id,"_id------->");
+
+        const downloadStream = bucket.openDownloadStream(_id)
+
+        // Set content-type as webp (because we converted images)
+        // res.set('Content-Type', 'image/webp')
+        res.set('Content-Type', 'image/webp');
+res.set('Cache-Control', 'public, max-age=31536000');
+
+        downloadStream.pipe(res)
+
+        downloadStream.on('error', () => {
+            res.status(404).json({ success: false, message: 'Image not found' })
+        })
+    } catch (err) {
+        console.error('Retrieve error:', err)
+        res.status(500).json({ success: false, message: 'Server error' })
+    }
+})
 
 
 
