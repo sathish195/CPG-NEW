@@ -588,17 +588,17 @@ admin.post('/updateCoin', auth, authAdmin, slowDownLimitter, rateLimitter, async
     const update = {
         $set: {}
     }
-    if(currentCoin.coinName !== payload.coinName) {
-        const nameExists = allCoins.filter(coin => (coin.coinName).toLowerCase() === (payload.coinName).toLowerCase)[0]
-        if(nameExists) return res.status(400).send("Coin Name Already Exists")
-        // update.$set['coins.$.coinName'] = payload.coinName
-    }
-    if(currentCoin.coinTicker !== payload.coinTicker) {
-        // check coin ticker
-        const tickerExists = allCoins.filter(coin => (coin.coinTicker).toLowerCase() === (payload.coinTicker).toLowerCase)[0]
-        if(tickerExists) return res.status(400).send("Coin Ticker Already Exists")
-        // update.$set['coins.$.coinTicker'] = payload.coinTicker
-    }
+    // if(currentCoin.coinName !== payload.coinName) {
+    //     const nameExists = allCoins.filter(coin => (coin.coinName).toLowerCase() === (payload.coinName).toLowerCase)[0]
+    //     if(nameExists) return res.status(400).send("Coin Name Already Exists")
+    //     // update.$set['coins.$.coinName'] = payload.coinName
+    // }
+    // if(currentCoin.coinTicker !== payload.coinTicker) {
+    //     // check coin ticker
+    //     const tickerExists = allCoins.filter(coin => (coin.coinTicker).toLowerCase() === (payload.coinTicker).toLowerCase)[0]
+    //     if(tickerExists) return res.status(400).send("Coin Ticker Already Exists")
+    //     // update.$set['coins.$.coinTicker'] = payload.coinTicker
+    // }
     if(currentCoin.coinStatus !== payload.coinStatus) update.$set['coins.$.coinStatus'] = payload.coinStatus
     if(currentCoin.note !== payload.note) update.$set['coins.$.note'] = payload.note
     if(currentCoin.precision !== payload.precision) update.$set['coins.$.precision'] = payload.precision
@@ -618,8 +618,8 @@ admin.post('/updateCoin', auth, authAdmin, slowDownLimitter, rateLimitter, async
         const userUpdate = {
             $set: {}
         }
-        if(currentCoin.coinName !== payload.coinName) userUpdate.$set['balances.$.coinName'] = payload.coinName
-        if(currentCoin.coinTicker !== payload.coinTicker) userUpdate.$set['balances.$.coinTicker'] = payload.coinTicker
+        // if(currentCoin.coinName !== payload.coinName) userUpdate.$set['balances.$.coinName'] = payload.coinName
+        // if(currentCoin.coinTicker !== payload.coinTicker) userUpdate.$set['balances.$.coinTicker'] = payload.coinTicker
         if(currentCoin.coinStatus !== payload.coinStatus) userUpdate.$set['balances.$.coinStatus'] = payload.coinStatus
         if(currentCoin.precision !== payload.precision) userUpdate.$set['balances.$.precision'] = payload.precision
         if(currentCoin.coinLogo !== payload.coinLogo) userUpdate.$set['balances.$.coinLogo'] = payload.coinLogo
@@ -632,8 +632,8 @@ admin.post('/updateCoin', auth, authAdmin, slowDownLimitter, rateLimitter, async
         // alert dev
         telegram.alertDev(`🕹️🔧 Admin controls updated 🔧🕹️ %0A
         🪙🔧 Coin updated 🔧🪙 %0A
-        name --> ${payload.coinName} %0A
-        ticker --> ${payload.coinTicker} %0A
+        name --> ${currentCoin.coinName} %0A
+        ticker --> ${currentCoin.coinTicker} %0A
         status --> ${payload.coinStatus} %0A
         withdraw min --> ${payload.withdraw?.withdrawMin} %0A
         withdraw max --> ${payload.withdraw?.withdrawMax} %0A
