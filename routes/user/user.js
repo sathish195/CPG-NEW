@@ -703,6 +703,10 @@ user.post('/updateSettlement', auth, authUser, slowDownLimitter, rateLimitter, a
         updateSettlement = true
         currentSettlement.settlementType = payload.settlementType
     }
+    if(payload.chain !== currentCoin.chain){
+        updateSettlement = true
+        currentSettlement.chain = payload.chain
+    }
     if(payload.settlementIn !== currentCoin.settlementIn) {
         updateSettlement = true
         currentSettlement.settlementIn = payload.settlementIn

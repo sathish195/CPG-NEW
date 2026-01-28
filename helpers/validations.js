@@ -567,9 +567,9 @@ module.exports = {
             coinId: Joi.string().pattern(/^[A-Z0-9]+$/).min(5).max(20).required().messages({
                 'string.pattern.base': "Coin Id Should Not Contain Any Special Characters"
             }),
-            // coinName: Joi.string().pattern(/^[a-z]+$/).min(3).max(15).required().messages({
-            //     'string.pattern.base': "Coin Name Should Not Contain Any Special Characters"
-            // }),
+            coinName: Joi.string().pattern(/^[a-z]+$/).min(3).max(15).required().messages({
+                'string.pattern.base': "Coin Name Should Not Contain Any Special Characters"
+            }),
             coinLogo: Joi.string().required(),
             // coinTicker: Joi.string().pattern(/^[A-Z]+$/).min(3).max(5).required().messages({
             //     'string.pattern.base': "Coin Ticker Should Not Contain Any Special Characters"
@@ -644,6 +644,9 @@ module.exports = {
         const schema = Joi.object({
             coin: Joi.string().pattern(/^[A-Z0-9]+$/).min(5).max(20).required().messages({
                 'string.pattern.base': "Coin Id Should Not Contain Any Special Characters"
+            }),
+            chain: Joi.string().pattern(/^[A-Z0-9]+$/).min(3).max(20).required().messages({
+                'string.pattern.base': "Chain ID Should Not Contain Any Special Characters"
             }),
             settlementType: Joi.string().valid("MONTHLY", "AMOUNT").required().messages({
                 'any.only': "Settlement Type Must Be 'Monthly' or 'Amount'"
