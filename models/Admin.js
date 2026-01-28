@@ -12,7 +12,7 @@ const adminSchema = mongoose.Schema({
     fcmToken: { type: String, required: this, default: "0" },
     status: { type: String, required: true, enum: { values: ["ACTIVE", "PENDING", "BLOCKED"], message: "${VALUE} is not supported" }, default: "PENDING" },
     tfaKey: { type: String, required: true, default: "0" },
-    tfaStatus: { type: String, required: true, enum: { values: ["ENABLE", "DISABLE", "ACTIVE"], message: "${VALUE} is not supported" }, default: "PENDING" },
+    tfaStatus: { type: String, required: true, enum: { values: ["ENABLE", "DISABLE", ,"PENDING","ACTIVE"], message: "${VALUE} is not supported" }, default: "PENDING" },
     isAdmin: { type: Boolean, required: true, default: true },
     adminType: { type: String, required: true, default: "1" },
     others: { type: Object, required: true, default: {} },
