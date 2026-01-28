@@ -947,8 +947,8 @@ console.log(appIdData,"appIdData");
     if(totalPendingInv >= 50) return res.status(400).send("Pending Invoices Limit Reached. Please Try Again After Some Time")
 
     // validations
-    // const invExists = await mongoFunctions.findOne("Transaction", { userId: user.userId, invNo: payload.invNo })
-    // if(invExists) return res.status(400).send("Invoice Number Already Exists");
+    const invExists = await mongoFunctions.findOne("Transaction", { userId: user.userId, invNo: payload.invNo })
+    if(invExists) return res.status(400).send("Invoice Number Already Exists");
 
     // get coins
     const adminControls = await controllers.getAdminControls();
