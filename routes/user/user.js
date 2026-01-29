@@ -670,7 +670,6 @@ user.post('/updateSettlement', auth, authUser, slowDownLimitter, rateLimitter, a
     const otp = await redis.get(`cpg-settlement-otp-${user.email}`)
     if(!otp) return res.status(400).send("OTP Expired. Please Try Resend OTP")
     if(otp !== payload.otp) return res.status(400).send("Incorrect OTP. Please Try Again")
-    await redis.delete(`cpg-settlement-otp-${user.email}`) // delete otp
 
     // verfiy 2fa
     if(user.tfaStatus === "ENABLE") {
@@ -691,6 +690,7 @@ user.post('/updateSettlement', auth, authUser, slowDownLimitter, rateLimitter, a
         if(!tfaResult || tfaResult.delta === null || tfaResult.delta === undefined) return res.status(400).send("Invalid 2FA Code! Please Try Again")
         if(tfaResult.delta < -1) return res.status(400).send("2FA Code Expired! Please Try Again")
     }
+    await redis.delete(`cpg-settlement-otp-${user.email}`) // delete otp
 
     // check coin
     const currentCoin = user.balances.filter(coin => coin.coinId === payload.coin)[0]

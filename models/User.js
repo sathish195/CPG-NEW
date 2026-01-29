@@ -42,6 +42,7 @@ const UserSchema = new mongoose.Schema({
             settlement: {
                 settlementType: { type: String, enum: { values: ["", "MONTHLY", "AMOUNT"], message: "${VALUE} is not supported" }, default: "" },
                 settlementIn: { type: Number, default: 0 },
+                chain: { type: String, default: 0 },
                 address: { type: String, default: "" },
                 settlementStatus: { type: String, enum: { values: ["ENABLE", "DISABLE"], message: "${VALUE} is not supported" }, default: "DISABLE" }
             }
