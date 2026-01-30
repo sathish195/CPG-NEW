@@ -333,7 +333,7 @@ module.exports = {
         const schema = Joi.object({
           tid: Joi.string().min(10).max(25).required(),
           status: Joi.string().valid("SUCCESS", "FAILED").required(),
-          hash: Joi.string().min(10).max(50).required(),
+          hash: Joi.string().min(10).max(100).required(),
         });
         return schema.validate(data);
       },
