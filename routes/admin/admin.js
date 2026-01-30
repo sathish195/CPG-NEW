@@ -987,7 +987,7 @@ admin.post('/get_success_deposits',auth, authAdmin, slowDownLimitter, rateLimitt
 // method post
 admin.post('/accept_reject_withdrwals', slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
  
-    // req.body = {enc : cryptojs.encryptObj(req.body)}
+    // req.body = {enc :await cryptojs.encrypt(req.body)}
     // get enc
     const { error: payloadError } = validations.getEnc(req.body)
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
@@ -1010,7 +1010,8 @@ console.log(payload);
           });
           if (!history) return res.status(400).send("Record Not Found..!");
 
-          if(history.status === "REJECT") {
+          if(payload.status === "REJECT") {
+            
             const withdarwal_obj = 
             {
                 status: payload.status,
@@ -1018,14 +1019,12 @@ console.log(payload);
             }
             const t = await mongoFunctions.findOneAndUpdate("Transaction",{tId:payload.tid,type:"WITHDRAWAL"} ,withdarwal_obj,{ new: true })
             
-         alertDev(`🕹️🔧 Admin REJECTED withdrawal 🔧🕹️ %0A
+         telegram.alertDev(`🕹️🔧 Admin REJECTED withdrawal 🔧🕹️ %0A
                             🪙 Withdrawal rejected  🪙 0A
-                            tId --> ${payload.tid} %0A
-         `)
+                            tId --> ${payload.tid}`)
 
             return res.status(200).send(await cryptojs.encrypt({ status: "Request Processed..!" }));
         }
-
     await producer.addJob({ type: "AdminApproveCryptoWithdraw", tId: history.tId, userId: history.userId,status: payload.status ,hash : payload.hash} );
 
     return res.status(200).send(await cryptojs.encrypt({ status: "Request Processing..!" }));
