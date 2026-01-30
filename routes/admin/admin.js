@@ -1010,27 +1010,24 @@ console.log(payload);
           });
           if (!history) return res.status(400).send("Record Not Found..!");
 
-        //   if(history.status === "SUCCESS") {
-            // const withdarwal_obj = 
-            // {
-            //     type: "WITHDRAWAL",
-            //     status: payload.status,
-            //     tid: history.tid,
-            //     userId: history.userId,
-            // }
+          if(history.status === "REJECT") {
+            const withdarwal_obj = 
+            {
+                status: payload.status,
+                comment:payload.status
+            }
+            const t = await mongoFunctions.findOneAndUpdate("Transaction",{tId:payload.tid,type:"WITHDRAWAL"} ,withdarwal_obj,{ new: true })
+            
+         alertDev(`🕹️🔧 Admin REJECTED withdrawal 🔧🕹️ %0A
+                            🪙 Withdrawal rejected  🪙 0A
+                            tId --> ${payload.tid} %0A
+         `)
+
+            return res.status(200).send(await cryptojs.encrypt({ status: "Request Processed..!" }));
+        }
 
     await producer.addJob({ type: "AdminApproveCryptoWithdraw", tId: history.tId, userId: history.userId,status: payload.status ,hash : payload.hash} );
 
-
-
-        
-
-        //   }
-        //   else{
-
-
-
-        //   }
     return res.status(200).send(await cryptojs.encrypt({ status: "Request Processing..!" }));
 
 

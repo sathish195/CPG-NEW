@@ -802,7 +802,8 @@ user.post('/initWithdraw', auth, authUser, slowDownLimitter, rateLimitter, async
         ..._.pick(currentChain, ['chainId', 'chainName']),
         fee: totalFee_chain,
         status: "PENDING",
-        comment: `Withdrawal from address "${payload.address}" with fee "${totalFee_chain}"`,
+        comment: "PENDING"
+        // comment: `Withdrawal from address "${payload.address}" with fee "${totalFee_chain}"`,
     }
     const transaction = await mongoFunctions.create("Transaction", transactionData)
 

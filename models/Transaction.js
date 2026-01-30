@@ -25,7 +25,7 @@ const transactionSchema = mongoose.Schema({
     fee: { type: Number, required: true },
     fee_type: { type: String,default:"0" },
     comment: { type: String, default:"" },
-    status: { type: String, required: true, enum: { values: ["PENDING", "SUCCESS", "FAILED"], message: "${VALUE} is not supported" } },
+    status: { type: String, required: true, enum: { values: ["PENDING", "SUCCESS", "FAILED","REJECT"], message: "${VALUE} is not supported" } },
     others: { type: Object, default: {} }
 }, {
     timestamps: true,

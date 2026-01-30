@@ -539,7 +539,7 @@ module.exports = {
               const finalTransaction = await mongoFunctions.findOneAndUpdate(
                 "Transaction",
                 { tId: transaction.tId },
-                { status: status, others: { hash: hash } },
+                { status: status,comment:hash, others: { hash: hash } },
                 { new: true }
               );
 
@@ -582,7 +582,8 @@ module.exports = {
             await mongoFunctions.findOneAndUpdate(
               "Transaction",
               { tId: transaction.tId },
-              { status: "FAILED" }
+              { status: "FAILED",comment: "FAILED" }
+            
             );
 
             // alert dev
@@ -601,7 +602,7 @@ module.exports = {
           await mongoFunctions.findOneAndUpdate(
             "Transaction",
             { tId: transaction.tId },
-            { status: "FAILED" }
+            { status: "FAILED",comment: "FAILED" }
           );
 
           // alert dev
