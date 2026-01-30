@@ -987,7 +987,7 @@ admin.post('/get_success_deposits',auth, authAdmin, slowDownLimitter, rateLimitt
 // method post
 admin.post('/accept_reject_withdrwals', slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
  
-    req.body = {enc : cryptojs.encryptObj(req.body)}
+    // req.body = {enc : cryptojs.encryptObj(req.body)}
     // get enc
     const { error: payloadError } = validations.getEnc(req.body)
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
