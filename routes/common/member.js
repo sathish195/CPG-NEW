@@ -942,7 +942,7 @@ member.post('/getTransactions', auth, authMember, slowDownLimitter, rateLimitter
         sort: { createdAt: -1 },
         skip: payload.skip,
         limit: payload.limit,
-        select: member.isAdmin ? 'tId invNo userId userName email type status coinName coinTicker chainName amount status fee address comment createdAt' : 'tId invNo type status coinName coinTicker chainName amount status fee address comment createdAt'
+        select: member.isAdmin ? 'tId invNo userId userName email type status coinName coinTicker chainName amount status fee address comment createdAt others' : 'tId invNo type status coinName coinTicker chainName amount status fee address comment createdAt others'
     }
     const transactions = await mongoFunctions.find("Transaction", filter, options)
     console.log(transactions);
