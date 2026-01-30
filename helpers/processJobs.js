@@ -325,37 +325,43 @@ module.exports = {
         // If no existing transaction with the same refno
         if (check_history_crypto) {
           // Find the coin object in the user's balances array based on coinName
-          // const user_balance = user.balances.find(c => c.coinName.toLowerCase() === data.coin.toLowerCase());
+          const user_balance = user.balances.find(c => c.coinName.toLowerCase() === data.coin.toLowerCase());
 
-          // if (user_balance) {
-          // let fee = parseFloat(data.fee);
-          // let amount_to_add = parseFloat(data.amount) - fee;
-          // const updatedBalance = parseFloat(user_balance.balance) + amount_to_add;
+          if (user_balance) {
+          let fee = parseFloat(data.fee);
+          let amount_to_add = parseFloat(data.amount) - fee;
+          const updatedBalance = parseFloat(user_balance.balance) + amount_to_add;
 
-          // console.log("Current balance:", user_balance.balance);
-          // console.log("Amount to add:", amount_to_add);
-          // console.log("Updated balance:", updatedBalance);
+          console.log("Current balance:", user_balance.balance);
+          console.log("Amount to add:", amount_to_add);
+          console.log("Updated balance:", updatedBalance);
 
-          // // Build the update query to update the specific balance in the balances array
-          // const filter = {
-          //     userId: user.userId,
-          //     "balances.coinName": data.coin
-          // };
+          // Build the update query to update the specific balance in the balances array
+          const filter = {
+              userId: user.userId,
+              "balances.coinName": data.coin
+          };
 
-          // const update = {
-          //     $set: {
-          //         "balances.$.balance": updatedBalance // Update balance for the matched coin
-          //     }
-          // };
+          const update = {
+              $set: {
+                  "balances.$.balance": updatedBalance // Update balance for the matched coin
+              }
+          };
+        
+          // Perform the update
+          const updated_user = await mongoFunctions.findOneAndUpdate(
+              "User",
+              filter,
+              update,
+              { new: true }
+          );
 
-          // // Perform the update
-          // const updated_user = await mongoFunctions.findOneAndUpdate(
-          //     "User",
-          //     filter,
-          //     update,
-          //     { new: true }
-          // );
-
+          await redis.hSet(
+            "cpg_users",
+            user.email,
+            JSON.stringify(updated_user)
+          ); // update in redis
+        }
           const updated_user = await mongoFunctions.findOneAndUpdate(
             "Transaction",
             { tId: data.txd },
@@ -369,6 +375,10 @@ module.exports = {
               new: true,
             }
           );
+
+
+
+
 
           // Send alert to developers
           telegram.alertDev(

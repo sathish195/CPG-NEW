@@ -1167,8 +1167,22 @@ res.set("Access-Control-Allow-Origin", "*");
     }
 })
 
+// admin remove new coins all users
+admin.post('/remove_new_coins', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
+
+      const id = req.body.id
+    //   balances
+    const updateMany = await mongoFunctions.updateMany("User", { }, { $pull: { balances: { coinId: id } } })
 
 
+    return res.status(200).send({
+        success: true,
+        message: 'Coin removed from all users',
+        modifiedCount: updateMany.modifiedCount
+      });
+
+})
+)
 module.exports = admin;
 
 
