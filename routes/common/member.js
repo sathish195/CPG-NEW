@@ -912,6 +912,7 @@ member.post('/getTransactions', auth, authMember, slowDownLimitter, rateLimitter
     const filter = {};
     // filter['type'] = type === 'withdraw' ? "WITHDRAWAL" : "DEPOSIT";
     filter['type'] =  type.toUpperCase()
+    console.log(filter,"----type----");
     if (fromDate && toDate) {
         fromDate = moment(fromDate, "YYYY-MM-DD").toDate()
         toDate = moment(toDate, "YYYY-MM-DD").toDate()
