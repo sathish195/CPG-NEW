@@ -717,7 +717,7 @@ const iface = new ethers.Interface(e_abi);
       await new Promise((resolve) => setTimeout(resolve, delay));
     } else if (each.chainName.toLowerCase() === "sepolia") {
       console.log("------------> in BSC testnet-------------------");
-//       await new Promise((resolve) => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
       //             const API_KEY = "3UPEGEFB3A7RZPYSMM587W7E912GFBX29F";
       // const ADDRESS = "0x3c8e934d44305cf943b7cb32fb8e86d31fba5cd8";
       // const CHAIN_ID = 11155111;
@@ -725,7 +725,7 @@ const iface = new ethers.Interface(e_abi);
         address,
         "",
         each.secret_key);
-//       await new Promise((resolve) => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
       // console.log("arr_data", arr_data.length);
       // console.log("arr_data", arr_data);
       let i = 1;
@@ -749,7 +749,7 @@ const iface = new ethers.Interface(e_abi);
               console.log("No history check result:", nohistory);
       
               // Delay between async calls
-        //       await new Promise((resolve) => setTimeout(resolve, delay));
+              await new Promise((resolve) => setTimeout(resolve, delay));
       
               if (nohistory) {
                 console.log("No previous history, proceeding with balance check");
@@ -795,7 +795,7 @@ const iface = new ethers.Interface(e_abi);
       
         //   console.log("Processed transaction:", e.hash);
           // Delay before continuing to the next loop
-        //   await new Promise((resolve) => setTimeout(resolve, delay));
+          await new Promise((resolve) => setTimeout(resolve, delay));
         }
       }
       
