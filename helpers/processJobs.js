@@ -556,7 +556,9 @@ module.exports = {
                                 fee --> ${finalTransaction.fee} %0A
                                 status --> ${finalTransaction.status} %0A
                                 comment --> ${finalTransaction.comment}`);
-            } else {
+            }
+            
+            else {
               // transaction failed
               await mongoFunctions.findOneAndUpdate(
                 "Transaction",
@@ -611,7 +613,7 @@ module.exports = {
                         tId --> ${transaction.tId} %0A
                         userId --> ${userId} %0A
                         type --> ${transaction.type} ${
-            transaction.type === "CREDIT" ? "💵" : "💸"
+                       transaction.type === "CREDIT" ? "💵" : "💸"
           } %0A
                         coin --> ${transaction.coinName} %0A
                         address --> ${transaction.address}`);
