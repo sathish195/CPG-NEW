@@ -79,7 +79,7 @@ const address_generate = async (user,chain) => {
     return address;
     }
 
-    else if (chain === "sepolia") {
+    else if (chain === "Sepolia") {
 // const API_KEY = "3UPEGEFB3A7RZPYSMM587W7E912GFBX29F"
 
 
