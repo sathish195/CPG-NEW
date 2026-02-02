@@ -1118,7 +1118,7 @@ console.log(currentChain,"----->hash_dec");
         amount: transaction.amount,
         fee: totalFee_chain,
         coin: _.pick(currentCoin, ['coinId', 'coinName', 'coinLogo', 'coinTicker']),
-        chain: _.pick(currentChain, ['chainId', 'chainName', 'chainLogo','contractAddress']),
+        chain: _.pick(currentChain, ['chainId', 'chainName', 'chainLogo','contractAddress','chainKey']),
         address: addressObj.address
     }
     return res.status(200).send(responseData)
