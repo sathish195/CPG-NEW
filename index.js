@@ -5,8 +5,8 @@ const dbConnect = require('./helpers/dbConnect')
 
 const app = express()
 
-require('./helpers/appConfig')(app) // configurations
-require('./helpers/middlewares')(app, express) // middlewares
+require('./helpers/appConfig')(app) 
+require('./helpers/middlewares')(app, express) 
 // require('./helpers/corn')
 
 // // (async () => {

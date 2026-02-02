@@ -11,12 +11,12 @@ cron.schedule('*/2 * * * *', async () => {
   console.log('This task runs every minute');
 
   try {
-    const deposits = await all_deposits();
+    // const deposits = await all_deposits();
     // const stats = await saveStats();
     // const settlement = await Settlement();
 
     // console.log("Deposits fetched:", settlement);
-    console.log("Deposits fetched:", deposits);
+    // console.log("Deposits fetched:", deposits);
     return deposits;
   } catch (err) {
     console.error("Error fetching deposits:", err);
