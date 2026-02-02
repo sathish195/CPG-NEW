@@ -18,6 +18,7 @@
 
 // // address_generate();
 // module.exports = { address_generate };
+const axios = requrie("axios")
 
 
 
@@ -25,10 +26,11 @@ const { Web3 } = require("web3");
 const { log } = require("winston");
 
 const address_generate = async (user,chain) => {
-  log("Generating address for user:", user.userid, "on chain:", chain);
+  console.log("Generating address for user:", user.userid, "on chain:", chain);
 
   try {
     if (chain === "Bitcoin") {
+      console.log("bitcotin-------------------------->");
       var body = {
         name: user.userid,
         key: "a252Ada0908a4a34d33bb5",
