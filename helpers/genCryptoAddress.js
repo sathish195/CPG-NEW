@@ -18,7 +18,7 @@
 
 // // address_generate();
 // module.exports = { address_generate };
-const axios = requrie("axios")
+const axios = require("axios")
 
 
 
