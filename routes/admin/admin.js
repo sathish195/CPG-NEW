@@ -796,12 +796,13 @@ admin.post('/deleteChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     // admin validations
     if(admin?.adminType !== "1") return res.status(401).send("You Are Not Allowed To Add New Chain");
 
-    // get enc
+    // // get enc
     const { error: payloadError } = validations.getEnc(req.body)
     if(payloadError) return res.status(400).send(payloadError.details[0].message)
 
     // decrypt payload
     const payload =await cryptojs.decrypt(req.body.enc)
+    // const payload = req.body
     console.log(payload,"payload------->");
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
@@ -819,8 +820,9 @@ admin.post('/deleteChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
     if(!currentCoin) return res.status(400).send("No Coin Found With Given Coin Id");
 
     // get chain
-    const currentChain = currentCoin?.chains.filter(chain => chain.chainId === payload.chain)[0]
+    const currentChain = currentCoin?.chains.filter(chain => chain.chainId === payload.chainId)[0]
     if(!currentChain) return res.status(400).send("No Chain Found With Given Chain Id");
+ 
 
     // delete chain
     let filter = { "coins.coinId": payload.coin, "coins.chains.chainId": payload.chain }
