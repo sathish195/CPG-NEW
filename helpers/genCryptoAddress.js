@@ -41,7 +41,9 @@ const address_generate = async (user,chain) => {
         url: "http://topbtc-1664110145.us-east-2.elb.amazonaws.com/api/crypt/genaddress",
         data: body,
       });
-      console.log(result,"-------------------------------------------------------->");
+      console.log(result,"bitcotin-------------------------->")
+
+      // console.log(result);
 
       if (result && result.data && result.data.address) {
         console.log(result.data);

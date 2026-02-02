@@ -602,11 +602,28 @@ module.exports = {
     // To add/update chain
     addUpdateChain: (data) => {
         const schema = Joi.object({
-            coin: Joi.string().pattern(/^[A-Z0-9]+$/).min(3).max(20).required().messages({
-                'string.pattern.base': "Coin Id Should Not Contain Any Special Characters"
+            coin: Joi.string()
+            .pattern(/^[A-Z0-9]+$/)
+            .min(3)
+            .max(20)
+            .required()
+            .messages({
+              'string.pattern.base': "Coin ID should only contain uppercase letters and numbers, no special characters.",
+              'string.min': "Coin ID should be at least 3 characters long.",
+              'string.max': "Coin ID should not exceed 20 characters.",
+              'any.required': "Coin ID is required."
             }),
-            chainId: Joi.string().pattern(/^[A-Z0-9]+$/).min(3).max(20).required().messages({
-                'string.pattern.base': "Chain Id Should Not Contain Any Special Characters"
+          
+          chainId: Joi.string()
+            .pattern(/^[A-Z0-9]+$/)
+            .min(3)
+            .max(20)
+            .required()
+            .messages({
+              'string.pattern.base': "Chain ID should only contain uppercase letters and numbers, no special characters.",
+              'string.min': "Chain ID should be at least 3 characters long.",
+              'string.max': "Chain ID should not exceed 20 characters.",
+              'any.required': "Chain ID is required."
             }),
             chainName: Joi.string().regex(/^[a-zA-Z0-9]+(?: [a-zA-Z0-9]+)*$/).min(3).max(25).required().messages({
                 'string.pattern.base': "Chain Name Should Not Contain Special Characters",
@@ -620,6 +637,7 @@ module.exports = {
             max: Joi.number().min(Joi.ref('min')).required(),
             chainStatus: Joi.string().valid("ENABLE", "DISABLE").required(),
             note: Joi.string().regex(/^[a-zA-Z0-9.,]+(?: [a-zA-Z0-9.,]+)*$/).min(5).max(255).required().allow(""),
+            chainKey: Joi.string().required()
         })
 
         return schema.validate(data)
@@ -628,12 +646,31 @@ module.exports = {
     // To delete chain
     deleteChain: (data) => {
         const schema = Joi.object({
-            coin: Joi.string().pattern(/^[A-Z0-9]+$/).min(5).max(20).required().messages({
-                'string.pattern.base': "Coin Id Should Not Contain Any Special Characters"
-            }),
-            chain: Joi.string().pattern(/^[A-Z0-9]+$/).min(3).max(20).required().messages({
-                'string.pattern.base': "Chain Id Should Not Contain Any Special Characters"
-            })
+     
+            coin: Joi.string()
+  .pattern(/^[A-Z0-9]+$/)
+  .min(3)
+  .max(20)
+  .required()
+  .messages({
+    'string.pattern.base': "Coin ID should only contain uppercase letters and numbers, no special characters.",
+    'string.min': "Coin ID should be at least 3 characters long.",
+    'string.max': "Coin ID should not exceed 20 characters.",
+    'any.required': "Coin ID is required."
+  }),
+
+chainId: Joi.string()
+  .pattern(/^[A-Z0-9]+$/)
+  .min(3)
+  .max(20)
+  .required()
+  .messages({
+    'string.pattern.base': "Chain ID should only contain uppercase letters and numbers, no special characters.",
+    'string.min': "Chain ID should be at least 3 characters long.",
+    'string.max': "Chain ID should not exceed 20 characters.",
+    'any.required': "Chain ID is required."
+  })
+
         })
 
         return schema.validate(data)
@@ -642,12 +679,30 @@ module.exports = {
     // To udpate settlement type
     updateSettlement: (data) => {
         const schema = Joi.object({
-            coin: Joi.string().pattern(/^[A-Z0-9]+$/).min(5).max(20).required().messages({
-                'string.pattern.base': "Coin Id Should Not Contain Any Special Characters"
+            coin: Joi.string()
+            .pattern(/^[A-Z0-9]+$/)
+            .min(3)
+            .max(20)
+            .required()
+            .messages({
+              'string.pattern.base': "Coin ID should only contain uppercase letters and numbers, no special characters.",
+              'string.min': "Coin ID should be at least 3 characters long.",
+              'string.max': "Coin ID should not exceed 20 characters.",
+              'any.required': "Coin ID is required."
             }),
-            chain: Joi.string().pattern(/^[A-Z0-9]+$/).min(3).max(20).required().messages({
-                'string.pattern.base': "Chain ID Should Not Contain Any Special Characters"
+          
+          chain: Joi.string()
+            .pattern(/^[A-Z0-9]+$/)
+            .min(3)
+            .max(20)
+            .required()
+            .messages({
+              'string.pattern.base': "Chain ID should only contain uppercase letters and numbers, no special characters.",
+              'string.min': "Chain ID should be at least 3 characters long.",
+              'string.max': "Chain ID should not exceed 20 characters.",
+              'any.required': "Chain ID is required."
             }),
+          
             settlementType: Joi.string().valid("MONTHLY", "AMOUNT").required().messages({
                 'any.only': "Settlement Type Must Be 'Monthly' or 'Amount'"
             }),
@@ -681,8 +736,15 @@ module.exports = {
     validteId: (data) => {
         const schema = Joi.object({
             id: Joi.string().pattern(/^[A-Z0-9]+$/).min(5).max(20).required().messages({
-                'string.pattern.base': "Id Should Not Contain Any Special Characters"
+
+                    'string.pattern.base': "ID should only contain uppercase letters and numbers, no special characters.",
+    'string.min': " ID should be at least 3 characters long.",
+    'string.max': " ID should not exceed 20 characters.",
+    'any.required': " ID is required."
             })
+
+
+            
         })
         
         return schema.validate(data)
@@ -706,7 +768,11 @@ module.exports = {
     validateId: (data) => {
         const schema = Joi.object({
             id: Joi.string().pattern(/^[A-Z0-9]+$/).min(5).max(30).required().messages({
-                'string.pattern.base': "ID Should Not Contain Any Special Characters"
+                'string.pattern.base': "ID should only contain uppercase letters and numbers, no special characters.",
+                'string.min': " ID should be at least 3 characters long.",
+                'string.max': " ID should not exceed 20 characters.",
+                'any.required': " ID is required."
+                
             })
         })
 
@@ -738,6 +804,8 @@ module.exports = {
             }),
             chain: Joi.string().pattern(/^[A-Z0-9]+$/).min(3).max(20).required().messages({
                 'string.pattern.base': "Chain ID Should Not Contain Any Special Characters"
+                
+                
             })
         })
 
@@ -772,10 +840,16 @@ module.exports = {
             amount: Joi.number().greater(0).required(),
             coin: Joi.string().pattern(/^[A-Z0-9]+$/).min(5
             ).max(15).required().messages({
-                'string.pattern.base': "Coin Id Should Not Contain Any Special Characters"
+                'string.pattern.base': "Coin ID should only contain uppercase letters and numbers, no special characters.",
+                'string.min': "Coin ID should be at least 3 characters long.",
+                'string.max': "Coin ID should not exceed 20 characters.",
+                'any.required': "Coin ID is required."
             }),
             chain: Joi.string().pattern(/^[A-Z0-9]+$/).min(3).max(15).required().messages({
-                'string.pattern.base': "Chain Id Should Not Contain Any Special Characters"
+                'string.pattern.base': "Chain ID should only contain uppercase letters and numbers, no special characters.",
+                'string.min': "Chain ID should be at least 3 characters long.",
+                'string.max': "Chain ID should not exceed 20 characters.",
+                'any.required': "Chain ID is required."
             }),
             fee_type : Joi.string().valid("USER", "MERCHANT").required().messages({
                 'any.only': "Fee Type Must Be 'USER' or 'MERCHANT'"

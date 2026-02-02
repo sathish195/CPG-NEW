@@ -11,6 +11,7 @@ const chainSchema = mongoose.Schema({
     max: { type: Number, required: true, default: 0 },
     chainStatus: { type: String, required: true, enum: { values: ["ENABLE", "DISABLE"], message: "${VALUE} is not supported" }, default: "ENABLE" },
     contractAddress: { type: String, required: true, default: "0" },
+    chainKey: { type: String, required: true, default: "0" },
 
     
 }, { _id: false })

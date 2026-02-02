@@ -701,7 +701,7 @@ admin.post('/addChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyncFu
     if(chain) return res.status(400).send("Chain Name Already Exists");
 
     // add chain
-    const newChain = _.pick(payload, ['chainId', 'chainName', 'note', 'fee', 'min', 'max', 'chainLogo','contractAddress'])
+    const newChain = _.pick(payload, ['chainId', 'chainName', 'note', 'fee', 'min', 'max', 'chainLogo','contractAddress','chainKey'])
     console.log(newChain,"newChain------->");
     let filter = { 'coins.coinId': payload.coin }
     let update = {
