@@ -26,13 +26,14 @@ const { Web3 } = require("web3");
 const { log } = require("winston");
 
 const address_generate = async (user,chain) => {
-  console.log("Generating address for user:", user.userid, "on chain:", chain);
+  console.log("Generating address for user:", user.userId, "on chain:", chain);
 
+  // Bitcoin
   try {
     if (chain === "Bitcoin") {
       console.log("bitcotin-------------------------->");
       var body = {
-        name: user.userid,
+        name: user.userId,
         key: "a252Ada0908a4a34d33bb5",
       };
       const result = await axios({
@@ -41,6 +42,7 @@ const address_generate = async (user,chain) => {
         data: body,
       });
       if (result && result.data && result.data.address) {
+        console.log(result.data);
         return result.data
         
       }
