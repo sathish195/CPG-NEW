@@ -802,6 +802,7 @@ admin.post('/deleteChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
 
     // decrypt payload
     const payload =await cryptojs.decrypt(req.body.enc)
+    console.log(payload,"payload------->");
     if(payload === 'tberror') return res.status(400).send("Invalid Encryption String")
     if(!payload || !(Object.keys(payload).length)) return res.status(400).send("Payload Should Not Be Empty")
 
