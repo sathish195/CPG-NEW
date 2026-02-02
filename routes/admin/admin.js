@@ -1033,51 +1033,6 @@ console.log(payload);
         }))
 
 
-// // Upload route
-// admin.post('/upload', upload.array('images', 8), async (req, res) => {
-//     try {
-//         if (!req.files || req.files.length === 0) {
-//             return res.status(400).json({ success: false, message: 'No files uploaded' })
-//         }
-
-//         // Initialize GridFSBucket
-//         const bucket = new GridFSBucket(mongoose.connection.db, {
-//             bucketName: 'uploads'
-//         })
-
-//         let ids
-
-//         for (const file of req.files) {
-//             // Compress image to WebP
-//             const compressed = await sharp(file.buffer)
-//                 // .resize({ width: 1200 }) // resize max width
-//                 .webp({ quality: 90 })   // compress
-//                 .toBuffer()
-
-//             // Upload to GridFS
-//             const uploadStream = bucket.openUploadStream(
-//                 `${Date.now()}-${file.originalname}`,
-//                 { contentType: 'image/webp' }
-//             )
-
-//             uploadStream.end(compressed)
-
-//             // Wait until file is stored
-//             await new Promise((resolve, reject) => {
-//                 uploadStream.on('finish', () => {
-//                     ids=uploadStream.id // save GridFS _id
-//                     resolve()
-//                 })
-//                 uploadStream.on('error', reject)
-//             })
-//         }
-
-//         return res.status(200).send({ success: true, imageurl: `https://cpg-new.onrender.com/api/admin/image/${ids}` })
-//     } catch (err) {
-//         console.error('Upload error:', err)
-//         res.status(400).send({ success: false, message: 'Upload failed' })
-//     }
-// })
 
 
 admin.post('/upload', upload.array('images', 8), async (req, res) => {
