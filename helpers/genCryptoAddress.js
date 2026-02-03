@@ -27,7 +27,6 @@ const { log } = require("winston");
 
 const address_generate = async (user,chain) => {
   console.log("Generating address for user:", user.userId, "on chain:", chain);
-
   // Bitcoin
   try {
     if (chain === "Bitcoin") {
