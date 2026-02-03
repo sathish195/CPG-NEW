@@ -825,9 +825,9 @@ admin.post('/deleteChain', auth, authAdmin, slowDownLimitter, rateLimitter, asyn
  
 
     // delete chain
-    let filter = { "coins.coinId": payload.coin, "coins.chains.chainId": payload.chain }
+    let filter = { "coins.coinId": payload.coin, "coins.chains.chainId": payload.chainId }
     let update = {
-        $pull: { 'coins.$.chains': { chainId: payload.chain } }
+        $pull: { 'coins.$.chains': { chainId: payload.chainId } }
     }
     const updatedAdminControls = await mongoFunctions.findOneAndUpdate("AdminControls", filter, update, { new: true })
     await redis.hSet("cpg_admin", "controls", JSON.stringify(updatedAdminControls))
