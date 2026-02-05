@@ -645,37 +645,72 @@ member.post('/getBalances', auth, authMember, slowDownLimitter, rateLimitter, as
     if(member.isAdmin){
         if(coins && coins.length) {
             // get total balances
+            // const pipeline = [
+            //     {
+            //         $unwind: '$balances', // Unwind the balances array
+            //     },
+            //     {
+            //         $group: {
+            //             _id: {
+            //                 coinId: '$balances.coinId',
+            //                 coinName: '$balances.coinName',
+            //                 coinTicker: '$balances.coinTicker',
+            //             },
+            //             balance: { $sum: '$balances.balance' },
+            //             precision: { $first: '$balances.precision' },
+            //             coinLogo: { $first: '$balances.coinLogo' },
+            //             coinStatus: { $first: '$balances.coinStatus' },
+            //         },
+            //     },
+            //     {
+            //         $project: {
+            //             _id: 0,
+            //             coinId: '$_id.coinId',
+            //             coinName: '$_id.coinName',
+            //             coinTicker: '$_id.coinTicker',
+            //             balance: 1,
+            //             precision: 1,
+            //             coinLogo: 1,
+            //             coinStatus: 1,
+            //         },
+            //     },
+            // ]
+
             const pipeline = [
                 {
-                    $unwind: '$balances', // Unwind the balances array
+                  $unwind: '$balances'
                 },
                 {
-                    $group: {
-                        _id: {
-                            coinId: '$balances.coinId',
-                            coinName: '$balances.coinName',
-                            coinTicker: '$balances.coinTicker',
-                        },
-                        balance: { $sum: '$balances.balance' },
-                        precision: { $first: '$balances.precision' },
-                        coinLogo: { $first: '$balances.coinLogo' },
-                        coinStatus: { $first: '$balances.coinStatus' },
+                  $group: {
+                    _id: {
+                      coinId: '$balances.coinId',
+                      coinName: '$balances.coinName',
+                      coinTicker: '$balances.coinTicker',
                     },
+                    balance: {
+                      $sum: { $toDecimal: '$balances.balance' }
+                    },
+                    precision: { $first: '$balances.precision' },
+                    coinLogo: { $first: '$balances.coinLogo' },
+                    coinStatus: { $first: '$balances.coinStatus' },
+                  }
                 },
                 {
-                    $project: {
-                        _id: 0,
-                        coinId: '$_id.coinId',
-                        coinName: '$_id.coinName',
-                        coinTicker: '$_id.coinTicker',
-                        balance: 1,
-                        precision: 1,
-                        coinLogo: 1,
-                        coinStatus: 1,
-                    },
-                },
-            ]
+                  $project: {
+                    _id: 0,
+                    coinId: '$_id.coinId',
+                    coinName: '$_id.coinName',
+                    coinTicker: '$_id.coinTicker',
+                    balance: 1,
+                    precision: 1,
+                    coinLogo: 1,
+                    coinStatus: 1,
+                  }
+                }
+              ]
+              
             balances = await mongoFunctions.aggregate("User", pipeline)
+            console.log(balances);
             balances = balances && balances.length ? balances.map(res => {
                 return {
                     ...res,
