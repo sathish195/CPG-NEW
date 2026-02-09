@@ -54,7 +54,7 @@ const address_generate = async (user,chain) => {
       }
     return false;
     } else if (chain === "Tron") {
-      var privateKey = crypto.generateRandomString(32).toString("hex");
+      var privateKey = crypto.generateRandomString()
       // var tron_key_check = await rediscon.redisExistSingle("tronkey");
       // if (tron_key_check) {
         var tron_key = "86fca927-f9c2-4889-a7f1-ed521085fc7b"
