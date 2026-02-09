@@ -54,7 +54,7 @@ const address_generate = async (user,chain) => {
       }
     return false;
     } else if (chain === "Tron") {
-      var privateKey = crypto.generateRandomString(32)
+      var privateKey =await crypto.generateRandomString(32)
       console.log(privateKey,"tron-------------------------->");
       // var tron_key_check = await rediscon.redisExistSingle("tronkey");
       // if (tron_key_check) {
