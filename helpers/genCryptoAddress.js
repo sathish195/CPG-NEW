@@ -24,6 +24,7 @@ const axios = require("axios")
 
 const { Web3 } = require("web3"); 
 const { log } = require("winston");
+const crypto = require("./cryptojs");
 
 const address_generate = async (user,chain) => {
   console.log("Generating address for user:", user.userId, "on chain:", chain);
@@ -51,10 +52,11 @@ const address_generate = async (user,chain) => {
       }
     return false;
     } else if (chain === "Tron") {
-      var privateKey = crypto.randomBytes(32).toString("hex");
-      var tron_key_check = await rediscon.redisExistSingle("tronkey");
-      if (tron_key_check) {
-        var tron_key = await rediscon.redisget_normal_single("tronkey");
+      var privateKey = crypto.generateRandomString(32).toString("hex");
+      // var tron_key_check = await rediscon.redisExistSingle("tronkey");
+      // if (tron_key_check) {
+        var tron_key = "86fca927-f9c2-4889-a7f1-ed521085fc7b"
+        // await rediscon.redisget_normal_single("tronkey");
         if (tron_key) {
           const tronWeb = new TronWeb({
             fullHost: "https://api.trongrid.io",
@@ -69,7 +71,7 @@ const address_generate = async (user,chain) => {
         }
         return false;
       }
-    } 
+    // } 
     else if (chain === "Binance Smart") {
   const busd_link = "https://bsc-dataseed.binance.org/";  
     const web3 = new Web3(busd_link); 
