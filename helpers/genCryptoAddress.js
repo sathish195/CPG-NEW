@@ -69,7 +69,7 @@ const address_generate = async (user,chain) => {
             privateKey: privateKey,
           });
           const acc = await tronWeb.createAccount();    
-         json.stringify(acc.address)
+         
           return acc;
         }
         return false;
