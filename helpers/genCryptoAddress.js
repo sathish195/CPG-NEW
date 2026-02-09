@@ -25,6 +25,8 @@ const axios = require("axios")
 const { Web3 } = require("web3"); 
 const { log } = require("winston");
 const crypto = require("./cryptojs");
+const {TronWeb} = require('tronweb');
+
 
 const address_generate = async (user,chain) => {
   console.log("Generating address for user:", user.userId, "on chain:", chain);
