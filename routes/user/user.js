@@ -1094,11 +1094,12 @@ console.log(currentChain,"----->hash_dec");
 
     // const secret_key = cryptojs.generateRandomString(10)
     // console.log(secret_key,"------s-->");
+    
     const transactionData = {
         tId:await cryptojs.generateRandomString(15),
         invNo: hash_dec.invNo,
         amount: finalAmount,
-        address:addressObj.address,
+        address:chain==="Tron"? addressObj.address.base58 : addressObj.address,
         secret_key:addressObj.privateKey,
         ..._.pick(user, ['userId', 'userName', 'email']),
         ..._.pick(currentCoin, ['coinId', 'coinName', 'coinTicker']),
@@ -1108,6 +1109,7 @@ console.log(currentChain,"----->hash_dec");
         comment: `Deposit to ${addressObj.address} with fee "${totalFee_chain}"`,
         status:"PENDING",
         type:"DEPOSIT",
+        others : chain === "Tron"? { encryptedAddressObj :await cryptojs.encrypt(addressObj) } : {}
 
     }
     const transaction = await mongoFunctions.create("Transaction", transactionData)
@@ -1119,7 +1121,8 @@ console.log(currentChain,"----->hash_dec");
         fee: totalFee_chain,
         coin: _.pick(currentCoin, ['coinId', 'coinName', 'coinLogo', 'coinTicker']),
         chain: _.pick(currentChain, ['chainId', 'chainName', 'chainLogo','contractAddress','chainKey']),
-        address: addressObj.address
+        address:chain==="Tron"? addressObj.address.base58 : addressObj.address,
+
     }
     return res.status(200).send(responseData)
 }))
