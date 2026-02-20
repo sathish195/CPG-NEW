@@ -733,7 +733,6 @@ const iface = new ethers.Interface(e_abi);
       if (arr_data && arr_data.length > 0) {
         for (const e of arr_data) {
           console.log(e.input, "inputttttt----->");
-      
           try {
             // Attempt to decode the function data (handle errors if it doesn't match the transfer function)
             const decoded = iface.decodeFunctionData("transfer", e.input);
