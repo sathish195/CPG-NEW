@@ -980,13 +980,17 @@ console.log(appIdData,"appIdData");
     console.log(appIdData,"appIdData before hash");
     console.log(payload,"payload before hash");
     console.log(requestedAmount,"requestedAmount before hash");
+    const timeNow = Date.now()
+    const expireTime = timeNow + 30 * 60 * 1000 // 30min
 
     const data = {
         ...appIdData, // userId, successUrl & notifyUrl
         ...payload, // invNo, amount, coin, chain
         amount: requestedAmount,
-        timestamp: Date.now()
-    }
+        timestamp: Date.now(),
+        expireTime,
+        appName : currentKey.appName
+    }    
     // console.log(data,"data to generate hash");
     // const secretKey = tigerBalm.decrypt(JSON.parse
     //     (currentKey.secretKey))
@@ -1047,9 +1051,9 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
     if(!hash_dec || hash_dec === 'tberror') return res.status(400).send("Invalid Hash");
 
     // hash key validations
-    const timeNow = Date.now()
-    const expireTime = hash_dec.timestamp + 30 * 60 * 1000 // 30min
-    if(timeNow >= expireTime) return res.status(400).send("Hash Key Expired. Please Try Again");
+    // const timeNow = Date.now()
+    // const expireTime = hash_dec.timestamp + 30 * 60 * 1000 // 30min
+    if(hash_dec.timestamp >= hash_dec.expireTime) return res.status(400).send("Hash Key Expired. Please Try Again");
 
     // check invoice
     // const invExists = await mongoFunctions.findOne("Transaction", { userId: user.userId, invNo: hash_dec.invNo })

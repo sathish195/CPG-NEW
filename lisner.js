@@ -8,13 +8,12 @@ const app = express()
 // const confrmation = require("./lisners/conformation");
 const mongoFunctions = require("./helpers/mongoFunctions");
 const {getExactLength} = require("./helpers/controllers");
-// const producer = require("./helpers/producer");
+const producer = require("./helpers/producer");
 const  db  = require("./helpers/dbConnect");
-const dbConnect = require('./helpers/dbConnect');
-const proceed = require("./conformation");
+const dbConnect = require('./helpers/dbConnect')
 
 // const dbConnect = require("./helpers/dbConnect");
-// dbConnect()s
+dbConnect()
 const provider = new ethers.JsonRpcProvider("https://eth-sepolia.g.alchemy.com/v2/PBeGbEO3r8HDl9rsXPWDd");
 
 const tokenAddress ="0x4CCc8accD389e3E536Bf199F93826FdcaF4dfF09"
@@ -88,18 +87,19 @@ console.log(parseFloat(getExactLength(getTransaction.amount, 3)),"----->");
 
 if(parseFloat(getExactLength(api_bal, 3)) >= parseFloat(getExactLength(getTransaction.amount, 3)))  {
     console.log("Balance check passed, preparing to add to queue");
-    await proceed(
-     getTransaction.tId,
-     getTransaction.userId,
-    log.transactionHash,
-    getTransaction.coinName,
-     getTransaction.chainName,
-     getTransaction.fee,
-   api_bal,
-   to,
-    
-    )
-}}}
+    await producer.addJob({
+      type: "CRYPTO_DEPOSITS",
+      txd: getTransaction.tId,
+      userid: getTransaction.userId,
+      hash: log.transactionHash,
+      coin: getTransaction.coinName,
+      chain: getTransaction.chainName,
+      fee: getTransaction.fee,
+      amount: api_bal,
+      address: to,
+    });
+}
+}}
 
 lastScannedBlock = safeBlock;
 
