@@ -10,10 +10,10 @@ const mongoFunctions = require("./helpers/mongoFunctions");
 const {getExactLength} = require("./helpers/controllers");
 const producer = require("./helpers/producer");
 const  db  = require("./helpers/dbConnect");
-const dbConnect = require('./helpers/dbConnect')
+// const dbConnect = require('./helpers/dbConnect')
 
 // const dbConnect = require("./helpers/dbConnect");
-dbConnect()
+// dbConnect()
 const provider = new ethers.JsonRpcProvider("https://eth-sepolia.g.alchemy.com/v2/PBeGbEO3r8HDl9rsXPWDd");
 
 const tokenAddress ="0x4CCc8accD389e3E536Bf199F93826FdcaF4dfF09"
@@ -65,12 +65,12 @@ topics: [TRANSFER_TOPIC]
 for (const log of logs) {
     // console.log(log);
 const parsed = iface.parseLog(log);
-console.log(parsed,"---->");
+// console.log(parsed,"---->");
 const to = parsed.args[1];
-console.log(to,"------>");
+// console.log(to,"------>");
 
 const getTransaction = await mongoFunctions.findOne("Transaction", { address : to ,status :"PENDING"});
-console.log(getTransaction,"----->");
+// console.log(getTransaction,"----->");
 
 if (getTransaction) {
 console.log("\n=== ERC20 PAYMENT DETECTED ===");
@@ -82,8 +82,8 @@ console.log("Block:", log.blockNumber);
 // const data =await confrmation(log.transactionHash);
 // console.log(data,"sdfadsf---");
 const api_bal = ethers.formatUnits(parsed.args.value.toString(), 18)
-console.log(parseFloat(getExactLength(api_bal, 3,"----->")));
-console.log(parseFloat(getExactLength(getTransaction.amount, 3)),"----->");
+// console.log(parseFloat(getExactLength(api_bal, 3,"----->")));
+// console.log(parseFloat(getExactLength(getTransaction.amount, 3)),"----->");
 
 if(parseFloat(getExactLength(api_bal, 3)) >= parseFloat(getExactLength(getTransaction.amount, 3)))  {
     console.log("Balance check passed, preparing to add to queue");
@@ -109,5 +109,4 @@ console.error("Error:", err.message);
 }, POLL_INTERVAL);
 }
 
-main();
-
+module.exports = main;
