@@ -1,15 +1,15 @@
 require("dotenv").config();
 const { ethers } = require("ethers");
-const express = require('express')
+// const express = require('express')
 require('dotenv').config()
 require('./helpers/errorHandler')
 
-const app = express()
+// const app = express()
 // const confrmation = require("./lisners/conformation");
 const mongoFunctions = require("./helpers/mongoFunctions");
 const {getExactLength} = require("./helpers/controllers");
 const producer = require("./helpers/producer");
-const  db  = require("./helpers/dbConnect");
+// const  db  = require("./helpers/dbConnect");
 // const dbConnect = require('./helpers/dbConnect')
 
 // const dbConnect = require("./helpers/dbConnect");
@@ -70,7 +70,7 @@ const to = parsed.args[1];
 // console.log(to,"------>");
 
 const getTransaction = await mongoFunctions.findOne("Transaction", { address : to ,status :"PENDING"});
-// console.log(getTransaction,"----->");
+console.log(getTransaction,"----->")
 
 if (getTransaction) {
 console.log("\n=== ERC20 PAYMENT DETECTED ===");

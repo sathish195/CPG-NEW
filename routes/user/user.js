@@ -948,8 +948,8 @@ console.log(appIdData,"appIdData");
     const requestedAmount = Number(payload.amount)
 
     // check pending invoices
-    const totalPendingInv = await mongoFunctions.countDocuments("Transaction", { type: "DEPOSIT", status: "PENDING" })
-    if(totalPendingInv >= 50) return res.status(400).send("Pending Invoices Limit Reached. Please Try Again After Some Time")
+    // const totalPendingInv = await mongoFunctions.countDocuments("Transaction", { type: "DEPOSIT", status: "PENDING" })
+    // if(totalPendingInv >= 50) return res.status(400).send("Pending Invoices Limit Reached. Please Try Again After Some Time")
 
     // validations
     const invExists = await mongoFunctions.findOne("Transaction", { userId: user.userId, invNo: payload.invNo })
