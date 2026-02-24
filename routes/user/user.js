@@ -1050,11 +1050,11 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
 
     if(!hash_dec || hash_dec === 'tberror') return res.status(400).send("Invalid Hash");
 
-    // hash key validations
-    // const timeNow = Date.now()
-    // const expireTime = hash_dec.timestamp + 30 * 60 * 1000 // 30min
-    if(hash_dec.timestamp >= hash_dec.expireTime) return res.status(400).send("Hash Key Expired. Please Try Again");
-
+      // hash key validations
+      const timeNow = Date.now()
+      const expireTime = hash_dec.timestamp + 30 * 60 * 1000 // 30min
+      if(timeNow >= expireTime) return res.status(400).send("Hash Key Expired. Please Try Again");
+  
     // check invoice
     // const invExists = await mongoFunctions.findOne("Transaction", { userId: user.userId, invNo: hash_dec.invNo })
     // if(invExists) return res.status(400).send("Invoice Number Already Exists");
