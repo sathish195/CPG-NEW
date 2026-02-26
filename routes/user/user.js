@@ -1056,8 +1056,8 @@ user.post('/initCheckout', slowDownLimitter, rateLimitter, asyncFun (async (req,
       if(timeNow >= expireTime) return res.status(400).send("Hash Key Expired. Please Try Again");
   
     // check invoice
-    const invExists = await mongoFunctions.findOne("Transaction", { userId: user.userId, invNo: hash_dec.invNo })
-    if(invExists) return res.status(400).send("Invoice Number Already Exists");
+    const invExists = await mongoFunctions.findOne("Transaction", { userId: user.userId, invNo: hash_dec.invNo,status:"SUCCESS" })
+    if(invExists) return res.status(400).send("Payment Already Made For This Invoice Number");
 
     // get coins
     const adminControls = await controllers.getAdminControls();
