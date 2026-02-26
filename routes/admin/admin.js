@@ -1086,7 +1086,7 @@ admin.post('/upload', upload.array('images', 8), async (req, res) => {
   });
   
 
-admin.get('/image/:id', async (req, res) => {
+admin.get('/image/:id',auth, authAdmin, async (req, res) => {
     console.log("req.params------->",req.params);
     try {
         const { id } = req.params
@@ -1106,7 +1106,7 @@ admin.get('/image/:id', async (req, res) => {
         // Set content-type as webp (because we converted images)
         // res.set('Content-Type', 'image/webp')
         res.set('Content-Type', 'image/webp');
-res.set('Cache-Control', 'public, max-age=31536000');
+ res.set('Cache-Control', 'public, max-age=31536000');
 res.set("Access-Control-Allow-Origin", "*");
   res.set("Cross-Origin-Resource-Policy", "cross-origin");
 
