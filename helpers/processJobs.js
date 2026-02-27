@@ -362,7 +362,7 @@ module.exports = {
             JSON.stringify(updated_user)
           ); // update in redis
         }
-          const updated_user = await mongoFunctions.findOneAndUpdate(
+          const updated_transaction = await mongoFunctions.findOneAndUpdate(
             "Transaction",
             { tId: data.txd },
             {
@@ -375,20 +375,21 @@ module.exports = {
               new: true,
             }
           );
-         console.log(updated_user,"updated_user----------------->");
-         let x = await redis.setEx(`cpg-deposit-secret-${updated_user.tId}`,updated_user, "1800",);
-         console.log(x,"redis response----------------->");
+     
   //  let x = await redis.setEx(`cpg-deposit-secret-${transaction.tId}`,transaction,"1800", );
 
           // Send alert to developers
           telegram.alertDev(
             `✅ New Deposit Received ✅
-                            Username: ${updated_user.userName}
-                            Amount: ${updated_user.amount}
+                            Username: ${updated_transaction.userName}
+                            Amount: ${updated_transaction.amount}
                             Coin: ${data.coin}
                             Chain: ${data.chain}
                             Fee: ${data.fee}`
           );
+          console.log(updated_user,"updated_user----------------->");
+          let x = await redis.setEx(`cpg-deposit-secret-${updated_transaction.tId}`,updated_transaction, "1800",);
+          console.log(x,"redis response----------------->");
           return true;
 
           // } else {
