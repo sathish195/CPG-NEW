@@ -1117,6 +1117,8 @@ console.log(currentChain,"----->hash_dec");
 
     }
     const transaction = await mongoFunctions.create("Transaction", transactionData)
+    await redis.setEx(`cpg-deposit-secret-${transaction.tId}`, 60 * 30, transaction);
+
 
     const responseData = {
         tId: transaction.tId,
@@ -1140,10 +1142,15 @@ user.post('/testStats', asyncFun (async (req, res) => {
 }))
 // deposits", "withdraw
 
-user.post('/get_transaction',auth, slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
+user.post('/get_transaction',slowDownLimitter, rateLimitter, asyncFun (async (req, res) => {
     console.log("req",req.body);
     // req.body = {enc : cryptojs.encryptObj(req.body)}
 
+    const key = req.headers["t-app-key"]
+    console.log(key);
+
+    const appKey_enc = await cryptojs.encrypt(key)
+    if(!appKey_enc) return res.status(400).send("App Key Is Required");
         console.log(req.body);
         const payload =await cryptojs.decrypt(req.body.enc)
         console.log(payload);
@@ -1152,8 +1159,10 @@ user.post('/get_transaction',auth, slowDownLimitter, rateLimitter, asyncFun (asy
     
         const { error } = validations.validate_tid(payload)
         if(error) return res.status(400).send(error.details[0].message)
-
-    const pending_withdrawals = await mongoFunctions.find("Transaction", {tId:payload.tid },{_id:0, __v:0,invNo:0})
+        const exists = await redis.get(`cpg-deposit-secret-${payload.tid}`);
+       if(!exists) return res.status(400).send("No Transaction Found With Given Transaction ID")
+       const pending_withdrawals = await redis.get(`cpg-deposit-secret-${payload.tid}`);
+    // const pending_withdrawals = await mongoFunctions.find("Transaction", {tId:payload.tid },{_id:0, __v:0,invNo:0})
     // console.log(pending_withdrawals);
     return res.status(200).send(await cryptojs.encrypt(pending_withdrawals))
 
