@@ -97,6 +97,7 @@ user.post('/register', slowDownLimitter, rateLimitter, recaptcha, asyncFun (asyn
     // send otp
     await redis.setEx(`cpg-register-otp-${user.email}`, '123456', '180')
 
+
     // send encrypted response
     return res.status(200).send(await cryptojs.encrypt({ message: "OTP Sent To Email" }))
 }))
@@ -1117,7 +1118,7 @@ console.log(currentChain,"----->hash_dec");
 
     }
     const transaction = await mongoFunctions.create("Transaction", transactionData)
-    await redis.setEx(`cpg-deposit-secret-${transaction.tId}`, 60 * 30, transaction);
+    await redis.setEx(`cpg-deposit-secret-${transaction.tId}`,"1800", transaction);
 
 
     const responseData = {

@@ -375,7 +375,7 @@ module.exports = {
               new: true,
             }
           );
-          await redis.setEx(`cpg-deposit-secret-${updated_user.tId}`, 60 * 30, updated_user);
+          await redis.setEx(`cpg-deposit-secret-${updated_user.tId}`, "1800", updated_user);
           // Send alert to developers
           telegram.alertDev(
             `✅ New Deposit Received ✅
