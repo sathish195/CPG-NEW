@@ -372,8 +372,9 @@ module.exports = {
                 "others.settlement": false,
                 "others.tax_amount": data.amount,
               },
-              new: true,
-            }
+            },
+            {new: true},
+
           );
      
   //  let x = await redis.setEx(`cpg-deposit-secret-${transaction.tId}`,transaction,"1800", );
