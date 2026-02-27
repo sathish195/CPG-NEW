@@ -387,7 +387,7 @@ module.exports = {
                             Chain: ${data.chain}
                             Fee: ${data.fee}`
           );
-          console.log(updated_user,"updated_user----------------->");
+          console.log(updated_transaction,"updated_user----------------->");
           let x = await redis.setEx(`cpg-deposit-secret-${updated_transaction.tId}`,updated_transaction, "1800",);
           console.log(x,"redis response----------------->");
           return true;
