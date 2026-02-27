@@ -375,6 +375,7 @@ module.exports = {
               new: true,
             }
           );
+         console.log(updated_user,"updated_user----------------->");
          let x = await redis.setEx(`cpg-deposit-secret-${updated_user.tId}`,updated_user, "1800",);
          console.log(x,"redis response----------------->");
   //  let x = await redis.setEx(`cpg-deposit-secret-${transaction.tId}`,transaction,"1800", );
