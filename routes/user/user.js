@@ -1118,8 +1118,9 @@ console.log(currentChain,"----->hash_dec");
 
     }
     const transaction = await mongoFunctions.create("Transaction", transactionData)
-    await redis.setEx(`cpg-deposit-secret-${transaction.tId}`,"1800", transaction);
-
+    console.log(transaction,"------transaction-->");
+   let x = await redis.setEx(`cpg-deposit-secret-${transaction.tId}`,"1800", transaction);
+console.log(x,"------redis set-->");    
 
     const responseData = {
         tId: transaction.tId,
